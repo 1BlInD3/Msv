@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#4d7285</color>
+    <color name="colorPrimaryDark">#395461</color>
+    <color name="colorAccent">#ef4c16</color>
+    <color name="plusColor">#FF5D1D</color>
+    <color name="mersenBlue">#4d7285</color>
+    <color name="mersenOrange">#ef4c16</color>
+    <color name="mersenLightBlue">#8AACBD</color>
+</resources>

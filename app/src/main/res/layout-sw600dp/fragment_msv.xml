@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.managementsafetyvisit.viewModels.MsvViewModel" />
+    </data>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.MsvFragment">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="150dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="10dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rabotnik_text"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/family_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:text="Vezetéknév"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/imageView" />
+
+    <TextView
+        android:id="@+id/first_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:text="Keresztnév"
+        app:layout_constraintStart_toStartOf="@+id/family_name"
+        app:layout_constraintTop_toBottomOf="@+id/family_name" />
+
+    <TextView
+        android:id="@+id/id_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:text="#1557"
+        app:layout_constraintStart_toStartOf="@+id/first_name"
+        app:layout_constraintTop_toBottomOf="@+id/first_name" />
+
+    <TextView
+        android:id="@+id/comissar_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="300dp"
+        android:layout_marginTop="20dp"
+        android:text="Felelős személy"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/chastnik_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="80dp"
+        android:text="Résztvevő"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/comissar_text"
+        app:layout_constraintTop_toTopOf="@+id/comissar_text" />
+
+    <TextView
+        android:id="@+id/comissar_family_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pintér"
+        android:textSize="30sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="@+id/comissar_text"
+        app:layout_constraintTop_toTopOf="@+id/family_name" />
+
+    <TextView
+        android:id="@+id/comissar_first_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Andrea"
+        android:textSize="30sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="@+id/comissar_family_text"
+        app:layout_constraintTop_toTopOf="@+id/first_name" />
+
+    <TextView
+        android:id="@+id/chastnik_family_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nyulas"
+        android:textSize="30sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="@+id/chastnik_text"
+        app:layout_constraintTop_toTopOf="@+id/comissar_family_text" />
+
+    <TextView
+        android:id="@+id/chastnik_first_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zoltán"
+        android:textSize="30sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="@+id/chastnik_family_text"
+        app:layout_constraintTop_toTopOf="@+id/comissar_first_text" />
+
+    <TextView
+        android:id="@+id/rabotnik_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Meglátogatott személy"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/comissar_text" />
+
+    <Button
+        android:id="@+id/new_response"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="80dp"
+        android:text="+"
+        android:elevation="2dp"
+        android:textSize="60sp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/round_button"
+        app:layout_constraintBottom_toBottomOf="@+id/horizontalScrollView"
+        app:layout_constraintEnd_toEndOf="@+id/horizontalScrollView" />
+
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="0dp"
+        android:layout_height="340dp"
+        android:backgroundTint="#C1B018"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/eszrevetel"
+                    android:layout_width="300dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="2dp"
+                    app:cardBackgroundColor="@color/mersenOrange"
+                    app:cardCornerRadius="6dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Észrevétel"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="20sp" />
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView"
+                    android:layout_width="100dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="2dp"
+                    app:cardBackgroundColor="@color/mersenOrange"
+                    app:cardCornerRadius="6dp"
+                    app:layout_constraintStart_toEndOf="@+id/eszrevetel"
+                    app:layout_constraintTop_toTopOf="@id/eszrevetel">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Típus"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="20sp" />
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView2"
+                    android:layout_width="300dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="2dp"
+                    app:cardBackgroundColor="@color/mersenOrange"
+                    app:cardCornerRadius="6dp"
+                    app:layout_constraintStart_toEndOf="@+id/cardView"
+                    app:layout_constraintTop_toTopOf="@+id/eszrevetel">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Válasz a párbeszédre"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="20sp" />
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView4"
+                    android:layout_width="300dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="2dp"
+                    app:cardBackgroundColor="@color/mersenOrange"
+                    app:cardCornerRadius="6dp"
+                    app:layout_constraintStart_toEndOf="@+id/cardView2"
+                    app:layout_constraintTop_toTopOf="@+id/eszrevetel">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Hozott intézkedések"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="20sp" />
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView5"
+                    android:layout_width="100dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="2dp"
+                    app:cardBackgroundColor="@color/mersenOrange"
+                    app:cardCornerRadius="6dp"
+                    app:layout_constraintStart_toEndOf="@+id/cardView4"
+                    app:layout_constraintTop_toTopOf="@+id/eszrevetel">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Azonnali"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="20sp" />
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView6"
+                    android:layout_width="200dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="2dp"
+                    app:cardBackgroundColor="@color/mersenOrange"
+                    app:cardCornerRadius="6dp"
+                    app:layout_constraintStart_toEndOf="@+id/cardView5"
+                    app:layout_constraintTop_toTopOf="@+id/eszrevetel">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Javító"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="20sp" />
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="200dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="2dp"
+                    app:cardBackgroundColor="@color/mersenOrange"
+                    app:cardCornerRadius="6dp"
+                    app:layout_constraintStart_toEndOf="@+id/cardView6"
+                    app:layout_constraintTop_toTopOf="@+id/eszrevetel">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Dátum"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="20sp" />
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/observation_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="68dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </HorizontalScrollView>
+
+    <FrameLayout
+        android:id="@+id/panel_container"
+        android:layout_width="950dp"
+        android:layout_height="600dp"
+        android:layout_marginStart="2dp"
+        android:elevation="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/horizontalScrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
