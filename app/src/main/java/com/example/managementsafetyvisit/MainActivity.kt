@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
     override fun onResume() {
         super.onResume()
         getLoginFragment()
+        dataArray.clear()
     }
     private fun getMsvFragment(){
         val msvFragment = MsvFragment()
