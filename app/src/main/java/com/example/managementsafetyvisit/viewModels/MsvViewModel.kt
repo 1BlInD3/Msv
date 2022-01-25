@@ -23,6 +23,16 @@ class MsvViewModel
         ): ViewModel() {
 
     var msvListener: MsvListener? = null
+    var firstName: String = ""
+    var familyName: String = ""
+    var tsz: String = ""
+    var firstNameCommissar: String = ""
+    var familyNameCommissar: String = ""
+    var firstNameChastnik: String = ""
+    var familyNameChastnik: String = ""
+    var datum: String = ""
+    var location = ""
+    var msvNumber = ""
 
     fun getPhoto(name: String){
         SendApi().getImage(name).enqueue(object : Callback<ResponseBody> {

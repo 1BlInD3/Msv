@@ -24,8 +24,52 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import java.lang.RuntimeException
 
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
+private const val ARG_PARAM3 = "param3"
+private const val ARG_PARAM4 = "param4"
+private const val ARG_PARAM5 = "param5"
+private const val ARG_PARAM6 = "param6"
+private const val ARG_PARAM7 = "param7"
+private const val ARG_PARAM8 = "param8"
+private const val ARG_PARAM9 = "param9"
+private const val ARG_PARAM10 = "param10"
+
 @AndroidEntryPoint
 class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelection {
+
+    private var p1 = 0
+    private var p2 = ""
+    private var p3 = 0
+    private var p4 = ""
+    private var p5 = 0
+    private var p6 = ""
+    private var p7 = 0
+    private var p8 = ""
+    private var p9 = ""
+    private var p10 = 0
+
+    private var familyName: String = ""
+    private var firstName: String = ""
+    private var middleName: String = ""
+    private var middleMiddleName: String = ""
+    private val capitals: ArrayList<Int> = ArrayList()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let{
+            p1 = it.getInt(ARG_PARAM1)
+            p2 = it.getString(ARG_PARAM2).toString()
+            p3 = it.getInt(ARG_PARAM3)
+            p4 = it.getString(ARG_PARAM4).toString()
+            p5 = it.getInt(ARG_PARAM5)
+            p6 = it.getString(ARG_PARAM6).toString()
+            p7 = it.getInt(ARG_PARAM7)
+            p8 = it.getString(ARG_PARAM8).toString()
+            p9 = it.getString(ARG_PARAM9).toString()
+            p10 = it.getInt(ARG_PARAM10)
+        }
+    }
 
     private val viewModel: MsvViewModel by viewModels()
     private lateinit var binding: FragmentMsvBinding
@@ -43,9 +87,6 @@ class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelecti
     ): View {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_msv, container, false)
         binding.viewModel = viewModel
-        binding.familyName.text = "Bálind"
-        binding.firstName.text = "Attila"
-        binding.idCode.text = "#1557"
         viewModel.msvListener = this
 
         binding.observationRecycler?.adapter =  ObservationDataAdapter(observationArray,this)
@@ -59,7 +100,7 @@ class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelecti
             mainActivityConnector.loadPerceptionPanel()
         }
         binding.imageView.setOnClickListener {
-            viewModel.getPhoto("BálindAttila1557.jpg")
+            viewModel.getPhoto("${viewModel.familyName}${viewModel.firstName}${viewModel.tsz}.jpg")
             Toast.makeText(requireContext(), "Frissítés", Toast.LENGTH_SHORT).show()
         }
         return binding.root
@@ -74,7 +115,49 @@ class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelecti
     override fun onResume() {
         super.onResume()
         //viewModel.getPhoto("BálindAttila1557.jpg")
-        viewModel.getPhoto("BálindAttila1557.jpg")
+        viewModel.msvNumber = p1.toString().trim()
+        nameGenerator(p2)
+        if(capitals.size == 2){
+            viewModel.familyName = familyName
+            viewModel.firstName = firstName
+        }else if(capitals.size == 3){
+            viewModel.familyName = "$familyName $middleName"
+            viewModel.firstName = firstName
+        }else if(capitals.size == 4){
+            viewModel.familyName = "$familyName $middleName"
+            viewModel.firstName = "$middleMiddleName $firstName"
+        }
+        capitals.clear()
+        viewModel.tsz = p3.toString().trim()
+        nameGenerator(p4)
+        if(capitals.size == 2){
+            viewModel.familyNameCommissar = familyName
+            viewModel.firstNameCommissar = firstName
+        }else if(capitals.size == 3){
+            viewModel.familyNameCommissar = "$familyName $middleName"
+            viewModel.firstNameCommissar = firstName
+        }else if(capitals.size == 4){
+            viewModel.familyNameCommissar = "$familyName $middleName"
+            viewModel.firstNameCommissar = "$middleMiddleName $firstName"
+        }
+        capitals.clear()
+        nameGenerator(p6)
+        if(capitals.size == 2){
+            viewModel.familyNameChastnik = familyName
+            viewModel.firstNameChastnik = firstName
+        }else if(capitals.size == 3){
+            viewModel.familyNameChastnik = "$familyName $middleName"
+            viewModel.firstNameChastnik = firstName
+        }else if(capitals.size == 4){
+            viewModel.familyNameChastnik = "$familyName $middleName"
+            viewModel.firstNameChastnik = "$middleMiddleName $firstName"
+        }
+        capitals.clear()
+        viewModel.location = p8
+        viewModel.datum = p9
+        if(middleName.isEmpty() == middleMiddleName.isEmpty()){
+            viewModel.getPhoto("${viewModel.familyName}${viewModel.firstName}${viewModel.tsz}.jpg")
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -95,4 +178,59 @@ class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelecti
     fun refreshList(){
         binding.observationRecycler?.adapter?.notifyDataSetChanged()
     }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(
+            param1: Int,
+            param2: String,
+            param3: Int,
+            param4: String,
+            param5: Int,
+            param6: String,
+            param7: Int,
+            param8: String,
+            param9: String,
+            param10: Int
+        ) =
+            MsvFragment().apply {
+                arguments = Bundle().apply {
+                    putInt(ARG_PARAM1, param1)
+                    putString(ARG_PARAM2, param2)
+                    putInt(ARG_PARAM3, param3)
+                    putString(ARG_PARAM4, param4)
+                    putInt(ARG_PARAM5, param5)
+                    putString(ARG_PARAM6, param6)
+                    putInt(ARG_PARAM7, param7)
+                    putString(ARG_PARAM8, param8)
+                    putString(ARG_PARAM9, param9)
+                    putInt(ARG_PARAM10, param10)
+                }
+            }
+    }
+
+    private fun nameGenerator(name: String){
+        for (i in 0 until name.length) {
+            if (Character.isUpperCase(name[i])) {
+                capitals.add(i)
+            }
+        }
+        if(capitals.size == 2){
+            familyName = name.substring(0,capitals[1]).trim()
+            firstName = name.substring(capitals[1]).trim()
+        }
+        if(capitals.size == 3){
+            //if(name.substring())
+            familyName = name.substring(0, capitals[1]);
+            middleName = name.substring(capitals[1], capitals[2]);
+            firstName = name.substring(capitals[2]);
+        }
+        if(capitals.size == 4){
+            familyName = name.substring(0, capitals[1]);
+            middleName = name.substring(capitals[1], capitals[2]);
+            middleMiddleName = name.substring(capitals[2], capitals[3]);
+            firstName = name.substring(capitals[3]);
+        }
+    }
+
 }

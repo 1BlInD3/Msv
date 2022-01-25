@@ -105,6 +105,19 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
                     sql.getDataByName(result.contents.trim())
                     CoroutineScope(Main).launch {
                         Log.d(TAG, "onActivityResult: $dataArray")
+                        val msvFragment = MsvFragment.newInstance(
+                            dataArray[0].id,
+                            dataArray[0].name,
+                            dataArray[0].tsz,
+                            dataArray[0].fsz,
+                            dataArray[0].ftsz,
+                            dataArray[0].resztvevo,
+                            dataArray[0].rtsz,
+                            dataArray[0].location,
+                            dataArray[0].date,
+                            dataArray[0].status
+                        )
+                        supportFragmentManager.beginTransaction().replace(R.id.id_container,msvFragment,"MSVFRAG").commit()
                     }
                 }
             } else {
