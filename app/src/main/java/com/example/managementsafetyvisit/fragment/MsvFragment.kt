@@ -32,6 +32,7 @@ class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelecti
     interface MainActivityConnector{
         fun loadPerceptionPanel()
         fun loadPanelWithValues(perception: String, type: String, response: String, measure: String, urgent: Boolean, corrector: String?,date: String?)
+        fun getCameraToScan()
     }
     private lateinit var mainActivityConnector: MainActivityConnector
 
@@ -61,7 +62,6 @@ class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelecti
             viewModel.getPhoto("BálindAttila1557.jpg")
             Toast.makeText(requireContext(), "Frissítés", Toast.LENGTH_SHORT).show()
         }
-
         return binding.root
     }
 

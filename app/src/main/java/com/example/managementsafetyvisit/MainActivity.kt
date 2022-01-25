@@ -1,17 +1,33 @@
 package com.example.managementsafetyvisit
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import com.example.managementsafetyvisit.camera.CaptureAct
+import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
+import com.example.managementsafetyvisit.fragment.LoginFragment
 import com.example.managementsafetyvisit.fragment.MsvFragment
 import com.example.managementsafetyvisit.fragment.PerceptionFragment
+import com.example.managementsafetyvisit.utils.Sql
+import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
-
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import javax.annotation.Nullable
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,PerceptionFragment.MainActivityInteract {
+class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,PerceptionFragment.MainActivityInteract, LoginFragment.LoginScan {
+
+    private val TAG = "MainActivity"
 
     companion object{
         val observationArray: ArrayList<ObservationData> = ArrayList()
+        val dataArray: ArrayList<Data> = ArrayList()
+        const val read_connect ="jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=scala_read;password=scala_read;loginTimeout=10"
+        var felelos: String = ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,17 +37,23 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
 
     override fun onResume() {
         super.onResume()
-        getMsvFragment()
+        getLoginFragment()
     }
     private fun getMsvFragment(){
         val msvFragment = MsvFragment()
         supportFragmentManager.beginTransaction().replace(R.id.id_container,msvFragment,"MSVFRAG").commit()
     }
 
+    private fun getLoginFragment(){
+        val login = LoginFragment()
+        supportFragmentManager.beginTransaction().replace(R.id.id_container,login,"LOGIN").commit()
+    }
+
     override fun loadPerceptionPanel() {
         val perceptionFragment = PerceptionFragment()
         supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()
     }
+
 
     override fun loadPanelWithValues(
         perception: String,
@@ -45,6 +67,11 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         val perceptionFragment = PerceptionFragment.newInstance(perception,response,measure,urgent,type,corrector,date)
         supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()
     }
+
+    override fun getCameraToScan() {
+        scanCode()
+    }
+
 
     override fun closeFragment() {
         val myFragment = supportFragmentManager.findFragmentByTag("PERCEPTION")
@@ -60,4 +87,34 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         }
     }
 
+    private fun scanCode() {
+        val integrator = IntentIntegrator(this)
+        integrator.captureActivity = CaptureAct::class.java
+        integrator.setOrientationLocked(true)
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
+        integrator.setPrompt("Beolvasás folyamatban...")
+        integrator.initiateScan()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, @Nullable data: Intent?) {
+        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null) {
+            if (result.contents != null) {
+                CoroutineScope(IO).launch {
+                    val sql = Sql()
+                    sql.getDataByName(result.contents.trim())
+                    CoroutineScope(Main).launch {
+                        Log.d(TAG, "onActivityResult: $dataArray")
+                    }
+                }
+            } else {
+                Log.d(TAG, "onActivityResult: no result")
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun openCamera() {
+        scanCode()
+    }
 }
