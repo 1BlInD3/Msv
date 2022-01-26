@@ -40,10 +40,10 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         getLoginFragment()
         dataArray.clear()
     }
-    private fun getMsvFragment(){
+    /*private fun getMsvFragment(){
         val msvFragment = MsvFragment()
         supportFragmentManager.beginTransaction().replace(R.id.id_container,msvFragment,"MSVFRAG").commit()
-    }
+    }*/
 
     private fun getLoginFragment(){
         val login = LoginFragment()

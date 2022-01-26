@@ -46,7 +46,7 @@
         android:textSize="30sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
-        android:text="@={viewModel.firstName}"
+        android:text="@={viewModel.middleMiddleName}"
         app:layout_constraintStart_toStartOf="@+id/family_name"
         app:layout_constraintTop_toBottomOf="@+id/family_name" />
 
@@ -99,7 +99,7 @@
         android:id="@+id/comissar_first_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@={viewModel.firstNameCommissar}"
+        android:text="@={viewModel.middleMiddleCommissarName}"
         android:textSize="30sp"
         android:textColor="@android:color/black"
         app:layout_constraintStart_toStartOf="@+id/comissar_family_text"
@@ -120,9 +120,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@={viewModel.firstNameChastnik}"
-        android:textSize="30sp"
         android:textColor="@android:color/black"
-        app:layout_constraintStart_toStartOf="@+id/chastnik_family_text"
+        android:textSize="30sp"
+        app:layout_constraintStart_toStartOf="@+id/textView10"
         app:layout_constraintTop_toTopOf="@+id/comissar_first_text" />
 
     <TextView
@@ -387,7 +387,73 @@
         app:layout_constraintStart_toEndOf="@+id/msv_number"
         app:layout_constraintTop_toTopOf="@+id/msv_number" />
 
-    <FrameLayout
+    <TextView
+        android:id="@+id/middle_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="@={viewModel.middleName}"
+        android:textColor="@android:color/black"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/family_name"
+        app:layout_constraintTop_toTopOf="@+id/family_name" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@={viewModel.firstName}"
+        android:textColor="@android:color/black"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/first_name"
+        app:layout_constraintTop_toBottomOf="@+id/middle_name" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="@={viewModel.middleCommissarName}"
+        android:textColor="@android:color/black"
+        android:textSize="30sp"
+        app:layout_constraintStart_toEndOf="@+id/comissar_family_text"
+        app:layout_constraintTop_toTopOf="@+id/comissar_family_text" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@={viewModel.firstNameCommissar}"
+        android:textColor="@android:color/black"
+        android:textSize="30sp"
+        app:layout_constraintStart_toStartOf="@+id/comissar_first_text"
+        app:layout_constraintTop_toTopOf="@+id/comissar_first_text" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="@={viewModel.middleChastinkName}"
+        android:textColor="@android:color/black"
+        android:textSize="30sp"
+        app:layout_constraintStart_toEndOf="@+id/chastnik_family_text"
+        app:layout_constraintTop_toTopOf="@+id/chastnik_family_text" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@={viewModel.middleMiddleChastnikName}"
+        android:textColor="@android:color/black"
+        android:textSize="30sp"
+        app:layout_constraintStart_toStartOf="@+id/chastnik_family_text"
+        app:layout_constraintTop_toTopOf="@+id/chastnik_first_text" />
+
+   <!-- <FrameLayout
         android:id="@+id/panel_container"
         android:layout_width="950dp"
         android:layout_height="600dp"
@@ -398,7 +464,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-    </FrameLayout>
+    </FrameLayout>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

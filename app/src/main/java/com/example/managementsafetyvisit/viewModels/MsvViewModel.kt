@@ -24,11 +24,17 @@ class MsvViewModel
 
     var msvListener: MsvListener? = null
     var firstName: String = ""
+    var middleName: String = ""
+    var middleMiddleName: String = ""
     var familyName: String = ""
     var tsz: String = ""
     var firstNameCommissar: String = ""
+    var middleCommissarName: String = ""
+    var middleMiddleCommissarName: String = ""
     var familyNameCommissar: String = ""
     var firstNameChastnik: String = ""
+    var middleChastinkName: String = ""
+    var middleMiddleChastnikName: String = ""
     var familyNameChastnik: String = ""
     var datum: String = ""
     var location = ""

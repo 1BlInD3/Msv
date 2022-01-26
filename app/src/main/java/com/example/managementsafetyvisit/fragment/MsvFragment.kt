@@ -36,7 +36,7 @@ private const val ARG_PARAM9 = "param9"
 private const val ARG_PARAM10 = "param10"
 
 @AndroidEntryPoint
-class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelection {
+class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelection {
 
     private var p1 = 0
     private var p2 = ""
@@ -57,7 +57,7 @@ class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelecti
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let{
+        arguments?.let {
             p1 = it.getInt(ARG_PARAM1)
             p2 = it.getString(ARG_PARAM2).toString()
             p3 = it.getInt(ARG_PARAM3)
@@ -73,11 +73,22 @@ class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelecti
 
     private val viewModel: MsvViewModel by viewModels()
     private lateinit var binding: FragmentMsvBinding
-    interface MainActivityConnector{
+
+    interface MainActivityConnector {
         fun loadPerceptionPanel()
-        fun loadPanelWithValues(perception: String, type: String, response: String, measure: String, urgent: Boolean, corrector: String?,date: String?)
+        fun loadPanelWithValues(
+            perception: String,
+            type: String,
+            response: String,
+            measure: String,
+            urgent: Boolean,
+            corrector: String?,
+            date: String?
+        )
+
         fun getCameraToScan()
     }
+
     private lateinit var mainActivityConnector: MainActivityConnector
 
     @SuppressLint("NotifyDataSetChanged")
@@ -85,11 +96,11 @@ class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelecti
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_msv, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_msv, container, false)
         binding.viewModel = viewModel
         viewModel.msvListener = this
 
-        binding.observationRecycler?.adapter =  ObservationDataAdapter(observationArray,this)
+        binding.observationRecycler?.adapter = ObservationDataAdapter(observationArray, this)
         binding.observationRecycler?.layoutManager = LinearLayoutManager(requireContext())
         binding.observationRecycler?.setHasFixedSize(true)
 
@@ -117,65 +128,93 @@ class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelecti
         //viewModel.getPhoto("BálindAttila1557.jpg")
         viewModel.msvNumber = p1.toString().trim()
         nameGenerator(p2)
-        if(capitals.size == 2){
+        if (capitals.size == 2) {
             viewModel.familyName = familyName
             viewModel.firstName = firstName
-        }else if(capitals.size == 3){
-            viewModel.familyName = "$familyName $middleName"
+        } else if (capitals.size == 3) {
+            viewModel.familyName = familyName
+            viewModel.middleName = middleName
             viewModel.firstName = firstName
-        }else if(capitals.size == 4){
-            viewModel.familyName = "$familyName $middleName"
-            viewModel.firstName = "$middleMiddleName $firstName"
+        } else if (capitals.size == 4) {
+            viewModel.familyName = familyName
+            viewModel.middleName = middleName
+            viewModel.middleMiddleName = "$middleMiddleName  "
+            viewModel.firstName = firstName
         }
         capitals.clear()
         viewModel.tsz = p3.toString().trim()
         nameGenerator(p4)
-        if(capitals.size == 2){
+        if (capitals.size == 2) {
             viewModel.familyNameCommissar = familyName
             viewModel.firstNameCommissar = firstName
-        }else if(capitals.size == 3){
-            viewModel.familyNameCommissar = "$familyName $middleName"
+        } else if (capitals.size == 3) {
+            viewModel.familyNameCommissar = familyName
+            viewModel.middleCommissarName = middleName
             viewModel.firstNameCommissar = firstName
-        }else if(capitals.size == 4){
-            viewModel.familyNameCommissar = "$familyName $middleName"
-            viewModel.firstNameCommissar = "$middleMiddleName $firstName"
+        } else if (capitals.size == 4) {
+            viewModel.familyNameCommissar = familyName
+            viewModel.middleCommissarName = middleName
+            viewModel.middleCommissarName = "$middleMiddleName  "
+            viewModel.firstNameCommissar = firstName
         }
         capitals.clear()
         nameGenerator(p6)
-        if(capitals.size == 2){
+        if (capitals.size == 2) {
             viewModel.familyNameChastnik = familyName
             viewModel.firstNameChastnik = firstName
-        }else if(capitals.size == 3){
-            viewModel.familyNameChastnik = "$familyName $middleName"
+        } else if (capitals.size == 3) {
+            viewModel.familyNameChastnik = familyName
+            viewModel.middleChastinkName = middleName
             viewModel.firstNameChastnik = firstName
-        }else if(capitals.size == 4){
-            viewModel.familyNameChastnik = "$familyName $middleName"
-            viewModel.firstNameChastnik = "$middleMiddleName $firstName"
+        } else if (capitals.size == 4) {
+            viewModel.familyNameChastnik = familyName
+            viewModel.middleChastinkName = middleName
+            viewModel.middleMiddleChastnikName = "$middleMiddleName  "
+            viewModel.firstNameChastnik = firstName
         }
         capitals.clear()
         viewModel.location = p8
         viewModel.datum = p9
-        if(middleName.isEmpty() == middleMiddleName.isEmpty()){
+        if (middleName.isEmpty() && middleMiddleName.isEmpty()) {
             viewModel.getPhoto("${viewModel.familyName}${viewModel.firstName}${viewModel.tsz}.jpg")
+        } else if (middleMiddleName.isEmpty()){
+            if(viewModel.familyName.substring(viewModel.familyName.length-1)=="-"){
+                viewModel.getPhoto("${viewModel.familyName.substring(0,viewModel.familyName.length-1)}${viewModel.middleName}${viewModel.firstName}q${viewModel.tsz}.jpg")
+            }else{
+                viewModel.getPhoto("${viewModel.familyName.substring(0,viewModel.familyName.length)}${viewModel.middleName}${viewModel.firstName}${viewModel.tsz}.jpg")
+            }
+        } else{
+            if(viewModel.familyName.substring(viewModel.familyName.length-1)=="-"){
+                viewModel.getPhoto("${viewModel.familyName.substring(0,viewModel.familyName.length-1)}${viewModel.middleName}${viewModel.middleMiddleName.trim()}${viewModel.firstName}q${viewModel.tsz}.jpg")
+            }else{
+                viewModel.getPhoto("${viewModel.familyName.substring(0,viewModel.familyName.length)}${viewModel.middleName}${viewModel.middleMiddleName.trim()}${viewModel.firstName}${viewModel.tsz}.jpg")
+            }
         }
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mainActivityConnector = if(context is MainActivityConnector){
+        mainActivityConnector = if (context is MainActivityConnector) {
             context
-        }else{
+        } else {
             throw RuntimeException(context.toString() + "must implement")
         }
     }
 
     override fun onCurrentClick(position: Int) {
-        mainActivityConnector.loadPanelWithValues(observationArray[position].perception,
-            observationArray[position].type, observationArray[position].response, observationArray[position].measure,
-            observationArray[position].now, observationArray[position].corrector, observationArray[position].date)
+        mainActivityConnector.loadPanelWithValues(
+            observationArray[position].perception,
+            observationArray[position].type,
+            observationArray[position].response,
+            observationArray[position].measure,
+            observationArray[position].now,
+            observationArray[position].corrector,
+            observationArray[position].date
+        )
     }
+
     @SuppressLint("NotifyDataSetChanged")
-    fun refreshList(){
+    fun refreshList() {
         binding.observationRecycler?.adapter?.notifyDataSetChanged()
     }
 
@@ -209,27 +248,39 @@ class MsvFragment : Fragment(),MsvListener,ObservationDataAdapter.CurrentSelecti
             }
     }
 
-    private fun nameGenerator(name: String){
+    private fun nameGenerator(name: String) {
         for (i in 0 until name.length) {
             if (Character.isUpperCase(name[i])) {
                 capitals.add(i)
             }
         }
-        if(capitals.size == 2){
-            familyName = name.substring(0,capitals[1]).trim()
+        if (capitals.size == 2) {
+            familyName = name.substring(0, capitals[1]).trim()
             firstName = name.substring(capitals[1]).trim()
         }
-        if(capitals.size == 3){
-            //if(name.substring())
-            familyName = name.substring(0, capitals[1]);
-            middleName = name.substring(capitals[1], capitals[2]);
-            firstName = name.substring(capitals[2]);
+        if (capitals.size == 3) {
+            if (name.substring(capitals[1] - 1, capitals[1]) == "-") {
+                familyName = name.substring(0, capitals[1]).trim()
+                middleName = name.substring(capitals[1], capitals[2]).trim()
+                firstName = name.substring(capitals[2]).trim()
+            } else {
+                familyName = name.substring(0, capitals[1]).trim()
+                middleName = name.substring(capitals[1], capitals[2]).trim()
+                firstName = name.substring(capitals[2]).trim()
+            }
         }
-        if(capitals.size == 4){
-            familyName = name.substring(0, capitals[1]);
-            middleName = name.substring(capitals[1], capitals[2]);
-            middleMiddleName = name.substring(capitals[2], capitals[3]);
-            firstName = name.substring(capitals[3]);
+        if (capitals.size == 4) {
+            if (name.substring(capitals[1] - 1, capitals[1]) == "-") {
+                familyName = name.substring(0, capitals[1]).trim()
+                middleName = name.substring(capitals[1], capitals[2]).trim()
+                middleMiddleName = name.substring(capitals[2], capitals[3]).trim()
+                firstName = name.substring(capitals[3]).trim()
+            } else {
+                familyName = name.substring(0, capitals[1]).trim()
+                middleName = name.substring(capitals[1], capitals[2]).trim()
+                middleMiddleName = name.substring(capitals[2], capitals[3]).trim()
+                firstName = name.substring(capitals[3]).trim()
+            }
         }
     }
 
