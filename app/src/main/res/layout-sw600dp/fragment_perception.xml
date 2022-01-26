@@ -53,7 +53,7 @@
         android:id="@+id/perception_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="2dp"
         android:background="@drawable/white_edit"
         android:ems="15"
         android:gravity="start|top"
@@ -69,28 +69,28 @@
         android:id="@+id/answer_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
+        android:layout_marginTop="20dp"
         android:text="Válasz a párbeszédre"
-        android:textSize="20sp"
         android:textColor="@android:color/black"
-        app:layout_constraintStart_toEndOf="@+id/perception_edit"
-        app:layout_constraintTop_toTopOf="@+id/perception_text" />
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/perception_edit"
+        app:layout_constraintTop_toBottomOf="@+id/perception_edit" />
 
     <EditText
         android:id="@+id/answer_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
+        android:layout_marginTop="2dp"
         android:background="@drawable/white_edit"
         android:ems="15"
-        android:text="@={viewModel.answer}"
         android:gravity="start|top"
         android:inputType="text"
         android:maxLines="1"
         android:padding="10dp"
         android:scrollbars="horizontal"
-        app:layout_constraintStart_toEndOf="@+id/perception_edit"
-        app:layout_constraintTop_toTopOf="@+id/perception_edit" />
+        android:text="@={viewModel.answer}"
+        app:layout_constraintStart_toStartOf="@+id/answer_text"
+        app:layout_constraintTop_toBottomOf="@+id/answer_text" />
 
     <TextView
         android:id="@+id/measure_text"
@@ -101,21 +101,21 @@
         android:textColor="@android:color/black"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/perception_edit"
-        app:layout_constraintTop_toBottomOf="@+id/perception_edit" />
+        app:layout_constraintTop_toBottomOf="@+id/answer_edit" />
 
     <EditText
         android:id="@+id/measure_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="2dp"
         android:background="@drawable/white_edit"
         android:ems="15"
-        android:text="@={viewModel.measure}"
         android:gravity="start|top"
         android:inputType="text"
         android:maxLines="1"
         android:padding="10dp"
         android:scrollbars="horizontal"
+        android:text="@={viewModel.measure}"
         app:layout_constraintStart_toStartOf="@+id/measure_text"
         app:layout_constraintTop_toBottomOf="@+id/measure_text" />
 
@@ -123,32 +123,32 @@
         android:id="@+id/type_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
+        android:layout_marginStart="30dp"
         android:text="Típus"
-        android:textSize="20sp"
         android:textColor="@android:color/black"
-        app:layout_constraintStart_toEndOf="@+id/measure_edit"
-        app:layout_constraintTop_toTopOf="@+id/measure_text" />
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/perception_edit"
+        app:layout_constraintTop_toTopOf="@+id/perception_text" />
 
     <Spinner
         android:id="@+id/type_spinner"
-        android:layout_width="0dp"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@+id/answer_edit"
+        android:layout_marginTop="2dp"
         android:selectedItemPosition="@={viewModel.typeList}"
         app:layout_constraintStart_toStartOf="@+id/type_text"
-        app:layout_constraintTop_toTopOf="@+id/measure_edit" />
+        app:layout_constraintTop_toBottomOf="@+id/type_text" />
 
     <TextView
         android:id="@+id/urgent_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
+        android:layout_marginStart="30dp"
         android:text="Azonnali"
-        android:textSize="20sp"
         android:textColor="@android:color/black"
-        app:layout_constraintStart_toEndOf="@+id/answer_edit"
-        app:layout_constraintTop_toTopOf="@+id/answer_text" />
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/calendarView"
+        app:layout_constraintTop_toTopOf="@+id/type_text" />
 
     <CheckBox
         android:id="@+id/urgent_box"
@@ -174,15 +174,15 @@
         android:id="@+id/corrector_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="2dp"
         android:background="@drawable/white_edit"
         android:ems="15"
-        android:text="@={viewModel.corrector}"
         android:gravity="start|top"
         android:inputType="text"
         android:maxLines="1"
         android:padding="10dp"
         android:scrollbars="horizontal"
+        android:text="@={viewModel.corrector}"
         app:layout_constraintStart_toStartOf="@+id/corrector_text"
         app:layout_constraintTop_toBottomOf="@+id/corrector_text" />
 
@@ -194,14 +194,14 @@
         android:textColor="@android:color/black"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/type_spinner"
-        app:layout_constraintTop_toTopOf="@+id/corrector_text" />
+        app:layout_constraintTop_toTopOf="@+id/answer_text" />
 
     <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="wrap_content"
-        android:layout_height="233dp"
+        android:layout_height="250dp"
         android:layout_marginTop="20dp"
-        app:layout_constraintStart_toEndOf="@+id/corrector_edit"
+        app:layout_constraintStart_toStartOf="@+id/textView7"
         app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

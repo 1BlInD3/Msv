@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import com.example.managementsafetyvisit.camera.CaptureAct
 import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
@@ -30,11 +31,13 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         const val read_connect ="jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=scala_read;password=scala_read;loginTimeout=10"
         const val write_connect ="jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=Termelesmonitor;password=TERM123;loginTimeout=10"
         var felelos: String = ""
+        val perceptionFragment = PerceptionFragment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Log.d(TAG, "onCreate: ")
     }
 
     override fun onResume() {
@@ -52,12 +55,14 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         supportFragmentManager.beginTransaction().replace(R.id.id_container,login,"LOGIN").commit()
     }
 
-    override fun loadPerceptionPanel(code: Int) {
+    override fun loadPerceptionPanel(code: String) {
         val sql = Sql()
         CoroutineScope(IO).launch {
             sql.loadPerceptionPanel(code)
             CoroutineScope(Main).launch {
-                val perceptionFragment = PerceptionFragment.newInstance(
+                supportFragmentManager.beginTransaction().replace(R.id.panel_container,
+                    perceptionFragment,"PERCEPTION").commit()
+               /* val perceptionFragment = PerceptionFragment.newInstance(
                     newPerceptionArray[0].perception,
                     newPerceptionArray[0].response,
                     newPerceptionArray[0].measure,
@@ -65,9 +70,10 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
                     newPerceptionArray[0].type,
                     newPerceptionArray[0].corrector,
                     newPerceptionArray[0].date,
-                    newPerceptionArray[0].id
+                    newPerceptionArray[0].id.trim()
                 )
-                supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()
+                Toast.makeText(this@MainActivity, newPerceptionArray[0].id.trim(), Toast.LENGTH_LONG).show()
+                supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()*/
             }
         }
     }
@@ -81,9 +87,9 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         urgent: Boolean,
         corrector: String?,
         date: String?,
-        id: Int
+        id: String
     ) {
-        val perceptionFragment = PerceptionFragment.newInstance(perception,response,measure,urgent,type,corrector,date,id)
+        val perceptionFragment = PerceptionFragment.newInstance(perception,response,measure,urgent,type,corrector,date,id.toString())
         supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()
     }
 
@@ -103,6 +109,28 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         val myFragment = supportFragmentManager.findFragmentByTag("MSVFRAG")
         if (myFragment != null) {
             (myFragment as MsvFragment).refreshList()
+        }
+    }
+
+    override fun saveNewPerception(
+        perception: String?,
+        answer: String?,
+        measure: String?,
+        type: String?,
+        urgent: Boolean,
+        corrector: String?,
+        date: String?,
+        id: Int
+    ) {
+        val sql = Sql()
+        CoroutineScope(IO).launch {
+            sql.saveNewPerception(perception,answer,measure,type,urgent,corrector,date,id)
+            CoroutineScope(Main).launch {
+                val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
+                if(myFrag != null){
+                    (myFrag as MsvFragment).refreshList()
+                }
+            }
         }
     }
 

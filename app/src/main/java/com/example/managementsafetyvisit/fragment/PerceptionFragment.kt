@@ -11,7 +11,6 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
 import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.databinding.FragmentPerceptionBinding
@@ -19,6 +18,7 @@ import com.example.managementsafetyvisit.viewModels.PerceptionViewModel
 import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -28,16 +28,28 @@ private const val ARG_PARAM5 = "param5"
 private const val ARG_PARAM6 = "param6"
 private const val ARG_PARAM7 = "param7"
 private const val ARG_PARAM8 = "param8"
+
 class PerceptionFragment : Fragment() {
 
     interface MainActivityInteract {
         fun closeFragment()
         fun refreshList()
+        fun saveNewPerception(
+            perception: String?,
+            answer: String?,
+            measure: String?,
+            type: String?,
+            urgent: Boolean,
+            corrector: String?,
+            date: String?,
+            id: Int
+        )
     }
 
     private lateinit var mainActivityInteract: MainActivityInteract
     private val viewModel: PerceptionViewModel by viewModels()
     private lateinit var binding: FragmentPerceptionBinding
+    private var id = ""
 
     private var p1 = ""
     private var p2 = ""
@@ -46,7 +58,7 @@ class PerceptionFragment : Fragment() {
     private var p5 = ""
     private var p6 = ""
     private var p7 = ""
-    private var p8 = 0
+    private var p8 = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -57,7 +69,7 @@ class PerceptionFragment : Fragment() {
             p5 = it.getString(ARG_PARAM5).toString()
             p6 = it.getString(ARG_PARAM6).toString()
             p7 = it.getString(ARG_PARAM7).toString()
-            p8 = it.getInt(ARG_PARAM8)
+            p8 = it.getString(ARG_PARAM8).toString()
         }
     }
 
@@ -71,6 +83,7 @@ class PerceptionFragment : Fragment() {
 
         binding.cancelButton.setOnClickListener {
             mainActivityInteract.closeFragment()
+            Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
         }
         val adapter = ArrayAdapter.createFromResource(
             requireContext(),
@@ -88,9 +101,9 @@ class PerceptionFragment : Fragment() {
             } else {
                 "$myMonth"
             }
-            val myFormattedDay: String = if(day < 10){
+            val myFormattedDay: String = if (day < 10) {
                 "0$day"
-            }else{
+            } else {
                 "$day"
             }
             viewModel.myDate = "$year-$myFormattedMonth-$myFormattedDay"
@@ -126,19 +139,28 @@ class PerceptionFragment : Fragment() {
                     ).show()
                 }
                 else -> {
-                    viewModel.response =  binding.perceptionEdit.text.toString().trim()
-                    viewModel.answer =  binding.answerEdit.text.toString().trim()
+                    viewModel.response = binding.perceptionEdit.text.toString().trim()
+                    viewModel.answer = binding.answerEdit.text.toString().trim()
                     viewModel.measure = binding.measureEdit.text.toString().trim()
-                    if(viewModel.myDate.isEmpty()){
+                    if (viewModel.myDate.isEmpty()) {
                         val simpleDate = SimpleDateFormat("yyyy-MM-dd")
                         viewModel.myDate = simpleDate.format(Date(binding.calendarView.date))
                     }
                     viewModel.urgent = binding.urgentBox.isChecked
-                    viewModel.typeValue = binding.typeSpinner.selectedItem.toString().substring(0,2)
+                    viewModel.typeValue =
+                        binding.typeSpinner.selectedItem.toString().substring(0, 2)
                     viewModel.corrector = binding.correctorEdit.text.toString().trim()
-
-                    observationArray.add(ObservationData(viewModel.response,viewModel.typeValue,viewModel.answer,viewModel.measure,viewModel.urgent,viewModel.corrector,viewModel.myDate,666))
-                    mainActivityInteract.refreshList()
+                    mainActivityInteract.saveNewPerception(viewModel.response,viewModel.answer,viewModel.measure,viewModel.typeValue,viewModel.urgent,viewModel.corrector,viewModel.myDate,viewModel.msvId.toInt())
+                    //observationArray.add(ObservationData(viewModel.response,viewModel.typeValue,viewModel.answer,viewModel.measure,viewModel.urgent,viewModel.corrector,viewModel.myDate,666))
+                    //mainActivityInteract.refreshList()
+                    viewModel.response = ""
+                    viewModel.answer = ""
+                    viewModel.measure = ""
+                    viewModel.typeValue = ""
+                    viewModel.urgent = false
+                    viewModel.corrector = ""
+                    viewModel.myDate = ""
+                    viewModel.msvId = ""
                     mainActivityInteract.closeFragment()
                 }
             }
@@ -148,6 +170,9 @@ class PerceptionFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        loadData()
+        viewModel.msvId = id
+       /* Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
         viewModel.response = p1
         viewModel.answer = p2
         viewModel.measure = p3
@@ -177,8 +202,9 @@ class PerceptionFragment : Fragment() {
             calendar.set(Calendar.DAY_OF_MONTH, day)
             val milli = calendar.timeInMillis
             binding.calendarView.setDate(milli, true, true)
-            viewModel.id = p8
-        }
+            viewModel.msvId = p8*/
+            Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
+
     }
 
     override fun onAttach(context: Context) {
@@ -200,7 +226,7 @@ class PerceptionFragment : Fragment() {
             param5: String?,
             param6: String?,
             param7: String?,
-            param8: Int
+            param8: String
         ) =
             PerceptionFragment().apply {
                 arguments = Bundle().apply {
@@ -211,8 +237,12 @@ class PerceptionFragment : Fragment() {
                     putString(ARG_PARAM5, param5)
                     putString(ARG_PARAM6, param6)
                     putString(ARG_PARAM7, param7)
-                    putInt(ARG_PARAM8, param8)
+                    putString(ARG_PARAM8, param8)
                 }
             }
+    }
+    private fun loadData(){
+        val myList: ArrayList<ObservationData> = arguments?.getSerializable("EMPTYARRAY")as ArrayList<ObservationData>
+        id = myList[0].id
     }
 }

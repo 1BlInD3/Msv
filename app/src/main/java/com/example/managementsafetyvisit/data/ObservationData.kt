@@ -8,5 +8,5 @@ data class ObservationData(
     val now: Boolean,
     val corrector: String?,
     val date: String?,
-    val id: Int
+    val id: String
 )

@@ -11,7 +11,7 @@ class PerceptionViewModel: ViewModel() {
     var answer: String = ""
     var corrector: String = ""
     var typeList = 0
-    var id = 0
+    var msvId : String = ""
     var update = false
 
 }

@@ -1,14 +1,17 @@
 package com.example.managementsafetyvisit.utils
 
+import android.os.Bundle
 import android.util.Log
 import com.example.managementsafetyvisit.MainActivity.Companion.dataArray
 import com.example.managementsafetyvisit.MainActivity.Companion.felelos
 import com.example.managementsafetyvisit.MainActivity.Companion.newPerceptionArray
 import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
+import com.example.managementsafetyvisit.MainActivity.Companion.perceptionFragment
 import com.example.managementsafetyvisit.MainActivity.Companion.read_connect
 import com.example.managementsafetyvisit.MainActivity.Companion.write_connect
 import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
+import com.example.managementsafetyvisit.fragment.PerceptionFragment
 import java.sql.Connection
 import java.sql.DriverManager
 
@@ -49,35 +52,68 @@ class Sql {
 
         }
     }
-    fun loadPerceptionPanel(msvCode: Int){
+    fun loadPerceptionPanel(msvCode: String){
         newPerceptionArray.clear()
         val connection1: Connection
         Class.forName("net.sourceforge.jtds.jdbc.Driver")
         try{
             connection1 = DriverManager.getConnection(write_connect)
             val statement1 = connection1.prepareStatement("""SELECT [ID],[IdData] FROM [Fusetech].[dbo].[MsvNotes] WHERE Statusz = 0 AND IdData = ?""")
-            statement1.setInt(1,msvCode)
+            statement1.setInt(1,msvCode.toInt())
             val resultSet1 = statement1.executeQuery()
             if(!resultSet1.next()){
                 val statement = connection1.prepareStatement("""INSERT INTO [Fusetech].[dbo].[MsvNotes] (IdData,Statusz) Values(?,?)""")
-                statement.setInt(1,msvCode)
+                statement.setInt(1,msvCode.toInt())
                 statement.setInt(2,0)
                 statement.executeUpdate()
                 val statement2 = connection1.prepareStatement("""SELECT [ID],[IdData] FROM [Fusetech].[dbo].[MsvNotes] WHERE Statusz = 0 AND IdData = ?""")
-                statement2.setInt(1,msvCode)
+                statement2.setInt(1,msvCode.toInt())
                 val resultSet2 = statement2.executeQuery()
                 if(!resultSet2.next()){
                     Log.d(TAG, "loadPerceptionPanel: Kurva nagy baj van")
                 }else{
                     val id = resultSet2.getInt("ID")
-                    newPerceptionArray.add(ObservationData("","PP","","",false,"","",id))
+                    newPerceptionArray.add(ObservationData("","PP","","",false,"","",id.toString().trim()))
+                    val bundle = Bundle()
+                    bundle.putSerializable("EMPTYARRAY", newPerceptionArray)
+                    perceptionFragment.arguments = bundle
                 }
             }else{
                 val id = resultSet1.getInt("ID")
-                newPerceptionArray.add(ObservationData("","PP","","",false,"","",id))
+                newPerceptionArray.add(ObservationData("","PP","","",false,"","",id.toString().trim()))
+                val bundle = Bundle()
+                bundle.putSerializable("EMPTYARRAY", newPerceptionArray)
+                perceptionFragment.arguments = bundle
             }
         }catch(e: Exception){
             Log.d(TAG, "loadPerceptionPanel: $e")
+        }
+    }
+
+    fun saveNewPerception(perception: String?, answer: String?,measure: String?,type: String?, urgent: Boolean,corrector: String?,date: String?,id: Int) {
+        var now: Int = 0
+        now = if(urgent){
+            1
+        }else{
+            0
+        }
+        val connection: Connection
+        Class.forName("net.sourceforge.jtds.jdbc.Driver")
+        try{
+            connection = DriverManager.getConnection(write_connect)
+            val statement = connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvNotes] SET Eszrevetel = ?, Tipus = ?, Valasz = ?, Intezkedes = ?, Azonnali = ?, Javito = ?, Datum = ?, Statusz = 1 WHERE ID = ? AND Statusz = 0""")
+            statement.setString(1,perception)
+            statement.setString(2,type)
+            statement.setString(3,answer)
+            statement.setString(4,measure)
+            statement.setInt(5,now)
+            statement.setString(6,corrector)
+            statement.setString(7,date)
+            statement.setInt(8,id)
+            statement.executeUpdate()
+            observationArray.add(ObservationData(perception,type,answer,measure,urgent,corrector,date,id.toString()))
+        }catch (e: Exception){
+            Log.d(TAG, "saveNewPerception: $e")
         }
     }
 }
