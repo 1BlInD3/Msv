@@ -3,8 +3,12 @@ package com.example.managementsafetyvisit.utils
 import android.util.Log
 import com.example.managementsafetyvisit.MainActivity.Companion.dataArray
 import com.example.managementsafetyvisit.MainActivity.Companion.felelos
+import com.example.managementsafetyvisit.MainActivity.Companion.newPerceptionArray
+import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
 import com.example.managementsafetyvisit.MainActivity.Companion.read_connect
+import com.example.managementsafetyvisit.MainActivity.Companion.write_connect
 import com.example.managementsafetyvisit.data.Data
+import com.example.managementsafetyvisit.data.ObservationData
 import java.sql.Connection
 import java.sql.DriverManager
 
@@ -43,6 +47,37 @@ class Sql {
             }
         }catch (e: Exception){
 
+        }
+    }
+    fun loadPerceptionPanel(msvCode: Int){
+        newPerceptionArray.clear()
+        val connection1: Connection
+        Class.forName("net.sourceforge.jtds.jdbc.Driver")
+        try{
+            connection1 = DriverManager.getConnection(write_connect)
+            val statement1 = connection1.prepareStatement("""SELECT [ID],[IdData] FROM [Fusetech].[dbo].[MsvNotes] WHERE Statusz = 0 AND IdData = ?""")
+            statement1.setInt(1,msvCode)
+            val resultSet1 = statement1.executeQuery()
+            if(!resultSet1.next()){
+                val statement = connection1.prepareStatement("""INSERT INTO [Fusetech].[dbo].[MsvNotes] (IdData,Statusz) Values(?,?)""")
+                statement.setInt(1,msvCode)
+                statement.setInt(2,0)
+                statement.executeUpdate()
+                val statement2 = connection1.prepareStatement("""SELECT [ID],[IdData] FROM [Fusetech].[dbo].[MsvNotes] WHERE Statusz = 0 AND IdData = ?""")
+                statement2.setInt(1,msvCode)
+                val resultSet2 = statement2.executeQuery()
+                if(!resultSet2.next()){
+                    Log.d(TAG, "loadPerceptionPanel: Kurva nagy baj van")
+                }else{
+                    val id = resultSet2.getInt("ID")
+                    newPerceptionArray.add(ObservationData("","PP","","",false,"","",id))
+                }
+            }else{
+                val id = resultSet1.getInt("ID")
+                newPerceptionArray.add(ObservationData("","PP","","",false,"","",id))
+            }
+        }catch(e: Exception){
+            Log.d(TAG, "loadPerceptionPanel: $e")
         }
     }
 }

@@ -25,8 +25,10 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
 
     companion object{
         val observationArray: ArrayList<ObservationData> = ArrayList()
+        val newPerceptionArray: ArrayList<ObservationData> = ArrayList()
         val dataArray: ArrayList<Data> = ArrayList()
         const val read_connect ="jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=scala_read;password=scala_read;loginTimeout=10"
+        const val write_connect ="jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=Termelesmonitor;password=TERM123;loginTimeout=10"
         var felelos: String = ""
     }
 
@@ -50,22 +52,38 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         supportFragmentManager.beginTransaction().replace(R.id.id_container,login,"LOGIN").commit()
     }
 
-    override fun loadPerceptionPanel() {
-        val perceptionFragment = PerceptionFragment()
-        supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()
+    override fun loadPerceptionPanel(code: Int) {
+        val sql = Sql()
+        CoroutineScope(IO).launch {
+            sql.loadPerceptionPanel(code)
+            CoroutineScope(Main).launch {
+                val perceptionFragment = PerceptionFragment.newInstance(
+                    newPerceptionArray[0].perception,
+                    newPerceptionArray[0].response,
+                    newPerceptionArray[0].measure,
+                    newPerceptionArray[0].now,
+                    newPerceptionArray[0].type,
+                    newPerceptionArray[0].corrector,
+                    newPerceptionArray[0].date,
+                    newPerceptionArray[0].id
+                )
+                supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()
+            }
+        }
     }
 
 
     override fun loadPanelWithValues(
-        perception: String,
-        type: String,
-        response: String,
-        measure: String,
+        perception: String?,
+        type: String?,
+        response: String?,
+        measure: String?,
         urgent: Boolean,
         corrector: String?,
-        date: String?
+        date: String?,
+        id: Int
     ) {
-        val perceptionFragment = PerceptionFragment.newInstance(perception,response,measure,urgent,type,corrector,date)
+        val perceptionFragment = PerceptionFragment.newInstance(perception,response,measure,urgent,type,corrector,date,id)
         supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()
     }
 

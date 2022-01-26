@@ -75,15 +75,16 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
     private lateinit var binding: FragmentMsvBinding
 
     interface MainActivityConnector {
-        fun loadPerceptionPanel()
+        fun loadPerceptionPanel(code: Int)
         fun loadPanelWithValues(
-            perception: String,
-            type: String,
-            response: String,
-            measure: String,
+            perception: String?,
+            type: String?,
+            response: String?,
+            measure: String?,
             urgent: Boolean,
             corrector: String?,
-            date: String?
+            date: String?,
+            id: Int
         )
 
         fun getCameraToScan()
@@ -108,7 +109,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.observationRecycler?.adapter?.notifyDataSetChanged()
 
         binding.newResponse?.setOnClickListener {
-            mainActivityConnector.loadPerceptionPanel()
+            mainActivityConnector.loadPerceptionPanel(viewModel.msvNumber.toInt())
         }
         binding.imageView.setOnClickListener {
             viewModel.getPhoto("${viewModel.familyName}${viewModel.firstName}${viewModel.tsz}.jpg")
@@ -209,7 +210,8 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             observationArray[position].measure,
             observationArray[position].now,
             observationArray[position].corrector,
-            observationArray[position].date
+            observationArray[position].date,
+            observationArray[position].id
         )
     }
 

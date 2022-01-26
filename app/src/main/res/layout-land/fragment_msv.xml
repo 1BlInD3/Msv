@@ -449,7 +449,7 @@
         app:layout_constraintStart_toStartOf="@+id/chastnik_first_text"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
-    <!--<FrameLayout
+    <FrameLayout
         android:id="@id/panel_container"
         android:layout_width="700dp"
         android:layout_height="300dp"
@@ -460,7 +460,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-    </FrameLayout>-->
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

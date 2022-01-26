@@ -27,7 +27,7 @@ private const val ARG_PARAM4 = "param4"
 private const val ARG_PARAM5 = "param5"
 private const val ARG_PARAM6 = "param6"
 private const val ARG_PARAM7 = "param7"
-
+private const val ARG_PARAM8 = "param8"
 class PerceptionFragment : Fragment() {
 
     interface MainActivityInteract {
@@ -46,6 +46,7 @@ class PerceptionFragment : Fragment() {
     private var p5 = ""
     private var p6 = ""
     private var p7 = ""
+    private var p8 = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -56,6 +57,7 @@ class PerceptionFragment : Fragment() {
             p5 = it.getString(ARG_PARAM5).toString()
             p6 = it.getString(ARG_PARAM6).toString()
             p7 = it.getString(ARG_PARAM7).toString()
+            p8 = it.getInt(ARG_PARAM8)
         }
     }
 
@@ -175,6 +177,7 @@ class PerceptionFragment : Fragment() {
             calendar.set(Calendar.DAY_OF_MONTH, day)
             val milli = calendar.timeInMillis
             binding.calendarView.setDate(milli, true, true)
+            viewModel.id = p8
         }
     }
 
@@ -190,13 +193,14 @@ class PerceptionFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance(
-            param1: String,
-            param2: String,
-            param3: String,
+            param1: String?,
+            param2: String?,
+            param3: String?,
             param4: Boolean,
-            param5: String,
+            param5: String?,
             param6: String?,
-            param7: String?
+            param7: String?,
+            param8: Int
         ) =
             PerceptionFragment().apply {
                 arguments = Bundle().apply {
@@ -207,6 +211,7 @@ class PerceptionFragment : Fragment() {
                     putString(ARG_PARAM5, param5)
                     putString(ARG_PARAM6, param6)
                     putString(ARG_PARAM7, param7)
+                    putInt(ARG_PARAM8, param8)
                 }
             }
     }
