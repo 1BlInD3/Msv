@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
 import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.adapters.ObservationDataAdapter
+import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.interfaces.MsvListener
 import com.example.managementsafetyvisit.databinding.FragmentMsvBinding
@@ -74,7 +76,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
 
     private val viewModel: MsvViewModel by viewModels()
     private lateinit var binding: FragmentMsvBinding
-    private val reversedList : ArrayList<ObservationData> = ArrayList()
+    private val reversedList: ArrayList<ObservationData> = ArrayList()
 
     interface MainActivityConnector {
         fun loadPerceptionPanel(code: String)
@@ -107,9 +109,6 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.observationRecycler?.layoutManager = LinearLayoutManager(requireContext())
         binding.observationRecycler?.setHasFixedSize(true)
 
-
-        refreshList()
-
         binding.newResponse?.setOnClickListener {
             mainActivityConnector.loadPerceptionPanel(viewModel.msvNumber.trim())
         }
@@ -128,6 +127,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
 
     override fun onResume() {
         super.onResume()
+        loadData()
         //viewModel.getPhoto("BálindAttila1557.jpg")
         viewModel.msvNumber = p1.toString().trim()
         nameGenerator(p2)
@@ -180,19 +180,48 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         viewModel.datum = p9
         if (middleName.isEmpty() && middleMiddleName.isEmpty()) {
             viewModel.getPhoto("${viewModel.familyName}${viewModel.firstName}${viewModel.tsz}.jpg")
-        } else if (middleMiddleName.isEmpty()){
-            if(viewModel.familyName.substring(viewModel.familyName.length-1)=="-"){
-                viewModel.getPhoto("${viewModel.familyName.substring(0,viewModel.familyName.length-1)}${viewModel.middleName}${viewModel.firstName}q${viewModel.tsz}.jpg")
-            }else{
-                viewModel.getPhoto("${viewModel.familyName.substring(0,viewModel.familyName.length)}${viewModel.middleName}${viewModel.firstName}${viewModel.tsz}.jpg")
+        } else if (middleMiddleName.isEmpty()) {
+            if (viewModel.familyName.substring(viewModel.familyName.length - 1) == "-") {
+                viewModel.getPhoto(
+                    "${
+                        viewModel.familyName.substring(
+                            0,
+                            viewModel.familyName.length - 1
+                        )
+                    }${viewModel.middleName}${viewModel.firstName}q${viewModel.tsz}.jpg"
+                )
+            } else {
+                viewModel.getPhoto(
+                    "${
+                        viewModel.familyName.substring(
+                            0,
+                            viewModel.familyName.length
+                        )
+                    }${viewModel.middleName}${viewModel.firstName}${viewModel.tsz}.jpg"
+                )
             }
-        } else{
-            if(viewModel.familyName.substring(viewModel.familyName.length-1)=="-"){
-                viewModel.getPhoto("${viewModel.familyName.substring(0,viewModel.familyName.length-1)}${viewModel.middleName}${viewModel.middleMiddleName.trim()}${viewModel.firstName}q${viewModel.tsz}.jpg")
-            }else{
-                viewModel.getPhoto("${viewModel.familyName.substring(0,viewModel.familyName.length)}${viewModel.middleName}${viewModel.middleMiddleName.trim()}${viewModel.firstName}${viewModel.tsz}.jpg")
+        } else {
+            if (viewModel.familyName.substring(viewModel.familyName.length - 1) == "-") {
+                viewModel.getPhoto(
+                    "${
+                        viewModel.familyName.substring(
+                            0,
+                            viewModel.familyName.length - 1
+                        )
+                    }${viewModel.middleName}${viewModel.middleMiddleName.trim()}${viewModel.firstName}q${viewModel.tsz}.jpg"
+                )
+            } else {
+                viewModel.getPhoto(
+                    "${
+                        viewModel.familyName.substring(
+                            0,
+                            viewModel.familyName.length
+                        )
+                    }${viewModel.middleName}${viewModel.middleMiddleName.trim()}${viewModel.firstName}${viewModel.tsz}.jpg"
+                )
             }
         }
+        refreshList()
     }
 
     override fun onAttach(context: Context) {
@@ -205,7 +234,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
     }
 
     override fun onCurrentClick(position: Int) {
-        mainActivityConnector.loadPanelWithValues(
+        /*mainActivityConnector.loadPanelWithValues(
             observationArray[position].perception,
             observationArray[position].type,
             observationArray[position].response,
@@ -214,49 +243,28 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             observationArray[position].corrector,
             observationArray[position].date,
             observationArray[position].id.toString()
-        )
+        )*/
+        Toast.makeText(requireContext(), reversedList[position].id, Toast.LENGTH_SHORT).show()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun refreshList() {
-        for(i in observationArray.size until 0){
-            reversedList.add(ObservationData(observationArray[i].perception, observationArray[i].type, observationArray[i].response,observationArray[i].measure,observationArray[i].now,observationArray[i].corrector,observationArray[i].date,observationArray[i].id))
+        reversedList.clear()
+        for (i in observationArray.size - 1 downTo 0) {
+            reversedList.add(
+                ObservationData(
+                    observationArray[i].perception,
+                    observationArray[i].type,
+                    observationArray[i].response,
+                    observationArray[i].measure,
+                    observationArray[i].now,
+                    observationArray[i].corrector,
+                    observationArray[i].date,
+                    observationArray[i].id
+                )
+            )
         }
         binding.observationRecycler?.adapter?.notifyDataSetChanged()
-    }
-
-    private fun reverseList(){
-
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(
-            param1: Int,
-            param2: String,
-            param3: Int,
-            param4: String,
-            param5: Int,
-            param6: String,
-            param7: Int,
-            param8: String,
-            param9: String,
-            param10: Int
-        ) =
-            MsvFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                    putInt(ARG_PARAM3, param3)
-                    putString(ARG_PARAM4, param4)
-                    putInt(ARG_PARAM5, param5)
-                    putString(ARG_PARAM6, param6)
-                    putInt(ARG_PARAM7, param7)
-                    putString(ARG_PARAM8, param8)
-                    putString(ARG_PARAM9, param9)
-                    putInt(ARG_PARAM10, param10)
-                }
-            }
     }
 
     private fun nameGenerator(name: String) {
@@ -295,4 +303,20 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    private fun loadData() {
+        val myList = arguments?.getSerializable("EMBER") as ArrayList<Data>
+        for (i in 0 until myList.size) {
+            p1 = myList[i].id
+            p2 = myList[i].name
+            p3 = myList[i].tsz
+            p4 = myList[i].fsz
+            p5 = myList[i].ftsz
+            p6 = myList[i].resztvevo
+            p7 = myList[i].rtsz
+            p8 = myList[i].location
+            p9 = myList[i].date
+            p10 = myList[i].status
+        }
+    }
 }

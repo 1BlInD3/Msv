@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         const val write_connect ="jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=Termelesmonitor;password=TERM123;loginTimeout=10"
         var felelos: String = ""
         val perceptionFragment = PerceptionFragment()
+        val msvFragment = MsvFragment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -153,23 +154,11 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
                     sql.getDataByName(result.contents.trim())
                     CoroutineScope(Main).launch {
                         Log.d(TAG, "onActivityResult: $dataArray")
-                        val msvFragment = MsvFragment.newInstance(
-                            dataArray[0].id,
-                            dataArray[0].name,
-                            dataArray[0].tsz,
-                            dataArray[0].fsz,
-                            dataArray[0].ftsz,
-                            dataArray[0].resztvevo,
-                            dataArray[0].rtsz,
-                            dataArray[0].location,
-                            dataArray[0].date,
-                            dataArray[0].status
-                        )
                         supportFragmentManager.beginTransaction().replace(R.id.id_container,msvFragment,"MSVFRAG").commit()
-                        val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
+                       /* val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
                         if(myFrag != null){
                             (myFrag as MsvFragment).refreshList()
-                        }
+                        }*/
                     }
                 }
             } else {
@@ -181,5 +170,20 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
 
     override fun openCamera() {
         scanCode()
+    }
+
+    override fun onStop() {
+        observationArray.clear()
+        newPerceptionArray.clear()
+        dataArray.clear()
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        observationArray.clear()
+        newPerceptionArray.clear()
+        dataArray.clear()
+        super.onDestroy()
+
     }
 }

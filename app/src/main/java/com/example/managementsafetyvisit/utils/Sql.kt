@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import com.example.managementsafetyvisit.MainActivity.Companion.dataArray
 import com.example.managementsafetyvisit.MainActivity.Companion.felelos
+import com.example.managementsafetyvisit.MainActivity.Companion.msvFragment
 import com.example.managementsafetyvisit.MainActivity.Companion.newPerceptionArray
 import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
 import com.example.managementsafetyvisit.MainActivity.Companion.perceptionFragment
@@ -14,6 +15,7 @@ import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.fragment.PerceptionFragment
 import java.sql.Connection
 import java.sql.DriverManager
+import kotlin.math.log
 
 class Sql {
     private val TAG = "Sql"
@@ -47,6 +49,8 @@ class Sql {
                     val date = resultSet1.getString("Datum")
                     val status = resultSet1.getInt("Statusz")
                     dataArray.add(Data(id,name,tsz,felelos,ftsz,resztvevo,rtsz,location,date,status))
+                    val bundle = Bundle()
+                    bundle.putSerializable("EMBER", dataArray)
                     val statement3 = connection.prepareStatement("""SELECT [ID],[Eszrevetel],[Tipus],[Valasz],[Intezkedes],[Azonnali],[Javito],[Datum],[Statusz] FROM [Fusetech].[dbo].[MsvNotes] WHERE IdData = ? AND Statusz > 0 order by ID""")
                     statement3.setInt(1,id)
                     val resultSet3 = statement3.executeQuery()
@@ -66,10 +70,11 @@ class Sql {
                             observationArray.add(ObservationData(eszrevetel,tipus,valasz,intezkedes,urgent,javito,datum,idM.toString().trim()))
                         }while (resultSet3.next())
                     }
+                    msvFragment.arguments = bundle
                 }
             }
         }catch (e: Exception){
-
+            Log.d(TAG, "getDataByName: $e")
         }
     }
     fun loadPerceptionPanel(msvCode: String){
