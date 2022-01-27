@@ -234,16 +234,16 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
     }
 
     override fun onCurrentClick(position: Int) {
-        /*mainActivityConnector.loadPanelWithValues(
-            observationArray[position].perception,
-            observationArray[position].type,
-            observationArray[position].response,
-            observationArray[position].measure,
-            observationArray[position].now,
-            observationArray[position].corrector,
-            observationArray[position].date,
-            observationArray[position].id.toString()
-        )*/
+        mainActivityConnector.loadPanelWithValues(
+            reversedList[position].perception,
+            reversedList[position].type,
+            reversedList[position].response,
+            reversedList[position].measure,
+            reversedList[position].now,
+            reversedList[position].corrector,
+            reversedList[position].date,
+            reversedList[position].id
+        )
         Toast.makeText(requireContext(), reversedList[position].id, Toast.LENGTH_SHORT).show()
     }
 

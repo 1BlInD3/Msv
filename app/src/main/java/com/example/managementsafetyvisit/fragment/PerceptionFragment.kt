@@ -149,7 +149,16 @@ class PerceptionFragment : Fragment() {
                     viewModel.typeValue =
                         binding.typeSpinner.selectedItem.toString().substring(0, 2)
                     viewModel.corrector = binding.correctorEdit.text.toString().trim()
-                    mainActivityInteract.saveNewPerception(viewModel.response,viewModel.answer,viewModel.measure,viewModel.typeValue,viewModel.urgent,viewModel.corrector,viewModel.myDate,viewModel.msvId.toInt())
+                    mainActivityInteract.saveNewPerception(
+                        viewModel.response,
+                        viewModel.answer,
+                        viewModel.measure,
+                        viewModel.typeValue,
+                        viewModel.urgent,
+                        viewModel.corrector,
+                        viewModel.myDate,
+                        viewModel.msvId.toInt()
+                    )
                     //observationArray.add(ObservationData(viewModel.response,viewModel.typeValue,viewModel.answer,viewModel.measure,viewModel.urgent,viewModel.corrector,viewModel.myDate,666))
                     //mainActivityInteract.refreshList()
                     viewModel.response = ""
@@ -169,41 +178,46 @@ class PerceptionFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        loadData()
-        viewModel.msvId = id
-       /* Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
-        viewModel.response = p1
-        viewModel.answer = p2
-        viewModel.measure = p3
-        viewModel.urgent = p4
-        when (p5) {
-            "PP" -> viewModel.typeList = 0
-            "UA" -> viewModel.typeList = 1
-            "UC" -> viewModel.typeList = 2
+        try {
+            loadData()
+            viewModel.msvId = id
+        } catch (e: Exception) {
+            loadModify()
+            viewModel.msvId = id
+            Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
+            viewModel.response = p1
+            viewModel.answer = p2
+            viewModel.measure = p3
+            viewModel.urgent = p4
+            when (p5) {
+                "PP" -> viewModel.typeList = 0
+                "UA" -> viewModel.typeList = 1
+                "UC" -> viewModel.typeList = 2
+            }
+            viewModel.corrector = p6
+            if (p7 != "") {
+                val date = p7
+                val year = date.substring(0, 4).toInt()
+                val month: Int = if (date.substring(5, 6) == ("0")) {
+                    date.substring(6, 7).toInt()
+                } else {
+                    date.substring(5, 7).toInt()
+                }
+                val day: Int = if (date.substring(8, 9) == "0") {
+                    date.substring(9).toInt()
+                } else {
+                    date.substring(8).toInt()
+                }
+                val calendar: Calendar = Calendar.getInstance()
+                calendar.set(Calendar.YEAR, year)
+                calendar.set(Calendar.MONTH, month - 1)
+                calendar.set(Calendar.DAY_OF_MONTH, day)
+                val milli = calendar.timeInMillis
+                binding.calendarView.setDate(milli, true, true)
+                viewModel.msvId = p8
+                Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
+            }
         }
-        viewModel.corrector = p6
-        if (p7 != "") {
-            val date = p7
-            val year = date.substring(0, 4).toInt()
-            val month: Int = if (date.substring(5, 6) == ("0")) {
-                date.substring(6, 7).toInt()
-            } else {
-                date.substring(5, 7).toInt()
-            }
-            val day: Int = if (date.substring(8, 9) == "0") {
-                date.substring(9).toInt()
-            } else {
-                date.substring(8).toInt()
-            }
-            val calendar: Calendar = Calendar.getInstance()
-            calendar.set(Calendar.YEAR, year)
-            calendar.set(Calendar.MONTH, month - 1)
-            calendar.set(Calendar.DAY_OF_MONTH, day)
-            val milli = calendar.timeInMillis
-            binding.calendarView.setDate(milli, true, true)
-            viewModel.msvId = p8*/
-            Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
-
     }
 
     override fun onAttach(context: Context) {
@@ -240,8 +254,23 @@ class PerceptionFragment : Fragment() {
                 }
             }
     }
-    private fun loadData(){
-        val myList: ArrayList<ObservationData> = arguments?.getSerializable("EMPTYARRAY")as ArrayList<ObservationData>
+
+    private fun loadData() {
+        val myList: ArrayList<ObservationData> =
+            arguments?.getSerializable("EMPTYARRAY") as ArrayList<ObservationData>
         id = myList[0].id
+    }
+
+    private fun loadModify() {
+        val myList: ArrayList<ObservationData> =
+            arguments?.getSerializable("LOADING") as ArrayList<ObservationData>
+        p1 = myList[0].perception.toString()
+        p2 = myList[0].response.toString()
+        p3 = myList[0].measure.toString()
+        p4 = myList[0].now
+        p5 = myList[0].type.toString()
+        p6 = myList[0].corrector.toString()
+        p7 = myList[0].date.toString()
+        p8 = myList[0].id
     }
 }

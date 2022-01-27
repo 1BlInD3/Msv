@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
                 )
                 Toast.makeText(this@MainActivity, newPerceptionArray[0].id.trim(), Toast.LENGTH_LONG).show()
                 supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()*/
+                Toast.makeText(this@MainActivity, newPerceptionArray[0].id.trim(), Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -91,7 +92,13 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         date: String?,
         id: String
     ) {
-        val perceptionFragment = PerceptionFragment.newInstance(perception,response,measure,urgent,type,corrector,date,id.toString())
+        //val perceptionFragment = PerceptionFragment.newInstance(perception,response,measure,urgent,type,corrector,date,id)
+        val observation: ArrayList<ObservationData> = ArrayList()
+        observation.add(ObservationData(perception,type,response,measure,urgent,corrector,date,id))
+        val perceptionFragment = PerceptionFragment()
+        val bundle = Bundle()
+        bundle.putSerializable("LOADING",observation)
+        perceptionFragment.arguments = bundle
         supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()
     }
 
@@ -155,10 +162,6 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
                     CoroutineScope(Main).launch {
                         Log.d(TAG, "onActivityResult: $dataArray")
                         supportFragmentManager.beginTransaction().replace(R.id.id_container,msvFragment,"MSVFRAG").commit()
-                       /* val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
-                        if(myFrag != null){
-                            (myFrag as MsvFragment).refreshList()
-                        }*/
                     }
                 }
             } else {
