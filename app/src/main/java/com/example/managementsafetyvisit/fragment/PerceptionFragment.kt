@@ -50,7 +50,6 @@ class PerceptionFragment : Fragment() {
     private val viewModel: PerceptionViewModel by viewModels()
     private lateinit var binding: FragmentPerceptionBinding
     private var id = ""
-
     private var p1 = ""
     private var p2 = ""
     private var p3 = ""

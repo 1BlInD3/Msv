@@ -476,5 +476,30 @@
 
     </FrameLayout>
 
+    <Button
+        android:id="@+id/camera_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="160dp"
+        android:background="@drawable/round_button_2"
+        android:drawableStart="@mipmap/camera"
+        android:drawableTint="@android:color/white"
+        android:paddingStart="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/new_response"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/check_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/round_button_3"
+        android:drawableStart="@mipmap/check"
+        android:drawableTint="@color/mersenOrange"
+        android:paddingStart="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/camera_button"
+        app:layout_constraintEnd_toEndOf="@+id/camera_button" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

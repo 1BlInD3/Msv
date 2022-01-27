@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
     companion object{
         val observationArray: ArrayList<ObservationData> = ArrayList()
         val newPerceptionArray: ArrayList<ObservationData> = ArrayList()
+       // val reversedList: ArrayList<ObservationData> = ArrayList()
         val dataArray: ArrayList<Data> = ArrayList()
         const val read_connect ="jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=scala_read;password=scala_read;loginTimeout=10"
         const val write_connect ="jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=Termelesmonitor;password=TERM123;loginTimeout=10"
@@ -165,6 +166,10 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
                             dataArray[0].status
                         )
                         supportFragmentManager.beginTransaction().replace(R.id.id_container,msvFragment,"MSVFRAG").commit()
+                        val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
+                        if(myFrag != null){
+                            (myFrag as MsvFragment).refreshList()
+                        }
                     }
                 }
             } else {

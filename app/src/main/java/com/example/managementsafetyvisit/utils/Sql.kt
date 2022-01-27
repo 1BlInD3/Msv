@@ -18,6 +18,7 @@ import java.sql.DriverManager
 class Sql {
     private val TAG = "Sql"
     fun getDataByName(code: String){
+        observationArray.clear()
         val connection: Connection
         Class.forName("net.sourceforge.jtds.jdbc.Driver")
         try{
@@ -46,6 +47,25 @@ class Sql {
                     val date = resultSet1.getString("Datum")
                     val status = resultSet1.getInt("Statusz")
                     dataArray.add(Data(id,name,tsz,felelos,ftsz,resztvevo,rtsz,location,date,status))
+                    val statement3 = connection.prepareStatement("""SELECT [ID],[Eszrevetel],[Tipus],[Valasz],[Intezkedes],[Azonnali],[Javito],[Datum],[Statusz] FROM [Fusetech].[dbo].[MsvNotes] WHERE IdData = ? AND Statusz > 0 order by ID""")
+                    statement3.setInt(1,id)
+                    val resultSet3 = statement3.executeQuery()
+                    if(!resultSet3.next()){
+                        Log.d(TAG, "getDataByName: Nincsenek észrevételek")
+                    }else{
+                        do{
+                            val idM = resultSet3.getInt("ID")
+                            val eszrevetel = resultSet3.getString("Eszrevetel")
+                            val tipus = resultSet3.getString("Tipus")
+                            val valasz = resultSet3.getString("Valasz")
+                            val intezkedes = resultSet3.getString("Intezkedes")
+                            val azonnali = resultSet3.getInt("Azonnali")
+                            val urgent : Boolean = azonnali != 0
+                            val javito = resultSet3.getString("Javito")
+                            val datum = resultSet3.getString("Datum")
+                            observationArray.add(ObservationData(eszrevetel,tipus,valasz,intezkedes,urgent,javito,datum,idM.toString().trim()))
+                        }while (resultSet3.next())
+                    }
                 }
             }
         }catch (e: Exception){

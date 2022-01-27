@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
 import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.adapters.ObservationDataAdapter
+import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.interfaces.MsvListener
 import com.example.managementsafetyvisit.databinding.FragmentMsvBinding
 import com.example.managementsafetyvisit.viewModels.MsvViewModel
@@ -73,6 +74,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
 
     private val viewModel: MsvViewModel by viewModels()
     private lateinit var binding: FragmentMsvBinding
+    private val reversedList : ArrayList<ObservationData> = ArrayList()
 
     interface MainActivityConnector {
         fun loadPerceptionPanel(code: String)
@@ -101,12 +103,12 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.viewModel = viewModel
         viewModel.msvListener = this
 
-        binding.observationRecycler?.adapter = ObservationDataAdapter(observationArray, this)
+        binding.observationRecycler?.adapter = ObservationDataAdapter(reversedList, this)
         binding.observationRecycler?.layoutManager = LinearLayoutManager(requireContext())
         binding.observationRecycler?.setHasFixedSize(true)
 
 
-        binding.observationRecycler?.adapter?.notifyDataSetChanged()
+        refreshList()
 
         binding.newResponse?.setOnClickListener {
             mainActivityConnector.loadPerceptionPanel(viewModel.msvNumber.trim())
@@ -217,7 +219,14 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
 
     @SuppressLint("NotifyDataSetChanged")
     fun refreshList() {
+        for(i in observationArray.size until 0){
+            reversedList.add(ObservationData(observationArray[i].perception, observationArray[i].type, observationArray[i].response,observationArray[i].measure,observationArray[i].now,observationArray[i].corrector,observationArray[i].date,observationArray[i].id))
+        }
         binding.observationRecycler?.adapter?.notifyDataSetChanged()
+    }
+
+    private fun reverseList(){
+
     }
 
     companion object {
