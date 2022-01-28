@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ManagementSafetyVisit</string>
+   <!-- <string name="app_name">ManagementSafetyVisit</string>-->
     <string-array name="msvTypes">
         <item>PP-Pozitív pontok</item>
         <item>UA-Nem biztonságos cselekmények</item>
