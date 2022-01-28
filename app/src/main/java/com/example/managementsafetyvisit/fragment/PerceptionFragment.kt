@@ -44,6 +44,16 @@ class PerceptionFragment : Fragment() {
             date: String?,
             id: Int
         )
+        fun updateExistingPerception(
+            perception: String?,
+            answer: String?,
+            measure: String?,
+            type: String?,
+            urgent: Boolean,
+            corrector: String?,
+            date: String?,
+            id: Int
+        )
     }
 
     private lateinit var mainActivityInteract: MainActivityInteract
@@ -58,6 +68,7 @@ class PerceptionFragment : Fragment() {
     private var p6 = ""
     private var p7 = ""
     private var p8 = ""
+    var update = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -114,62 +125,124 @@ class PerceptionFragment : Fragment() {
             // Toast.makeText(requireContext(), "${binding.urgentBox.isChecked}", Toast.LENGTH_SHORT).show()
         }
         binding.okButton.setOnClickListener {
-            viewModel.typeValue = binding.typeSpinner.selectedItem.toString()
-            when {
-                binding.perceptionEdit.text.isEmpty() -> {
-                    Toast.makeText(
-                        requireContext(),
-                        "Az észrevétel mező nem lehet üres!",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                binding.answerEdit.text.isEmpty() -> {
-                    Toast.makeText(
-                        requireContext(),
-                        "A válasz mező nem lehet üres!",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                binding.measureEdit.text.isEmpty() -> {
-                    Toast.makeText(
-                        requireContext(),
-                        "Az intézkedések mező nem lehet üres!",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                else -> {
-                    viewModel.response = binding.perceptionEdit.text.toString().trim()
-                    viewModel.answer = binding.answerEdit.text.toString().trim()
-                    viewModel.measure = binding.measureEdit.text.toString().trim()
-                    if (viewModel.myDate.isEmpty()) {
-                        val simpleDate = SimpleDateFormat("yyyy-MM-dd")
-                        viewModel.myDate = simpleDate.format(Date(binding.calendarView.date))
+            if(!update){
+                viewModel.typeValue = binding.typeSpinner.selectedItem.toString()
+                when {
+                    binding.perceptionEdit.text.isEmpty() -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "Az észrevétel mező nem lehet üres!",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
-                    viewModel.urgent = binding.urgentBox.isChecked
-                    viewModel.typeValue =
-                        binding.typeSpinner.selectedItem.toString().substring(0, 2)
-                    viewModel.corrector = binding.correctorEdit.text.toString().trim()
-                    mainActivityInteract.saveNewPerception(
-                        viewModel.response,
-                        viewModel.answer,
-                        viewModel.measure,
-                        viewModel.typeValue,
-                        viewModel.urgent,
-                        viewModel.corrector,
-                        viewModel.myDate,
-                        viewModel.msvId.toInt()
-                    )
-                    //observationArray.add(ObservationData(viewModel.response,viewModel.typeValue,viewModel.answer,viewModel.measure,viewModel.urgent,viewModel.corrector,viewModel.myDate,666))
-                    //mainActivityInteract.refreshList()
-                    viewModel.response = ""
-                    viewModel.answer = ""
-                    viewModel.measure = ""
-                    viewModel.typeValue = ""
-                    viewModel.urgent = false
-                    viewModel.corrector = ""
-                    viewModel.myDate = ""
-                    viewModel.msvId = ""
-                    mainActivityInteract.closeFragment()
+                    binding.answerEdit.text.isEmpty() -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "A válasz mező nem lehet üres!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    binding.measureEdit.text.isEmpty() -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "Az intézkedések mező nem lehet üres!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    else -> {
+                        viewModel.response = binding.perceptionEdit.text.toString().trim()
+                        viewModel.answer = binding.answerEdit.text.toString().trim()
+                        viewModel.measure = binding.measureEdit.text.toString().trim()
+                        if (viewModel.myDate.isEmpty()) {
+                            val simpleDate = SimpleDateFormat("yyyy-MM-dd")
+                            viewModel.myDate = simpleDate.format(Date(binding.calendarView.date))
+                        }
+                        viewModel.urgent = binding.urgentBox.isChecked
+                        viewModel.typeValue =
+                            binding.typeSpinner.selectedItem.toString().substring(0, 2)
+                        viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                        mainActivityInteract.saveNewPerception(
+                            viewModel.response,
+                            viewModel.answer,
+                            viewModel.measure,
+                            viewModel.typeValue,
+                            viewModel.urgent,
+                            viewModel.corrector,
+                            viewModel.myDate,
+                            viewModel.msvId.toInt()
+                        )
+                        //observationArray.add(ObservationData(viewModel.response,viewModel.typeValue,viewModel.answer,viewModel.measure,viewModel.urgent,viewModel.corrector,viewModel.myDate,666))
+                        //mainActivityInteract.refreshList()
+                        viewModel.response = ""
+                        viewModel.answer = ""
+                        viewModel.measure = ""
+                        viewModel.typeValue = ""
+                        viewModel.urgent = false
+                        viewModel.corrector = ""
+                        viewModel.myDate = ""
+                        viewModel.msvId = ""
+                        mainActivityInteract.closeFragment()
+                    }
+                }
+            }else{
+                update = false
+                viewModel.typeValue = binding.typeSpinner.selectedItem.toString()
+                when {
+                    binding.perceptionEdit.text.isEmpty() -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "Az észrevétel mező nem lehet üres!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    binding.answerEdit.text.isEmpty() -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "A válasz mező nem lehet üres!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    binding.measureEdit.text.isEmpty() -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "Az intézkedések mező nem lehet üres!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    else -> {
+                        viewModel.response = binding.perceptionEdit.text.toString().trim()
+                        viewModel.answer = binding.answerEdit.text.toString().trim()
+                        viewModel.measure = binding.measureEdit.text.toString().trim()
+                        if (viewModel.myDate.isEmpty()) {
+                            val simpleDate = SimpleDateFormat("yyyy-MM-dd")
+                            viewModel.myDate = simpleDate.format(Date(binding.calendarView.date))
+                        }
+                        viewModel.urgent = binding.urgentBox.isChecked
+                        viewModel.typeValue =
+                            binding.typeSpinner.selectedItem.toString().substring(0, 2)
+                        viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                        mainActivityInteract.updateExistingPerception(
+                            viewModel.response,
+                            viewModel.answer,
+                            viewModel.measure,
+                            viewModel.typeValue,
+                            viewModel.urgent,
+                            viewModel.corrector,
+                            viewModel.myDate,
+                            viewModel.msvId.toInt()
+                        )
+                        //observationArray.add(ObservationData(viewModel.response,viewModel.typeValue,viewModel.answer,viewModel.measure,viewModel.urgent,viewModel.corrector,viewModel.myDate,666))
+                        //mainActivityInteract.refreshList()
+                        viewModel.response = ""
+                        viewModel.answer = ""
+                        viewModel.measure = ""
+                        viewModel.typeValue = ""
+                        viewModel.urgent = false
+                        viewModel.corrector = ""
+                        viewModel.myDate = ""
+                        viewModel.msvId = ""
+                        mainActivityInteract.closeFragment()
+                    }
                 }
             }
         }
@@ -181,7 +254,9 @@ class PerceptionFragment : Fragment() {
         try {
             loadData()
             viewModel.msvId = id
+            update = false
         } catch (e: Exception) {
+            update = true
             loadModify()
             viewModel.msvId = id
             Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()

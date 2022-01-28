@@ -143,6 +143,28 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         }
     }
 
+    override fun updateExistingPerception(
+        perception: String?,
+        answer: String?,
+        measure: String?,
+        type: String?,
+        urgent: Boolean,
+        corrector: String?,
+        date: String?,
+        id: Int
+    ) {
+        val sql = Sql()
+        CoroutineScope(IO).launch {
+            sql.updateExisting(perception,answer,measure,type,urgent,corrector,date,id)
+            CoroutineScope(Main).launch {
+                val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
+                if(myFrag != null){
+                    (myFrag as MsvFragment).refreshList()
+                }
+            }
+        }
+    }
+
     private fun scanCode() {
         val integrator = IntentIntegrator(this)
         integrator.captureActivity = CaptureAct::class.java

@@ -1,12 +1,12 @@
 package com.example.managementsafetyvisit.data
 
 data class ObservationData(
-    val perception: String?,
-    val type: String?,
-    val response: String?,
-    val measure: String?,
-    val now: Boolean,
-    val corrector: String?,
-    val date: String?,
-    val id: String
+    var perception: String?,
+    var type: String?,
+    var response: String?,
+    var measure: String?,
+    var now: Boolean,
+    var corrector: String?,
+    var date: String?,
+    var id: String
 )

@@ -18,6 +18,8 @@ import java.sql.DriverManager
 import kotlin.math.log
 
 class Sql {
+    private var updateId = 0
+    private var update = false
     private val TAG = "Sql"
     fun getDataByName(code: String){
         observationArray.clear()
@@ -139,6 +141,50 @@ class Sql {
             observationArray.add(ObservationData(perception,type,answer,measure,urgent,corrector,date,id.toString()))
         }catch (e: Exception){
             Log.d(TAG, "saveNewPerception: $e")
+        }
+    }
+    fun updateExisting(perception: String?, answer: String?,measure: String?,type: String?, urgent: Boolean,corrector: String?,date: String?,id: Int){
+        var now: Int = 0
+        now = if(urgent){
+            1
+        }else{
+            0
+        }
+        val connection: Connection
+        Class.forName("net.sourceforge.jtds.jdbc.Driver")
+        try{
+            connection = DriverManager.getConnection(write_connect)
+            val statement = connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvNotes] SET Eszrevetel = ?, Tipus = ?, Valasz = ?, Intezkedes = ?, Azonnali = ?, Javito = ?, Datum = ? WHERE ID = ?""")
+            statement.setString(1,perception)
+            statement.setString(2,type)
+            statement.setString(3,answer)
+            statement.setString(4,measure)
+            statement.setInt(5,now)
+            statement.setString(6,corrector)
+            statement.setString(7,date)
+            statement.setInt(8,id)
+            statement.executeUpdate()
+            //observationArray.add(ObservationData(perception,type,answer,measure,urgent,corrector,date,id.toString()))
+            getPositionByValue(id)
+            if(update){
+                observationArray[updateId].perception = perception
+                observationArray[updateId].type = type
+                observationArray[updateId].response = answer
+                observationArray[updateId].measure = measure
+                observationArray[updateId].now = urgent
+                observationArray[updateId].corrector = corrector
+                observationArray[updateId].date = date
+            }
+        }catch (e: Exception){
+            Log.d(TAG, "saveNewPerception: $e")
+        }
+    }
+    private fun getPositionByValue(id: Int){
+        for(i in 0 until observationArray.size){
+            if(observationArray[i].id == id.toString()){
+                update = true
+                updateId = i
+            }
         }
     }
 }

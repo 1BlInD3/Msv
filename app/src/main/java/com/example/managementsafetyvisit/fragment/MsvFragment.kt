@@ -267,6 +267,10 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.observationRecycler?.adapter?.notifyDataSetChanged()
     }
 
+    /*fun refreshAt(position: Int){
+        binding.observationRecycler?.adapter?.notifyItemChanged(position)
+    }*/
+
     private fun nameGenerator(name: String) {
         for (i in 0 until name.length) {
             if (Character.isUpperCase(name[i])) {
