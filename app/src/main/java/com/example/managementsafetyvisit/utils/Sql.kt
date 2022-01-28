@@ -117,7 +117,7 @@ class Sql {
         }
     }
 
-    fun saveNewPerception(perception: String?, answer: String?,measure: String?,type: String?, urgent: Boolean,corrector: String?,date: String?,id: Int) {
+    fun saveNewPerception(perception: String?, answer: String?,measure: String?,type: String?, urgent: Boolean,corrector: String?,date: String?,id: Int,statusz: Int) {
         var now: Int = 0
         now = if(urgent){
             1
@@ -128,7 +128,7 @@ class Sql {
         Class.forName("net.sourceforge.jtds.jdbc.Driver")
         try{
             connection = DriverManager.getConnection(write_connect)
-            val statement = connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvNotes] SET Eszrevetel = ?, Tipus = ?, Valasz = ?, Intezkedes = ?, Azonnali = ?, Javito = ?, Datum = ?, Statusz = 1 WHERE ID = ? AND Statusz = 0""")
+            val statement = connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvNotes] SET Eszrevetel = ?, Tipus = ?, Valasz = ?, Intezkedes = ?, Azonnali = ?, Javito = ?, Datum = ?, Statusz = ? WHERE ID = ? AND Statusz = 0""")
             statement.setString(1,perception)
             statement.setString(2,type)
             statement.setString(3,answer)
@@ -136,14 +136,15 @@ class Sql {
             statement.setInt(5,now)
             statement.setString(6,corrector)
             statement.setString(7,date)
-            statement.setInt(8,id)
+            statement.setInt(8,statusz)
+            statement.setInt(9,id)
             statement.executeUpdate()
             observationArray.add(ObservationData(perception,type,answer,measure,urgent,corrector,date,id.toString()))
         }catch (e: Exception){
             Log.d(TAG, "saveNewPerception: $e")
         }
     }
-    fun updateExisting(perception: String?, answer: String?,measure: String?,type: String?, urgent: Boolean,corrector: String?,date: String?,id: Int){
+    fun updateExisting(perception: String?, answer: String?,measure: String?,type: String?, urgent: Boolean,corrector: String?,date: String?,id: Int,statusz: Int){
         var now: Int = 0
         now = if(urgent){
             1
@@ -154,7 +155,7 @@ class Sql {
         Class.forName("net.sourceforge.jtds.jdbc.Driver")
         try{
             connection = DriverManager.getConnection(write_connect)
-            val statement = connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvNotes] SET Eszrevetel = ?, Tipus = ?, Valasz = ?, Intezkedes = ?, Azonnali = ?, Javito = ?, Datum = ? WHERE ID = ?""")
+            val statement = connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvNotes] SET Eszrevetel = ?, Tipus = ?, Valasz = ?, Intezkedes = ?, Azonnali = ?, Javito = ?, Datum = ?, Statusz = ? WHERE ID = ?""")
             statement.setString(1,perception)
             statement.setString(2,type)
             statement.setString(3,answer)
@@ -162,9 +163,9 @@ class Sql {
             statement.setInt(5,now)
             statement.setString(6,corrector)
             statement.setString(7,date)
-            statement.setInt(8,id)
+            statement.setInt(8,statusz)
+            statement.setInt(9,id)
             statement.executeUpdate()
-            //observationArray.add(ObservationData(perception,type,answer,measure,urgent,corrector,date,id.toString()))
             getPositionByValue(id)
             if(update){
                 observationArray[updateId].perception = perception

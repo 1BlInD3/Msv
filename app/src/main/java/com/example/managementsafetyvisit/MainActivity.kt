@@ -153,11 +153,12 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         urgent: Boolean,
         corrector: String?,
         date: String?,
-        id: Int
+        id: Int,
+        statusz: Int
     ) {
         val sql = Sql()
         CoroutineScope(IO).launch {
-            sql.saveNewPerception(perception, answer, measure, type, urgent, corrector, date, id)
+            sql.saveNewPerception(perception, answer, measure, type, urgent, corrector, date, id,statusz)
             CoroutineScope(Main).launch {
                 val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
                 if (myFrag != null) {
@@ -175,11 +176,12 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         urgent: Boolean,
         corrector: String?,
         date: String?,
-        id: Int
+        id: Int,
+        statusz: Int
     ) {
         val sql = Sql()
         CoroutineScope(IO).launch {
-            sql.updateExisting(perception, answer, measure, type, urgent, corrector, date, id)
+            sql.updateExisting(perception, answer, measure, type, urgent, corrector, date, id,statusz)
             CoroutineScope(Main).launch {
                 val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
                 if (myFrag != null) {

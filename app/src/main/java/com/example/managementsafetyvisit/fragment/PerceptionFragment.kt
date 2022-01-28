@@ -42,7 +42,8 @@ class PerceptionFragment : Fragment() {
             urgent: Boolean,
             corrector: String?,
             date: String?,
-            id: Int
+            id: Int,
+            statusz: Int
         )
         fun updateExistingPerception(
             perception: String?,
@@ -52,7 +53,8 @@ class PerceptionFragment : Fragment() {
             urgent: Boolean,
             corrector: String?,
             date: String?,
-            id: Int
+            id: Int,
+            statusz: Int
         )
         fun deleteById(id: Int)
     }
@@ -175,18 +177,31 @@ class PerceptionFragment : Fragment() {
                         viewModel.typeValue =
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
                         viewModel.corrector = binding.correctorEdit.text.toString().trim()
-                        mainActivityInteract.saveNewPerception(
-                            viewModel.response,
-                            viewModel.answer,
-                            viewModel.measure,
-                            viewModel.typeValue,
-                            viewModel.urgent,
-                            viewModel.corrector,
-                            viewModel.myDate,
-                            viewModel.msvId.toInt()
-                        )
-                        //observationArray.add(ObservationData(viewModel.response,viewModel.typeValue,viewModel.answer,viewModel.measure,viewModel.urgent,viewModel.corrector,viewModel.myDate,666))
-                        //mainActivityInteract.refreshList()
+                        if(viewModel.urgent && viewModel.measure.isNotEmpty()){
+                            mainActivityInteract.saveNewPerception(
+                                viewModel.response,
+                                viewModel.answer,
+                                viewModel.measure,
+                                viewModel.typeValue,
+                                viewModel.urgent,
+                                viewModel.corrector,
+                                viewModel.myDate,
+                                viewModel.msvId.toInt(),
+                                3
+                            )
+                        }else{
+                            mainActivityInteract.saveNewPerception(
+                                viewModel.response,
+                                viewModel.answer,
+                                viewModel.measure,
+                                viewModel.typeValue,
+                                viewModel.urgent,
+                                viewModel.corrector,
+                                viewModel.myDate,
+                                viewModel.msvId.toInt(),
+                                1
+                            )
+                        }
                         viewModel.response = ""
                         viewModel.answer = ""
                         viewModel.measure = ""
@@ -235,18 +250,31 @@ class PerceptionFragment : Fragment() {
                         viewModel.typeValue =
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
                         viewModel.corrector = binding.correctorEdit.text.toString().trim()
-                        mainActivityInteract.updateExistingPerception(
-                            viewModel.response,
-                            viewModel.answer,
-                            viewModel.measure,
-                            viewModel.typeValue,
-                            viewModel.urgent,
-                            viewModel.corrector,
-                            viewModel.myDate,
-                            viewModel.msvId.toInt()
-                        )
-                        //observationArray.add(ObservationData(viewModel.response,viewModel.typeValue,viewModel.answer,viewModel.measure,viewModel.urgent,viewModel.corrector,viewModel.myDate,666))
-                        //mainActivityInteract.refreshList()
+                        if(viewModel.urgent && viewModel.measure.isNotEmpty()){
+                            mainActivityInteract.updateExistingPerception(
+                                viewModel.response,
+                                viewModel.answer,
+                                viewModel.measure,
+                                viewModel.typeValue,
+                                viewModel.urgent,
+                                viewModel.corrector,
+                                viewModel.myDate,
+                                viewModel.msvId.toInt(),
+                                3
+                            )
+                        }else{
+                            mainActivityInteract.updateExistingPerception(
+                                viewModel.response,
+                                viewModel.answer,
+                                viewModel.measure,
+                                viewModel.typeValue,
+                                viewModel.urgent,
+                                viewModel.corrector,
+                                viewModel.myDate,
+                                viewModel.msvId.toInt(),
+                                1
+                            )
+                        }
                         viewModel.response = ""
                         viewModel.answer = ""
                         viewModel.measure = ""
