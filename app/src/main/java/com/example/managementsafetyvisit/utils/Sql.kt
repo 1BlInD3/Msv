@@ -179,6 +179,19 @@ class Sql {
             Log.d(TAG, "saveNewPerception: $e")
         }
     }
+    fun deleteExisting(id: Int){
+        val connection: Connection
+        Class.forName("net.sourceforge.jtds.jdbc.Driver")
+        try {
+            connection = DriverManager.getConnection(write_connect)
+            val statement = connection.prepareStatement("""DELETE FROM [Fusetech].[dbo].[MsvNotes] WHERE ID = ?""")
+            statement.setInt(1,id)
+            statement.executeUpdate()
+        }catch (e: Exception){
+            Log.d(TAG, "deleteExisting: $e")
+        }
+
+    }
     private fun getPositionByValue(id: Int){
         for(i in 0 until observationArray.size){
             if(observationArray[i].id == id.toString()){

@@ -267,9 +267,13 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.observationRecycler?.adapter?.notifyDataSetChanged()
     }
 
-    /*fun refreshAt(position: Int){
-        binding.observationRecycler?.adapter?.notifyItemChanged(position)
-    }*/
+    fun refreshAt(position: Int){
+        for(i in observationArray.size - 1 downTo 0){
+            if(observationArray[i].id.toInt() == position){
+                observationArray.removeAt(i)
+            }
+        }
+    }
 
     private fun nameGenerator(name: String) {
         for (i in 0 until name.length) {

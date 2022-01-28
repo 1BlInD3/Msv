@@ -19,18 +19,23 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import javax.annotation.Nullable
+
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,PerceptionFragment.MainActivityInteract, LoginFragment.LoginScan {
+class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
+    PerceptionFragment.MainActivityInteract, LoginFragment.LoginScan {
 
     private val TAG = "MainActivity"
 
-    companion object{
+    companion object {
         val observationArray: ArrayList<ObservationData> = ArrayList()
         val newPerceptionArray: ArrayList<ObservationData> = ArrayList()
-       // val reversedList: ArrayList<ObservationData> = ArrayList()
+
+        // val reversedList: ArrayList<ObservationData> = ArrayList()
         val dataArray: ArrayList<Data> = ArrayList()
-        const val read_connect ="jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=scala_read;password=scala_read;loginTimeout=10"
-        const val write_connect ="jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=Termelesmonitor;password=TERM123;loginTimeout=10"
+        const val read_connect =
+            "jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=scala_read;password=scala_read;loginTimeout=10"
+        const val write_connect =
+            "jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=Termelesmonitor;password=TERM123;loginTimeout=10"
         var felelos: String = ""
         val perceptionFragment = PerceptionFragment()
         val msvFragment = MsvFragment()
@@ -52,9 +57,10 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         supportFragmentManager.beginTransaction().replace(R.id.id_container,msvFragment,"MSVFRAG").commit()
     }*/
 
-    private fun getLoginFragment(){
+    private fun getLoginFragment() {
         val login = LoginFragment()
-        supportFragmentManager.beginTransaction().replace(R.id.id_container,login,"LOGIN").commit()
+        supportFragmentManager.beginTransaction().replace(R.id.id_container, login, "LOGIN")
+            .commit()
     }
 
     override fun loadPerceptionPanel(code: String) {
@@ -62,21 +68,27 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
         CoroutineScope(IO).launch {
             sql.loadPerceptionPanel(code)
             CoroutineScope(Main).launch {
-                supportFragmentManager.beginTransaction().replace(R.id.panel_container,
-                    perceptionFragment,"PERCEPTION").commit()
-               /* val perceptionFragment = PerceptionFragment.newInstance(
-                    newPerceptionArray[0].perception,
-                    newPerceptionArray[0].response,
-                    newPerceptionArray[0].measure,
-                    newPerceptionArray[0].now,
-                    newPerceptionArray[0].type,
-                    newPerceptionArray[0].corrector,
-                    newPerceptionArray[0].date,
-                    newPerceptionArray[0].id.trim()
-                )
-                Toast.makeText(this@MainActivity, newPerceptionArray[0].id.trim(), Toast.LENGTH_LONG).show()
-                supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()*/
-                Toast.makeText(this@MainActivity, newPerceptionArray[0].id.trim(), Toast.LENGTH_LONG).show()
+                supportFragmentManager.beginTransaction().replace(
+                    R.id.panel_container,
+                    perceptionFragment, "PERCEPTION"
+                ).commit()
+                /* val perceptionFragment = PerceptionFragment.newInstance(
+                     newPerceptionArray[0].perception,
+                     newPerceptionArray[0].response,
+                     newPerceptionArray[0].measure,
+                     newPerceptionArray[0].now,
+                     newPerceptionArray[0].type,
+                     newPerceptionArray[0].corrector,
+                     newPerceptionArray[0].date,
+                     newPerceptionArray[0].id.trim()
+                 )
+                 Toast.makeText(this@MainActivity, newPerceptionArray[0].id.trim(), Toast.LENGTH_LONG).show()
+                 supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()*/
+                Toast.makeText(
+                    this@MainActivity,
+                    newPerceptionArray[0].id.trim(),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -94,12 +106,24 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
     ) {
         //val perceptionFragment = PerceptionFragment.newInstance(perception,response,measure,urgent,type,corrector,date,id)
         val observation: ArrayList<ObservationData> = ArrayList()
-        observation.add(ObservationData(perception,type,response,measure,urgent,corrector,date,id))
+        observation.add(
+            ObservationData(
+                perception,
+                type,
+                response,
+                measure,
+                urgent,
+                corrector,
+                date,
+                id
+            )
+        )
         val perceptionFragment = PerceptionFragment()
         val bundle = Bundle()
-        bundle.putSerializable("LOADING",observation)
+        bundle.putSerializable("LOADING", observation)
         perceptionFragment.arguments = bundle
-        supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.panel_container, perceptionFragment, "PERCEPTION").commit()
     }
 
     override fun getCameraToScan() {
@@ -133,10 +157,10 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
     ) {
         val sql = Sql()
         CoroutineScope(IO).launch {
-            sql.saveNewPerception(perception,answer,measure,type,urgent,corrector,date,id)
+            sql.saveNewPerception(perception, answer, measure, type, urgent, corrector, date, id)
             CoroutineScope(Main).launch {
                 val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
-                if(myFrag != null){
+                if (myFrag != null) {
                     (myFrag as MsvFragment).refreshList()
                 }
             }
@@ -155,11 +179,29 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
     ) {
         val sql = Sql()
         CoroutineScope(IO).launch {
-            sql.updateExisting(perception,answer,measure,type,urgent,corrector,date,id)
+            sql.updateExisting(perception, answer, measure, type, urgent, corrector, date, id)
             CoroutineScope(Main).launch {
                 val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
-                if(myFrag != null){
+                if (myFrag != null) {
                     (myFrag as MsvFragment).refreshList()
+                }
+            }
+        }
+    }
+
+    override fun deleteById(id: Int) {
+        val sql = Sql()
+        CoroutineScope(IO).launch {
+            sql.deleteExisting(id)
+            CoroutineScope(Main).launch {
+                val myFragment = supportFragmentManager.findFragmentByTag("PERCEPTION")
+                if (myFragment != null) {
+                    supportFragmentManager.beginTransaction().remove(myFragment).commit()
+                }
+                val myMsvFragment = supportFragmentManager.findFragmentByTag("MSVFRAG")
+                if(myMsvFragment != null){
+                    (myMsvFragment as MsvFragment).refreshAt(id)
+                    (myMsvFragment as MsvFragment).refreshList()
                 }
             }
         }
@@ -183,7 +225,8 @@ class MainActivity : AppCompatActivity(),MsvFragment.MainActivityConnector,Perce
                     sql.getDataByName(result.contents.trim())
                     CoroutineScope(Main).launch {
                         Log.d(TAG, "onActivityResult: $dataArray")
-                        supportFragmentManager.beginTransaction().replace(R.id.id_container,msvFragment,"MSVFRAG").commit()
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.id_container, msvFragment, "MSVFRAG").commit()
                     }
                 }
             } else {

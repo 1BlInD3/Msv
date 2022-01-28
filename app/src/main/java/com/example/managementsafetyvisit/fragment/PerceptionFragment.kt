@@ -54,6 +54,7 @@ class PerceptionFragment : Fragment() {
             date: String?,
             id: Int
         )
+        fun deleteById(id: Int)
     }
 
     private lateinit var mainActivityInteract: MainActivityInteract
@@ -124,6 +125,19 @@ class PerceptionFragment : Fragment() {
             viewModel.urgent = binding.urgentBox.isChecked
             // Toast.makeText(requireContext(), "${binding.urgentBox.isChecked}", Toast.LENGTH_SHORT).show()
         }
+
+        binding.deleteButton?.setOnClickListener {
+            if(update){
+                mainActivityInteract.deleteById(viewModel.msvId.toInt())
+            }else{
+                Toast.makeText(
+                    requireContext(),
+                    "Csak mentett észrevételt lehet törölni",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
         binding.okButton.setOnClickListener {
             if(!update){
                 viewModel.typeValue = binding.typeSpinner.selectedItem.toString()
