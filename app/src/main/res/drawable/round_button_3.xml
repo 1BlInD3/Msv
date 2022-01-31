@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >
-   <stroke
-       android:color="@color/mersenOrange"
-       android:width="5dp"/>
-    <corners
-        android:radius="80dp"/>
-    <solid
-        android:color="@android:color/white"
-        />
-</shape>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="false">
+        <shape android:shape="rectangle">
+            <stroke android:width="5dp" android:color="@color/mersenOrange" />
+            <corners android:radius="80dp" />
+            <solid android:color="@android:color/white" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <stroke android:width="5dp" android:color="@color/mersenBlue" />
+            <corners android:radius="80dp" />
+            <solid android:color="@android:color/white" />
+        </shape>
+    </item>
+</selector>
