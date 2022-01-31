@@ -96,7 +96,7 @@ class PerceptionFragment : Fragment() {
 
         binding.cancelButton.setOnClickListener {
             mainActivityInteract.closeFragment()
-            Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
+           // Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
         }
         val adapter = ArrayAdapter.createFromResource(
             requireContext(),
@@ -120,7 +120,7 @@ class PerceptionFragment : Fragment() {
                 "$day"
             }
             viewModel.myDate = "$year-$myFormattedMonth-$myFormattedDay"
-            Toast.makeText(requireContext(), viewModel.myDate, Toast.LENGTH_SHORT).show()
+            //Toast.makeText(requireContext(), viewModel.myDate, Toast.LENGTH_SHORT).show()
         }
 
         binding.urgentBox.setOnClickListener {
@@ -301,7 +301,7 @@ class PerceptionFragment : Fragment() {
             update = true
             loadModify()
             viewModel.msvId = id
-            Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
+            //Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
             viewModel.response = p1
             viewModel.answer = p2
             viewModel.measure = p3
@@ -332,7 +332,7 @@ class PerceptionFragment : Fragment() {
                 val milli = calendar.timeInMillis
                 binding.calendarView.setDate(milli, true, true)
                 viewModel.msvId = p8
-                Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
+               // Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
             }
         }
     }

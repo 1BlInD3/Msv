@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     private val TAG = "MainActivity"
     private lateinit var progress: ProgressBar
+    private lateinit var progressRound: ProgressBar
 
     companion object {
         val observationArray: ArrayList<ObservationData> = ArrayList()
@@ -50,7 +51,9 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         progress = findViewById(R.id.progressBar)
+        progressRound = findViewById(R.id.progressBar2)
         progress.visibility = View.GONE
+        progressRound.visibility = View.GONE
         Log.d(TAG, "onCreate: ")
     }
 
@@ -72,6 +75,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun loadPerceptionPanel(code: String) {
         val sql = Sql(this)
+        progressRound.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             sql.loadPerceptionPanel(code)
             CoroutineScope(Main).launch {
@@ -79,6 +83,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                     R.id.panel_container,
                     perceptionFragment, "PERCEPTION"
                 ).commit()
+                progressRound.visibility = View.GONE
                 /* val perceptionFragment = PerceptionFragment.newInstance(
                      newPerceptionArray[0].perception,
                      newPerceptionArray[0].response,
@@ -91,11 +96,6 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                  )
                  Toast.makeText(this@MainActivity, newPerceptionArray[0].id.trim(), Toast.LENGTH_LONG).show()
                  supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()*/
-                Toast.makeText(
-                    this@MainActivity,
-                    newPerceptionArray[0].id.trim(),
-                    Toast.LENGTH_LONG
-                ).show()
             }
         }
     }

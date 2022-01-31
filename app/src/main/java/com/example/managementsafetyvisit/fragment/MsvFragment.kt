@@ -250,7 +250,6 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             reversedList[position].date,
             reversedList[position].id
         )
-        Toast.makeText(requireContext(), reversedList[position].id, Toast.LENGTH_SHORT).show()
     }
 
     @SuppressLint("NotifyDataSetChanged")
