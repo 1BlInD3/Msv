@@ -43,7 +43,7 @@ class Sql (private val sqlMessage: SqlMessage) {
                 statement1.setString(1, felelos)
                 val resultSet1 = statement1.executeQuery()
                 if(!resultSet1.next()){
-                    Log.d(TAG, "getDataByName: ")
+                   sqlMessage.sendMessage("Nincs a $felelos nevén aktív MSV!")
                 }else{
                     val id = resultSet1.getInt("ID")
                     val name = resultSet1.getString("Név")
