@@ -1,5 +1,7 @@
 package com.example.managementsafetyvisit
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -24,7 +26,7 @@ import javax.annotation.Nullable
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
-    PerceptionFragment.MainActivityInteract, LoginFragment.LoginScan {
+    PerceptionFragment.MainActivityInteract, LoginFragment.LoginScan, Sql.SqlMessage {
 
     private val TAG = "MainActivity"
     private lateinit var progress: ProgressBar
@@ -69,7 +71,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     override fun loadPerceptionPanel(code: String) {
-        val sql = Sql()
+        val sql = Sql(this)
         CoroutineScope(IO).launch {
             sql.loadPerceptionPanel(code)
             CoroutineScope(Main).launch {
@@ -161,7 +163,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         id: Int,
         statusz: Int
     ) {
-        val sql = Sql()
+        val sql = Sql(this)
         CoroutineScope(IO).launch {
             sql.saveNewPerception(perception, answer, measure, type, urgent, corrector, date, id,statusz)
             CoroutineScope(Main).launch {
@@ -184,7 +186,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         id: Int,
         statusz: Int
     ) {
-        val sql = Sql()
+        val sql = Sql(this)
         CoroutineScope(IO).launch {
             sql.updateExisting(perception, answer, measure, type, urgent, corrector, date, id,statusz)
             CoroutineScope(Main).launch {
@@ -197,7 +199,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     override fun deleteById(id: Int) {
-        val sql = Sql()
+        val sql = Sql(this)
         CoroutineScope(IO).launch {
             sql.deleteExisting(id)
             CoroutineScope(Main).launch {
@@ -229,13 +231,14 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             if (result.contents != null) {
                 progress.visibility = View.VISIBLE
                 CoroutineScope(IO).launch {
-                    val sql = Sql()
-                    sql.getDataByName(result.contents.trim())
-                    CoroutineScope(Main).launch {
-                        Log.d(TAG, "onActivityResult: $dataArray")
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.id_container, msvFragment, "MSVFRAG").commit()
-                        progress.visibility = View.GONE
+                    val sql = Sql(this@MainActivity)
+                    if(sql.getDataByName(result.contents.trim())){
+                        CoroutineScope(Main).launch {
+                            Log.d(TAG, "onActivityResult: $dataArray")
+                            supportFragmentManager.beginTransaction()
+                                .replace(R.id.id_container, msvFragment, "MSVFRAG").commit()
+                            progress.visibility = View.GONE
+                        }
                     }
                 }
             } else {
@@ -262,5 +265,18 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         dataArray.clear()
         super.onDestroy()
 
+    }
+
+    override fun sendMessage(message: String) {
+        CoroutineScope(Main).launch {
+            val dialog = AlertDialog.Builder(this@MainActivity)
+            dialog.setTitle("Figyelem")
+            dialog.setMessage(message)
+            dialog.setPositiveButton("OK") { _, _ ->
+                progress.visibility = View.GONE
+            }
+            dialog.create()
+            dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
+        }
     }
 }

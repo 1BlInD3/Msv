@@ -17,11 +17,16 @@ import java.sql.Connection
 import java.sql.DriverManager
 import kotlin.math.log
 
-class Sql {
+class Sql (private val sqlMessage: SqlMessage) {
+
+    interface SqlMessage{
+        fun sendMessage(message: String)
+    }
+
     private var updateId = 0
     private var update = false
     private val TAG = "Sql"
-    fun getDataByName(code: String){
+    fun getDataByName(code: String): Boolean{
         observationArray.clear()
         val connection: Connection
         Class.forName("net.sourceforge.jtds.jdbc.Driver")
@@ -73,11 +78,13 @@ class Sql {
                         }while (resultSet3.next())
                     }
                     msvFragment.arguments = bundle
+                    return true
                 }
             }
         }catch (e: Exception){
-            Log.d(TAG, "getDataByName: $e")
+            sqlMessage.sendMessage("Nincs hálózat")
         }
+        return false
     }
     fun loadPerceptionPanel(msvCode: String){
         newPerceptionArray.clear()

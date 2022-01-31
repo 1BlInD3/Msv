@@ -103,18 +103,17 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_msv, container, false)
         binding.viewModel = viewModel
         viewModel.msvListener = this
-
         binding.observationRecycler?.adapter = ObservationDataAdapter(reversedList, this)
         binding.observationRecycler?.layoutManager = LinearLayoutManager(requireContext())
         binding.observationRecycler?.setHasFixedSize(true)
-
+        binding.imageProgress?.visibility = View.GONE
         binding.newResponse?.setOnClickListener {
             mainActivityConnector.loadPerceptionPanel(viewModel.msvNumber.trim())
         }
-        binding.imageView.setOnClickListener {
+       /* binding.imageView.setOnClickListener {
             viewModel.getPhoto("${viewModel.familyName}${viewModel.firstName}${viewModel.tsz}.jpg")
             Toast.makeText(requireContext(), "Frissítés", Toast.LENGTH_SHORT).show()
-        }
+        }*/
         return binding.root
     }
 
@@ -122,6 +121,14 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         CoroutineScope(Main).launch {
             binding.imageView.setImageBitmap(image)
         }
+    }
+
+    override fun setProgressOn() {
+        binding.imageProgress?.visibility = View.VISIBLE
+    }
+
+    override fun setProgressOff() {
+        binding.imageProgress?.visibility = View.GONE
     }
 
     override fun onResume() {

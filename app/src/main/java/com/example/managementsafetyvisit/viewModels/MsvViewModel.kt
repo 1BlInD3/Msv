@@ -7,6 +7,10 @@ import com.example.managementsafetyvisit.interfaces.MsvListener
 import com.example.managementsafetyvisit.retrofit.RetrofitFunctions
 import com.example.managementsafetyvisit.retrofit.SendApi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -41,12 +45,16 @@ class MsvViewModel
     var msvNumber = ""
 
     fun getPhoto(name: String){
+        msvListener?.setProgressOn()
         SendApi().getImage(name).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
                     val bmp = BitmapFactory.decodeStream(response.body()!!.byteStream())
                     Log.d(TAG, "onResponse: ${bmp::class.simpleName}")
                     msvListener?.sendImageBitmap(bmp)
+                    CoroutineScope(Main).launch {
+                        msvListener?.setProgressOff()
+                    }
                 }
             }
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
