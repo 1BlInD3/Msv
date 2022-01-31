@@ -12,10 +12,8 @@ import com.example.managementsafetyvisit.MainActivity.Companion.read_connect
 import com.example.managementsafetyvisit.MainActivity.Companion.write_connect
 import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
-import com.example.managementsafetyvisit.fragment.PerceptionFragment
 import java.sql.Connection
 import java.sql.DriverManager
-import kotlin.math.log
 
 class Sql (private val sqlMessage: SqlMessage) {
 
@@ -125,7 +123,7 @@ class Sql (private val sqlMessage: SqlMessage) {
     }
 
     fun saveNewPerception(perception: String?, answer: String?,measure: String?,type: String?, urgent: Boolean,corrector: String?,date: String?,id: Int,statusz: Int) {
-        var now: Int = 0
+        var now = 0
         now = if(urgent){
             1
         }else{
@@ -152,7 +150,7 @@ class Sql (private val sqlMessage: SqlMessage) {
         }
     }
     fun updateExisting(perception: String?, answer: String?,measure: String?,type: String?, urgent: Boolean,corrector: String?,date: String?,id: Int,statusz: Int){
-        var now: Int = 0
+        var now = 0
         now = if(urgent){
             1
         }else{
