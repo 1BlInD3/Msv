@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.example.managementsafetyvisit.camera.CaptureAct
 import com.example.managementsafetyvisit.data.Data
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     PerceptionFragment.MainActivityInteract, LoginFragment.LoginScan {
 
     private val TAG = "MainActivity"
+    private lateinit var progress: ProgressBar
 
     companion object {
         val observationArray: ArrayList<ObservationData> = ArrayList()
@@ -44,6 +47,8 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        progress = findViewById(R.id.progressBar)
+        progress.visibility = View.GONE
         Log.d(TAG, "onCreate: ")
     }
 
@@ -222,6 +227,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents != null) {
+                progress.visibility = View.VISIBLE
                 CoroutineScope(IO).launch {
                     val sql = Sql()
                     sql.getDataByName(result.contents.trim())
@@ -229,6 +235,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                         Log.d(TAG, "onActivityResult: $dataArray")
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.id_container, msvFragment, "MSVFRAG").commit()
+                        progress.visibility = View.GONE
                     }
                 }
             } else {
