@@ -21,6 +21,10 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.managementsafetyvisit.R
+import com.example.managementsafetyvisit.retrofit.RetrofitFunctions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -45,6 +49,7 @@ class CameraFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_camera, container, false)
         cameraCaptureButton = view.findViewById(R.id.camera_capture_button)
+        outputDirectory = getOutputDirectory()
         viewFinder = view.findViewById(R.id.viewFinder)
         if (allPermissionGranted()) {
             startCamera()
@@ -52,6 +57,9 @@ class CameraFragment : Fragment() {
             ActivityCompat.requestPermissions(
                 requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
             )
+        }
+        cameraCaptureButton.setOnClickListener {
+            takePhoto()
         }
         return view
     }
@@ -122,14 +130,14 @@ class CameraFragment : Fragment() {
                     val msg = "Photo capture succeeded: $savedUri"
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, stringPath)
-                    /*val retro = RetrofitFunctions(this@MainActivity)
+                    val retro = RetrofitFunctions()
                      CoroutineScope(IO).launch {
                          try {
-                             retro.retrofitGet(photoFile, """C:\Users\blind\Desktop""")
+                             retro.retrofitGet(photoFile, """C:\Users\balindattila\Desktop""")
                          } catch (e: Exception) {
                              Log.d("HIBA", "$e")
                          }
-                     }*/
+                     }
                 }
             })
     }
