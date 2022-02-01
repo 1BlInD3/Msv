@@ -92,6 +92,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
 
         fun getCameraToScan()
         fun getCameraInstance()
+        fun closeMsv(statusz: Int, id: Int)
     }
 
     private lateinit var mainActivityConnector: MainActivityConnector
@@ -113,6 +114,9 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         }
         binding.cameraButton?.setOnClickListener {
             mainActivityConnector.getCameraInstance()
+        }
+        binding.checkButton?.setOnClickListener {
+            mainActivityConnector.closeMsv(2,viewModel.msvNumber.trim().toInt())
         }
        /* binding.imageView.setOnClickListener {
             viewModel.getPhoto("${viewModel.familyName}${viewModel.firstName}${viewModel.tsz}.jpg")

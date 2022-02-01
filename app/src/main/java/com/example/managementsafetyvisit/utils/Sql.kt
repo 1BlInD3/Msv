@@ -41,7 +41,7 @@ class Sql (private val sqlMessage: SqlMessage) {
                 statement1.setString(1, felelos)
                 val resultSet1 = statement1.executeQuery()
                 if(!resultSet1.next()){
-                   sqlMessage.sendMessage("Nincs a $felelos nevén aktív MSV!")
+                   sqlMessage.sendMessage("$felelos nevén nincs aktív MSV!")
                 }else{
                     val id = resultSet1.getInt("ID")
                     val name = resultSet1.getString("Név")
@@ -206,4 +206,20 @@ class Sql (private val sqlMessage: SqlMessage) {
             }
         }
     }
+
+    fun closeCommissarMsv(status: Int, id: Int){
+        val connection: Connection
+        Class.forName("net.sourceforge.jtds.jdbc.Driver")
+        try{
+            connection = DriverManager.getConnection(write_connect)
+            val statement = connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvData] Set Statusz = ? where ID = ?""")
+            statement.setInt(1,status)
+            statement.setInt(2,id)
+            statement.executeUpdate()
+            sqlMessage.sendMessage("Az $id számú Msv lezárásra került")
+        }catch (e: Exception){
+            sqlMessage.sendMessage("Nem sikerült a frissítés! \n$e")
+        }
+    }
+
 }

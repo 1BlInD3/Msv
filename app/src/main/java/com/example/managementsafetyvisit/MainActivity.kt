@@ -150,6 +150,26 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         supportFragmentManager.beginTransaction().replace(R.id.panel_container,cameraFragment,"CAMERA").commit()
     }
 
+    override fun closeMsv(statusz: Int, id: Int) {
+        val sql = Sql(this)
+        val dialog = AlertDialog.Builder(this@MainActivity)
+        dialog.setTitle("Figyelem")
+        dialog.setMessage("Biztos le akarod zárni az Msv-t?")
+        dialog.setPositiveButton("Igen") { _, _ ->
+            CoroutineScope(IO).launch {
+               sql.closeCommissarMsv(statusz,id)
+                CoroutineScope(Main).launch {
+                    getLoginFragment()
+                }
+            }
+        }
+        dialog.setNegativeButton("Nem"){_,_ ->
+
+        }
+        dialog.create()
+        dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
+    }
+
 
     override fun closeFragment() {
         val myFragment = supportFragmentManager.findFragmentByTag("PERCEPTION")

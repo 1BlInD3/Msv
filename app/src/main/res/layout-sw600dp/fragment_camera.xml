@@ -16,13 +16,16 @@
 
     <Button
         android:id="@+id/camera_capture_button"
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
+        android:paddingStart="15dp"
+        android:drawableStart="@mipmap/capture"
+        android:background="@drawable/round_button_2"
+        android:drawableTint="@android:color/white"
         android:elevation="2dp"
         android:scaleType="fitCenter"
-        android:text="Take Photo"
         app:layout_constraintBottom_toBottomOf="@+id/viewFinder"
         app:layout_constraintEnd_toEndOf="parent" />
 

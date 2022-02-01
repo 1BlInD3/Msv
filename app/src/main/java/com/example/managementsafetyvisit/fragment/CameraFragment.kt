@@ -1,7 +1,6 @@
 package com.example.managementsafetyvisit.fragment
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -127,7 +126,7 @@ class CameraFragment : Fragment() {
                     //val path = "file:///storage/emulated/0/Android/media/com.example.camerarest/CameraRest/2022-01-13-12-22-06-923.jpg"
                     val path = savedUri.toString()
                     val stringPath = path.substring(8, path.length)
-                    val msg = "Photo capture succeeded: $savedUri"
+                    val msg = "A kép mentésre került"
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, stringPath)
                     val retro = RetrofitFunctions()
