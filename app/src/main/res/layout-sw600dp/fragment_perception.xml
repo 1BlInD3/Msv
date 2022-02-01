@@ -12,7 +12,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/frame_white"
     tools:context=".fragment.PerceptionFragment"
-    android:scrollbars="vertical">
+    android:scrollbars="vertical"
+    android:clickable="true">
 
     <Button
         android:id="@+id/ok_button"

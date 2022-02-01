@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -51,6 +50,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
     private var p9 = ""
     private var p10 = 0
 
+
     private var familyName: String = ""
     private var firstName: String = ""
     private var middleName: String = ""
@@ -91,6 +91,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         )
 
         fun getCameraToScan()
+        fun getCameraInstance()
     }
 
     private lateinit var mainActivityConnector: MainActivityConnector
@@ -109,6 +110,9 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.imageProgress?.visibility = View.GONE
         binding.newResponse?.setOnClickListener {
             mainActivityConnector.loadPerceptionPanel(viewModel.msvNumber.trim())
+        }
+        binding.cameraButton?.setOnClickListener {
+            mainActivityConnector.getCameraInstance()
         }
        /* binding.imageView.setOnClickListener {
             viewModel.getPhoto("${viewModel.familyName}${viewModel.firstName}${viewModel.tsz}.jpg")
@@ -332,4 +336,5 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             p10 = myList[i].status
         }
     }
+
 }
