@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.managementsafetyvisit.MainActivity.Companion.msvNumber
 import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
 import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.adapters.ObservationDataAdapter
@@ -113,6 +114,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             mainActivityConnector.loadPerceptionPanel(viewModel.msvNumber.trim())
         }
         binding.cameraButton?.setOnClickListener {
+            msvNumber = viewModel.msvNumber.trim()
             mainActivityConnector.getCameraInstance()
         }
         binding.checkButton?.setOnClickListener {

@@ -1,17 +1,13 @@
 package com.example.managementsafetyvisit
 
-import android.Manifest
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
-import android.widget.Toast
-import androidx.core.content.ContextCompat
 import com.example.managementsafetyvisit.camera.CaptureAct
 import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
@@ -26,7 +22,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
-import java.io.File
 import javax.annotation.Nullable
 
 @AndroidEntryPoint
@@ -50,8 +45,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         var felelos: String = ""
         val perceptionFragment = PerceptionFragment()
         val msvFragment = MsvFragment()
-        private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+        var msvNumber: String = ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +62,6 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         super.onResume()
         getLoginFragment()
         dataArray.clear()
-        val myFile : File = getExternalFilesDir(null)!!
     }
     /*private fun getMsvFragment(){
         val msvFragment = MsvFragment()

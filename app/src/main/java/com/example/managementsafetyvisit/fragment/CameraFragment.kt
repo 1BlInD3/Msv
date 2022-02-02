@@ -19,10 +19,13 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.managementsafetyvisit.MainActivity.Companion.msvNumber
 import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.retrofit.RetrofitFunctions
+import com.example.managementsafetyvisit.utils.showToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
@@ -30,7 +33,7 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 
 
-class CameraFragment : Fragment() {
+class CameraFragment : Fragment(){
 
     private var imageCapture: ImageCapture? = null
     private lateinit var outputDirectory: File
@@ -126,13 +129,16 @@ class CameraFragment : Fragment() {
                     //val path = "file:///storage/emulated/0/Android/media/com.example.camerarest/CameraRest/2022-01-13-12-22-06-923.jpg"
                     val path = savedUri.toString()
                     val stringPath = path.substring(8, path.length)
-                    val msg = "A kép mentésre került"
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                    //val msg = "A kép mentésre került"
+                   // Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, stringPath)
                     val retro = RetrofitFunctions()
                      CoroutineScope(IO).launch {
                          try {
-                             retro.retrofitGet(photoFile, """C:\Users\balindattila\Desktop""")
+                             retro.retrofitGet(photoFile, """C:\Users\balindattila\Desktop""","MSV_$msvNumber")
+                             CoroutineScope(Main).launch {
+                                 showToast("A kép mentve a szerverre",requireContext())
+                             }
                          } catch (e: Exception) {
                              Log.d("HIBA", "$e")
                          }

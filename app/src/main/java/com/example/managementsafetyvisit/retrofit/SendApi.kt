@@ -13,7 +13,8 @@ interface SendApi {
     @POST("uploadFile/{path}")
     fun sendPhoto(
         @Part("path")path: RequestBody,
-        @Part xml: MultipartBody.Part
+        @Part xml: MultipartBody.Part,
+        @Query("number") number: String
     ): Call<UploadResponse>
 
     @GET("test")
