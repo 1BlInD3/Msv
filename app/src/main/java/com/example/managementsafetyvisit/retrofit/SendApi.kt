@@ -20,6 +20,9 @@ interface SendApi {
     @GET("test")
     fun getTest():Call<UploadResponse>
 
+    @GET("data")
+    fun getImageNumber(@Query("folder") folder: String):Call<UploadResponse>
+
     @GET("image")
     fun getImage(@Query("name") name: String): Call<ResponseBody>
 

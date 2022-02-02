@@ -19,9 +19,12 @@ import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.interfaces.MsvListener
 import com.example.managementsafetyvisit.databinding.FragmentMsvBinding
+import com.example.managementsafetyvisit.retrofit.RetrofitFunctions
+import com.example.managementsafetyvisit.utils.showToast
 import com.example.managementsafetyvisit.viewModels.MsvViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import java.lang.RuntimeException
@@ -114,6 +117,13 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             mainActivityConnector.loadPerceptionPanel(viewModel.msvNumber.trim())
         }
         binding.cameraButton?.setOnClickListener {
+            val retro = RetrofitFunctions()
+            CoroutineScope(IO).launch {
+                val number = retro.getImageCount("MSV_$msvNumber")
+                CoroutineScope(Main).launch {
+                    showToast(number,requireContext())
+                }
+            }
             msvNumber = viewModel.msvNumber.trim()
             mainActivityConnector.getCameraInstance()
         }

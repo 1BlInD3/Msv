@@ -12,10 +12,11 @@
         android:indeterminate="true"
         android:layout_width="700dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="142dp"
+        android:layout_marginBottom="140dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:elevation="10dp"/>
 
     <ProgressBar
         android:id="@+id/progressBar2"

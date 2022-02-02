@@ -28,6 +28,11 @@ class RetrofitFunctions() {
         }
     }
 
+    fun getImageCount(folder: String):String{
+        val response = SendApi().getImageNumber(folder).execute()
+        return response.body()!!.message.trim()
+    }
+
     private fun uploadPhoto(file: File, path: String, number: String) {
         val body = UploadRequestBody(file, "file")
         val photoResponse = SendApi().sendPhoto(
@@ -45,7 +50,7 @@ class RetrofitFunctions() {
         }
     }
 
-    fun getPhoto(name: String){
+    /*fun getPhoto(name: String){
         SendApi().getImage(name).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
@@ -59,6 +64,5 @@ class RetrofitFunctions() {
             }
 
         })
-    }
-
+    }*/
 }
