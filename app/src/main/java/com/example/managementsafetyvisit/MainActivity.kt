@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         val perceptionFragment = PerceptionFragment()
         val msvFragment = MsvFragment()
         var msvNumber: String = ""
+        var imageNumber = ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -140,7 +141,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun getCameraInstance() {
         val cameraFragment = CameraFragment()
-        supportFragmentManager.beginTransaction().replace(R.id.panel_container,cameraFragment,"CAMERA").commit()
+        supportFragmentManager.beginTransaction().replace(R.id.panel_container,cameraFragment,"CAMERA").addToBackStack(null).commit()
     }
 
     override fun closeMsv(statusz: Int, id: Int) {

@@ -19,9 +19,11 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.managementsafetyvisit.MainActivity.Companion.imageNumber
 import com.example.managementsafetyvisit.MainActivity.Companion.msvNumber
 import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.retrofit.RetrofitFunctions
+import com.example.managementsafetyvisit.utils.showDialog
 import com.example.managementsafetyvisit.utils.showToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -33,7 +35,7 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 
 
-class CameraFragment : Fragment(){
+class CameraFragment : Fragment() {
 
     private var imageCapture: ImageCapture? = null
     private lateinit var outputDirectory: File
@@ -44,6 +46,7 @@ class CameraFragment : Fragment(){
     private val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
     private val REQUEST_CODE_PERMISSIONS = 10
     private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+    private var number = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,8 +54,24 @@ class CameraFragment : Fragment(){
     ): View {
         val view = inflater.inflate(R.layout.fragment_camera, container, false)
         cameraCaptureButton = view.findViewById(R.id.camera_capture_button)
+        cameraCaptureButton.isEnabled = false
+        cameraCaptureButton.setBackgroundResource(R.drawable.round_button_disabled)
         outputDirectory = getOutputDirectory()
         viewFinder = view.findViewById(R.id.viewFinder)
+        val retro = RetrofitFunctions()
+        CoroutineScope(IO).launch {
+            number = retro.getImageCount("MSV_$msvNumber").trim().toInt()
+            CoroutineScope(Main).launch{
+                if(number>=10){
+                    showDialog("Nem tudsz több képet készíteni",requireContext())
+                    cameraCaptureButton.isEnabled = false
+                    cameraCaptureButton.setBackgroundResource(R.drawable.round_button_disabled)
+                }else{
+                    cameraCaptureButton.isEnabled = true
+                    cameraCaptureButton.setBackgroundResource(R.drawable.round_button_2)
+                }
+            }
+        }
         if (allPermissionGranted()) {
             startCamera()
         } else {
@@ -67,7 +86,7 @@ class CameraFragment : Fragment(){
     }
 
     private fun startCamera() {
-        try{
+        try {
             val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
             cameraProviderFuture.addListener(Runnable {
@@ -96,56 +115,76 @@ class CameraFragment : Fragment(){
                 }
 
             }, ContextCompat.getMainExecutor(requireContext()))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Log.d(TAG, "startCamera: $e")
         }
 
     }
 
     private fun takePhoto() {
-        // Get a stable reference of the modifiable image capture use case
+        cameraCaptureButton.isEnabled = false
+        cameraCaptureButton.setBackgroundResource(R.drawable.round_button_disabled)
         val imageCapture = imageCapture ?: return
+        val retro = RetrofitFunctions()
+        CoroutineScope(IO).launch {
+            val number = retro.getImageCount("MSV_$msvNumber")
+            CoroutineScope(Main).launch {
+                if (number.toInt() < 10) {
+                    // Create time-stamped output file to hold the image
+                    val photoFile = File(
+                        outputDirectory,
+                        SimpleDateFormat(
+                            FILENAME_FORMAT, Locale.US
+                        ).format(System.currentTimeMillis()) + ".jpg"
+                    )
 
-        // Create time-stamped output file to hold the image
-        val photoFile = File(
-            outputDirectory,
-            SimpleDateFormat(
-                FILENAME_FORMAT, Locale.US
-            ).format(System.currentTimeMillis()) + ".jpg"
-        )
+                    val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+                    imageCapture.takePicture(
+                        outputOptions,
+                        ContextCompat.getMainExecutor(requireContext()),
+                        object : ImageCapture.OnImageSavedCallback {
+                            override fun onError(exc: ImageCaptureException) {
+                                Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                            }
 
-        imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(requireContext()),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                            override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                                val savedUri = Uri.fromFile(photoFile)
+                                //val path = "file:///storage/emulated/0/Android/media/com.example.camerarest/CameraRest/2022-01-13-12-22-06-923.jpg"
+                                val path = savedUri.toString()
+                                val stringPath = path.substring(8, path.length)
+                                //val msg = "A kép mentésre került"
+                                // Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                                Log.d(TAG, stringPath)
+                                val retro = RetrofitFunctions()
+                                CoroutineScope(IO).launch {
+                                    try {
+                                        retro.retrofitGet(
+                                            photoFile,
+                                            """\\fs\MSV\foto""",
+                                            "MSV_$msvNumber"
+                                        )
+                                        CoroutineScope(Main).launch {
+                                            showToast("A kép mentve a szerverre", requireContext())
+                                            cameraCaptureButton.isEnabled = true
+                                            cameraCaptureButton.setBackgroundResource(R.drawable.round_button_2)
+                                        }
+                                    } catch (e: Exception) {
+                                        Log.d("HIBA", "$e")
+                                    }
+                                }
+                            }
+                        })
+                }else{
+                    showDialog("Nem tudsz több képet felvinni",requireContext())
+                    cameraCaptureButton.isEnabled = false
+                    cameraCaptureButton.setBackgroundResource(R.drawable.round_button_disabled)
                 }
-
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val savedUri = Uri.fromFile(photoFile)
-                    //val path = "file:///storage/emulated/0/Android/media/com.example.camerarest/CameraRest/2022-01-13-12-22-06-923.jpg"
-                    val path = savedUri.toString()
-                    val stringPath = path.substring(8, path.length)
-                    //val msg = "A kép mentésre került"
-                   // Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, stringPath)
-                    val retro = RetrofitFunctions()
-                     CoroutineScope(IO).launch {
-                         try {
-                             retro.retrofitGet(photoFile, """C:\Users\balindattila\Desktop""","MSV_$msvNumber")
-                             CoroutineScope(Main).launch {
-                                 showToast("A kép mentve a szerverre",requireContext())
-                             }
-                         } catch (e: Exception) {
-                             Log.d("HIBA", "$e")
-                         }
-                     }
-                }
-            })
+            }
+        }
+        // Get a stable reference of the modifiable image capture use case
     }
+
     private fun allPermissionGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
     }
@@ -156,11 +195,6 @@ class CameraFragment : Fragment(){
         }
         return if (mediaDir != null && mediaDir.exists())
             mediaDir else requireActivity().filesDir
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cameraExecutor.shutdown()
     }
 
     override fun onRequestPermissionsResult(
