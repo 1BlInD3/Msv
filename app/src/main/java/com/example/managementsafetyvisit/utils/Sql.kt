@@ -35,6 +35,7 @@ class Sql (private val sqlMessage: SqlMessage) {
             val resultSet = statement.executeQuery()
             if(!resultSet.next()){
                 felelos = ""
+                sqlMessage.sendMessage("Biztos jó kódot vittél fel?")
             }else{
                 felelos = resultSet.getString("TextDescription").trim()
                 val statement1 = connection.prepareStatement("""SELECT [ID],[Név],[Tsz],[FelelosSzemely],[FelelosTsz],[Resztvevo],[ResztvevoTsz],[Helyszin],[Datum],[Statusz] FROM [Fusetech].[dbo].[MsvData] where FelelosSzemely =? AND Statusz = 1""")
@@ -80,7 +81,7 @@ class Sql (private val sqlMessage: SqlMessage) {
                 }
             }
         }catch (e: Exception){
-            sqlMessage.sendMessage("Nincs hálózat")
+            sqlMessage.sendMessage("Nincs hálózat $e")
         }
         return false
     }

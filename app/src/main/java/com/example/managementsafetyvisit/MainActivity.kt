@@ -306,13 +306,4 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         }
     }
 
-    override fun onBackPressed() {
-        /*val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
-        if(myFrag != null){
-            val loginFrag = LoginFragment()
-            supportFragmentManager.beginTransaction().replace(R.id.id_container,loginFrag,"LOGIN").commit()
-        }*/
-        super.onBackPressed()
-    }
-
 }

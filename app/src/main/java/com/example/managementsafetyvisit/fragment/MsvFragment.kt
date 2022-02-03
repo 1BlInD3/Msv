@@ -154,10 +154,14 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         if (capitals.size == 2) {
             viewModel.familyName = familyName
             viewModel.firstName = firstName
+            viewModel.middleName  = ""
+            viewModel.middleMiddleName = ""
         } else if (capitals.size == 3) {
             viewModel.familyName = familyName
             viewModel.middleName = middleName
             viewModel.firstName = firstName
+
+            viewModel.middleMiddleName = ""
         } else if (capitals.size == 4) {
             viewModel.familyName = familyName
             viewModel.middleName = middleName
@@ -170,10 +174,13 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         if (capitals.size == 2) {
             viewModel.familyNameCommissar = familyName
             viewModel.firstNameCommissar = firstName
+            viewModel.middleCommissarName  = ""
+            viewModel.middleMiddleCommissarName = ""
         } else if (capitals.size == 3) {
             viewModel.familyNameCommissar = familyName
             viewModel.middleCommissarName = middleName
             viewModel.firstNameCommissar = firstName
+            viewModel.middleMiddleCommissarName = ""
         } else if (capitals.size == 4) {
             viewModel.familyNameCommissar = familyName
             viewModel.middleCommissarName = middleName
@@ -185,10 +192,14 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         if (capitals.size == 2) {
             viewModel.familyNameChastnik = familyName
             viewModel.firstNameChastnik = firstName
+            viewModel.middleChastinkName  = ""
+            viewModel.middleMiddleChastnikName = ""
+
         } else if (capitals.size == 3) {
             viewModel.familyNameChastnik = familyName
             viewModel.middleChastinkName = middleName
             viewModel.firstNameChastnik = firstName
+            viewModel.middleMiddleChastnikName = ""
         } else if (capitals.size == 4) {
             viewModel.familyNameChastnik = familyName
             viewModel.middleChastinkName = middleName
