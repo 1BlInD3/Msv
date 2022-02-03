@@ -56,12 +56,12 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         progressRound = findViewById(R.id.progressBar2)
         progress.visibility = View.GONE
         progressRound.visibility = View.GONE
+        getLoginFragment()
         Log.d(TAG, "onCreate: ")
     }
 
     override fun onResume() {
         super.onResume()
-        getLoginFragment()
         dataArray.clear()
     }
     /*private fun getMsvFragment(){
@@ -71,8 +71,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     private fun getLoginFragment() {
         val login = LoginFragment()
-        supportFragmentManager.beginTransaction().replace(R.id.id_container, login, "LOGIN")
-            .commit()
+        supportFragmentManager.beginTransaction().add(R.id.id_container, login, "LOGIN").commit()
     }
 
     override fun loadPerceptionPanel(code: String) {
@@ -84,7 +83,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                 supportFragmentManager.beginTransaction().replace(
                     R.id.panel_container,
                     perceptionFragment, "PERCEPTION"
-                ).commit()
+                ).addToBackStack(null).commit()
                 progressRound.visibility = View.GONE
                 /* val perceptionFragment = PerceptionFragment.newInstance(
                      newPerceptionArray[0].perception,
@@ -263,7 +262,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                         CoroutineScope(Main).launch {
                             Log.d(TAG, "onActivityResult: $dataArray")
                             supportFragmentManager.beginTransaction()
-                                .replace(R.id.id_container, msvFragment, "MSVFRAG").commit()
+                                .replace(R.id.id_container, msvFragment, "MSVFRAG").addToBackStack(null).commit()
                             progress.visibility = View.GONE
                         }
                     }
@@ -280,8 +279,8 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     override fun onStop() {
-        observationArray.clear()
-        newPerceptionArray.clear()
+       /* observationArray.clear()
+        newPerceptionArray.clear()*/
         dataArray.clear()
         super.onStop()
     }
@@ -305,6 +304,15 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             dialog.create()
             dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
         }
+    }
+
+    override fun onBackPressed() {
+        /*val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
+        if(myFrag != null){
+            val loginFrag = LoginFragment()
+            supportFragmentManager.beginTransaction().replace(R.id.id_container,loginFrag,"LOGIN").commit()
+        }*/
+        super.onBackPressed()
     }
 
 }

@@ -80,7 +80,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
 
     private val viewModel: MsvViewModel by viewModels()
     private lateinit var binding: FragmentMsvBinding
-    private val reversedList: ArrayList<ObservationData> = ArrayList()
+
 
     interface MainActivityConnector {
         fun loadPerceptionPanel(code: String)
@@ -110,7 +110,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_msv, container, false)
         binding.viewModel = viewModel
         viewModel.msvListener = this
-        binding.observationRecycler?.adapter = ObservationDataAdapter(reversedList, this)
+        binding.observationRecycler?.adapter = ObservationDataAdapter(viewModel.reversedList, this)
         binding.observationRecycler?.layoutManager = LinearLayoutManager(requireContext())
         binding.observationRecycler?.setHasFixedSize(true)
         binding.imageProgress?.visibility = View.GONE
@@ -255,22 +255,22 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
 
     override fun onCurrentClick(position: Int) {
         mainActivityConnector.loadPanelWithValues(
-            reversedList[position].perception,
-            reversedList[position].type,
-            reversedList[position].response,
-            reversedList[position].measure,
-            reversedList[position].now,
-            reversedList[position].corrector,
-            reversedList[position].date,
-            reversedList[position].id
+            viewModel.reversedList[position].perception,
+            viewModel.reversedList[position].type,
+            viewModel.reversedList[position].response,
+            viewModel.reversedList[position].measure,
+            viewModel.reversedList[position].now,
+            viewModel.reversedList[position].corrector,
+            viewModel.reversedList[position].date,
+            viewModel.reversedList[position].id
         )
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun refreshList() {
-        reversedList.clear()
+        viewModel.reversedList.clear()
         for (i in observationArray.size - 1 downTo 0) {
-            reversedList.add(
+            viewModel.reversedList.add(
                 ObservationData(
                     observationArray[i].perception,
                     observationArray[i].type,

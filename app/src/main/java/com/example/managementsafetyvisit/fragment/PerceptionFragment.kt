@@ -3,6 +3,7 @@ package com.example.managementsafetyvisit.fragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -106,7 +107,6 @@ class PerceptionFragment : Fragment() {
             .also { adapter -> adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
 
         binding.typeSpinner.adapter = adapter
-        binding.perceptionEdit.requestFocus()
         binding.calendarView.setOnDateChangeListener { _, year, month, day ->
             val myMonth = month + 1
             val myFormattedMonth: String = if (myMonth < 10) {
@@ -303,6 +303,7 @@ class PerceptionFragment : Fragment() {
             viewModel.msvId = id
             //Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
             viewModel.response = p1
+            //binding.perceptionEdit.requestFocus()
             viewModel.answer = p2
             viewModel.measure = p3
             viewModel.urgent = p4
@@ -333,6 +334,12 @@ class PerceptionFragment : Fragment() {
                 binding.calendarView.setDate(milli, true, true)
                 viewModel.msvId = p8
                // Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
+            }
+            try {
+                binding.perceptionEdit.setSelection(binding.perceptionEdit.text.length)
+
+            }catch (e: Exception){
+                Log.d("FOKUSZ", "onResume: $e")
             }
         }
     }

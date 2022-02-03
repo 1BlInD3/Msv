@@ -3,6 +3,7 @@ package com.example.managementsafetyvisit.viewModels
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.interfaces.MsvListener
 import com.example.managementsafetyvisit.retrofit.RetrofitFunctions
 import com.example.managementsafetyvisit.retrofit.SendApi
@@ -43,6 +44,7 @@ class MsvViewModel
     var datum: String = ""
     var location = ""
     var msvNumber = ""
+    val reversedList: ArrayList<ObservationData> = ArrayList()
 
     fun getPhoto(name: String){
         msvListener?.setProgressOn()
