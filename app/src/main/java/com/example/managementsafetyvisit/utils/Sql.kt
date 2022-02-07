@@ -19,6 +19,7 @@ class Sql (private val sqlMessage: SqlMessage) {
 
     interface SqlMessage{
         fun sendMessage(message: String)
+        fun noEntry()
     }
 
     private var updateId = 0
@@ -213,11 +214,19 @@ class Sql (private val sqlMessage: SqlMessage) {
         Class.forName("net.sourceforge.jtds.jdbc.Driver")
         try{
             connection = DriverManager.getConnection(write_connect)
-            val statement = connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvData] Set Statusz = ? where ID = ?""")
-            statement.setInt(1,status)
-            statement.setInt(2,id)
-            statement.executeUpdate()
-            sqlMessage.sendMessage("Az $id számú Msv lezárásra került")
+            val statement1 = connection.prepareStatement("SELECT * FROM [Fusetech].[dbo].[MsvNotes] WHERE IdData = ?")
+            statement1.setInt(1,id)
+            val resultSet1 = statement1.executeQuery()
+            if(!resultSet1.next()){
+                sqlMessage.sendMessage("Az $id számú Msv-t nem lehet lezárni észrevétel nélkül")
+            }else{
+                val statement = connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvData] Set Statusz = ? where ID = ?""")
+                statement.setInt(1,status)
+                statement.setInt(2,id)
+                statement.executeUpdate()
+                sqlMessage.sendMessage("Az $id számú Msv lezárásra került")
+                sqlMessage.noEntry()
+            }
         }catch (e: Exception){
             sqlMessage.sendMessage("Nem sikerült a frissítés! \n$e")
         }

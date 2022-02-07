@@ -151,9 +151,9 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         dialog.setPositiveButton("Igen") { _, _ ->
             CoroutineScope(IO).launch {
                sql.closeCommissarMsv(statusz,id)
-                CoroutineScope(Main).launch {
-                    getLoginFragment()
-                }
+                /*CoroutineScope(Main).launch {
+                    //getLoginFragment()
+                }*/
             }
         }
         dialog.setNegativeButton("Nem"){_,_ ->
@@ -300,6 +300,19 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             dialog.setMessage(message)
             dialog.setPositiveButton("OK") { _, _ ->
                 progress.visibility = View.GONE
+            }
+            dialog.create()
+            dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
+        }
+    }
+
+    override fun noEntry() {
+        CoroutineScope(Main).launch {
+            val dialog = AlertDialog.Builder(this@MainActivity)
+            dialog.setTitle("Figyelem")
+            dialog.setMessage("Az Msv lezárásra került")
+            dialog.setPositiveButton("OK") { _, _ ->
+                finishAndRemoveTask()
             }
             dialog.create()
             dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
