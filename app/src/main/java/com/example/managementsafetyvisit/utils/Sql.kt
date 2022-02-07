@@ -86,7 +86,7 @@ class Sql (private val sqlMessage: SqlMessage) {
         }
         return false
     }
-    fun loadPerceptionPanel(msvCode: String){
+    fun loadPerceptionPanel(msvCode: String, name: String){
         newPerceptionArray.clear()
         val connection1: Connection
         Class.forName("net.sourceforge.jtds.jdbc.Driver")
@@ -109,6 +109,7 @@ class Sql (private val sqlMessage: SqlMessage) {
                     val id = resultSet2.getInt("ID")
                     newPerceptionArray.add(ObservationData("","PP","","",false,"","",id.toString().trim()))
                     val bundle = Bundle()
+                    bundle.putString("MYSTRING",name)
                     bundle.putSerializable("EMPTYARRAY", newPerceptionArray)
                     perceptionFragment.arguments = bundle
                 }
@@ -116,6 +117,7 @@ class Sql (private val sqlMessage: SqlMessage) {
                 val id = resultSet1.getInt("ID")
                 newPerceptionArray.add(ObservationData("","PP","","",false,"","",id.toString().trim()))
                 val bundle = Bundle()
+                bundle.putString("MYSTRING",name)
                 bundle.putSerializable("EMPTYARRAY", newPerceptionArray)
                 perceptionFragment.arguments = bundle
             }

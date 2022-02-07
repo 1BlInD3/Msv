@@ -16,6 +16,7 @@ import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.databinding.FragmentPerceptionBinding
 import com.example.managementsafetyvisit.viewModels.PerceptionViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -30,6 +31,7 @@ private const val ARG_PARAM6 = "param6"
 private const val ARG_PARAM7 = "param7"
 private const val ARG_PARAM8 = "param8"
 
+@AndroidEntryPoint
 class PerceptionFragment : Fragment() {
 
     interface MainActivityInteract {
@@ -178,6 +180,8 @@ class PerceptionFragment : Fragment() {
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
                         viewModel.corrector = binding.correctorEdit.text.toString().trim()
                         if(viewModel.urgent && viewModel.measure.isNotEmpty()){
+                            val omg: String? = arguments?.getString("MYSTRING")
+                            viewModel.corrector = omg!!
                             mainActivityInteract.saveNewPerception(
                                 viewModel.response,
                                 viewModel.answer,

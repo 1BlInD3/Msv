@@ -83,7 +83,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
 
 
     interface MainActivityConnector {
-        fun loadPerceptionPanel(code: String/*, name: String*/)
+        fun loadPerceptionPanel(code: String, name: String)
         fun loadPanelWithValues(
             perception: String?,
             type: String?,
@@ -116,7 +116,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.imageProgress?.visibility = View.GONE
 
         binding.newResponse?.setOnClickListener {
-            mainActivityConnector.loadPerceptionPanel(viewModel.msvNumber.trim()/*, "${viewModel.familyNameCommissar}${viewModel.middleCommissarName}${viewModel.middleMiddleCommissarName}${viewModel.firstNameCommissar}"*/)
+            mainActivityConnector.loadPerceptionPanel(viewModel.msvNumber.trim(), "${viewModel.familyNameCommissar} ${viewModel.middleCommissarName} ${viewModel.middleMiddleCommissarName} ${viewModel.firstNameCommissar}")
         }
         binding.cameraButton?.setOnClickListener {
             msvNumber = viewModel.msvNumber.trim()

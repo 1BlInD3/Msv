@@ -74,11 +74,11 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         supportFragmentManager.beginTransaction().add(R.id.id_container, login, "LOGIN").commit()
     }
 
-    override fun loadPerceptionPanel(code: String) {
+    override fun loadPerceptionPanel(code: String, name: String) {
         val sql = Sql(this)
         progressRound.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
-            sql.loadPerceptionPanel(code)
+            sql.loadPerceptionPanel(code,name)
             CoroutineScope(Main).launch {
                 supportFragmentManager.beginTransaction().replace(
                     R.id.panel_container,
@@ -100,6 +100,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             }
         }
     }
+
 
 
     override fun loadPanelWithValues(
