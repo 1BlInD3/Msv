@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.managementsafetyvisit.MainActivity.Companion.imageNumber
 import com.example.managementsafetyvisit.MainActivity.Companion.msvNumber
 import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
 import com.example.managementsafetyvisit.R
@@ -20,12 +19,9 @@ import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.interfaces.MsvListener
 import com.example.managementsafetyvisit.databinding.FragmentMsvBinding
-import com.example.managementsafetyvisit.retrofit.RetrofitFunctions
-import com.example.managementsafetyvisit.utils.showToast
 import com.example.managementsafetyvisit.viewModels.MsvViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import java.lang.RuntimeException
@@ -125,10 +121,6 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.checkButton?.setOnClickListener {
             mainActivityConnector.closeMsv(2,viewModel.msvNumber.trim().toInt())
         }
-       /* binding.imageView.setOnClickListener {
-            viewModel.getPhoto("${viewModel.familyName}${viewModel.firstName}${viewModel.tsz}.jpg")
-            Toast.makeText(requireContext(), "Frissítés", Toast.LENGTH_SHORT).show()
-        }*/
         return binding.root
     }
 
@@ -149,7 +141,6 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
     override fun onResume() {
         super.onResume()
         loadData()
-        //viewModel.getPhoto("BálindAttila1557.jpg")
         viewModel.msvNumber = p1.toString().trim()
         nameGenerator(p2)
         if (capitals.size == 2) {

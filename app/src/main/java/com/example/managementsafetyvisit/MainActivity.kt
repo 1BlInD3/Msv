@@ -46,7 +46,11 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         val perceptionFragment = PerceptionFragment()
         val msvFragment = MsvFragment()
         var msvNumber: String = ""
+        var closingTime = false
         var imageNumber = ""
+        var closingStatus = 0
+        var closingId = 0
+        var rtsz = ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,10 +68,6 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         super.onResume()
         dataArray.clear()
     }
-    /*private fun getMsvFragment(){
-        val msvFragment = MsvFragment()
-        supportFragmentManager.beginTransaction().replace(R.id.id_container,msvFragment,"MSVFRAG").commit()
-    }*/
 
     private fun getLoginFragment() {
         val login = LoginFragment()
@@ -78,29 +78,16 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         val sql = Sql(this)
         progressRound.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
-            sql.loadPerceptionPanel(code,name)
+            sql.loadPerceptionPanel(code, name)
             CoroutineScope(Main).launch {
                 supportFragmentManager.beginTransaction().replace(
                     R.id.panel_container,
                     perceptionFragment, "PERCEPTION"
                 ).addToBackStack(null).commit()
                 progressRound.visibility = View.GONE
-                /* val perceptionFragment = PerceptionFragment.newInstance(
-                     newPerceptionArray[0].perception,
-                     newPerceptionArray[0].response,
-                     newPerceptionArray[0].measure,
-                     newPerceptionArray[0].now,
-                     newPerceptionArray[0].type,
-                     newPerceptionArray[0].corrector,
-                     newPerceptionArray[0].date,
-                     newPerceptionArray[0].id.trim()
-                 )
-                 Toast.makeText(this@MainActivity, newPerceptionArray[0].id.trim(), Toast.LENGTH_LONG).show()
-                 supportFragmentManager.beginTransaction().replace(R.id.panel_container,perceptionFragment,"PERCEPTION").commit()*/
             }
         }
     }
-
 
 
     override fun loadPanelWithValues(
@@ -113,7 +100,6 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         date: String?,
         id: String
     ) {
-        //val perceptionFragment = PerceptionFragment.newInstance(perception,response,measure,urgent,type,corrector,date,id)
         val observation: ArrayList<ObservationData> = ArrayList()
         observation.add(
             ObservationData(
@@ -141,24 +127,19 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun getCameraInstance() {
         val cameraFragment = CameraFragment()
-        supportFragmentManager.beginTransaction().replace(R.id.panel_container,cameraFragment,"CAMERA").addToBackStack(null).commit()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.panel_container, cameraFragment, "CAMERA").addToBackStack(null).commit()
     }
 
     override fun closeMsv(statusz: Int, id: Int) {
-        val sql = Sql(this)
         val dialog = AlertDialog.Builder(this@MainActivity)
         dialog.setTitle("Figyelem")
-        dialog.setMessage("Biztos le akarod zárni az Msv-t?")
-        dialog.setPositiveButton("Igen") { _, _ ->
-            CoroutineScope(IO).launch {
-               sql.closeCommissarMsv(statusz,id)
-                /*CoroutineScope(Main).launch {
-                    //getLoginFragment()
-                }*/
-            }
-        }
-        dialog.setNegativeButton("Nem"){_,_ ->
-
+        dialog.setMessage("A résztvevőnek hitelesíteni kell az Msv lezárását")
+        dialog.setPositiveButton("OK") { _, _ ->
+            closingId = id
+            closingStatus = statusz
+            closingTime = true
+            scanCode()
         }
         dialog.create()
         dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
@@ -192,7 +173,17 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     ) {
         val sql = Sql(this)
         CoroutineScope(IO).launch {
-            sql.saveNewPerception(perception, answer, measure, type, urgent, corrector, date, id,statusz)
+            sql.saveNewPerception(
+                perception,
+                answer,
+                measure,
+                type,
+                urgent,
+                corrector,
+                date,
+                id,
+                statusz
+            )
             CoroutineScope(Main).launch {
                 val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
                 if (myFrag != null) {
@@ -215,7 +206,17 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     ) {
         val sql = Sql(this)
         CoroutineScope(IO).launch {
-            sql.updateExisting(perception, answer, measure, type, urgent, corrector, date, id,statusz)
+            sql.updateExisting(
+                perception,
+                answer,
+                measure,
+                type,
+                urgent,
+                corrector,
+                date,
+                id,
+                statusz
+            )
             CoroutineScope(Main).launch {
                 val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
                 if (myFrag != null) {
@@ -235,7 +236,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                     supportFragmentManager.beginTransaction().remove(myFragment).commit()
                 }
                 val myMsvFragment = supportFragmentManager.findFragmentByTag("MSVFRAG")
-                if(myMsvFragment != null){
+                if (myMsvFragment != null) {
                     (myMsvFragment as MsvFragment).refreshAt(id)
                     (myMsvFragment as MsvFragment).refreshList()
                 }
@@ -258,13 +259,30 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             if (result.contents != null) {
                 progress.visibility = View.VISIBLE
                 CoroutineScope(IO).launch {
-                    val sql = Sql(this@MainActivity)
-                    if(sql.getDataByName(result.contents.trim())){
-                        CoroutineScope(Main).launch {
-                            Log.d(TAG, "onActivityResult: $dataArray")
-                            supportFragmentManager.beginTransaction()
-                                .replace(R.id.id_container, msvFragment, "MSVFRAG").addToBackStack(null).commit()
-                            progress.visibility = View.GONE
+                    if (!closingTime) {
+                        val sql = Sql(this@MainActivity)
+                        if (sql.getDataByName(result.contents.trim())) {
+                            CoroutineScope(Main).launch {
+                                Log.d(TAG, "onActivityResult: $dataArray")
+                                supportFragmentManager.beginTransaction()
+                                    .replace(R.id.id_container, msvFragment, "MSVFRAG")
+                                    .addToBackStack(null).commit()
+                                progress.visibility = View.GONE
+                            }
+                        }
+                    } else {
+                        closingTime = false
+                        CoroutineScope(IO).launch {
+                            val sql = Sql(this@MainActivity)
+                            sql.closeCommissarMsv(closingStatus, closingId, result.contents.trim())
+                            CoroutineScope(Main).launch {
+                                val builder = AlertDialog.Builder(this@MainActivity)
+                                builder.setTitle("FIGYELEM!")
+                                builder.setMessage("Az Msv lezárásra került! :)")
+                                builder.setPositiveButton("OK"){_,_->
+                                    finishAndRemoveTask()
+                                }
+                            }
                         }
                     }
                 }
@@ -280,8 +298,6 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     override fun onStop() {
-       /* observationArray.clear()
-        newPerceptionArray.clear()*/
         dataArray.clear()
         super.onStop()
     }

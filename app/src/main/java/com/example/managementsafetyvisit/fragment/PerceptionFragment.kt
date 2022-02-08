@@ -357,32 +357,6 @@ class PerceptionFragment : Fragment() {
         }
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(
-            param1: String?,
-            param2: String?,
-            param3: String?,
-            param4: Boolean,
-            param5: String?,
-            param6: String?,
-            param7: String?,
-            param8: String
-        ) =
-            PerceptionFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                    putString(ARG_PARAM3, param3)
-                    putBoolean(ARG_PARAM4, param4)
-                    putString(ARG_PARAM5, param5)
-                    putString(ARG_PARAM6, param6)
-                    putString(ARG_PARAM7, param7)
-                    putString(ARG_PARAM8, param8)
-                }
-            }
-    }
-
     private fun loadData() {
         val myList: ArrayList<ObservationData> =
             arguments?.getSerializable("EMPTYARRAY") as ArrayList<ObservationData>
