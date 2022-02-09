@@ -3,12 +3,13 @@ package com.example.managementsafetyvisit.data
 data class Data(
     val id: Int,
     val name: String,
-    val tsz: Int,
+    val tsz: String,
     val fsz: String,
-    val ftsz: Int,
+    val ftsz: String,
     val resztvevo: String,
-    val rtsz: Int,
+    val rtsz: String,
     val location: String,
     val date: String,
-    val status: Int
+    val status: Int,
+    val entryDate: String
 )

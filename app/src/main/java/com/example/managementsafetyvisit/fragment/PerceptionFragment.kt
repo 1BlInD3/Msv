@@ -298,6 +298,7 @@ class PerceptionFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         try {
+            binding.perceptionEdit.requestFocus()
             loadData()
             viewModel.msvId = id
             update = false
@@ -340,6 +341,7 @@ class PerceptionFragment : Fragment() {
                // Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
             }
             try {
+                binding.perceptionEdit.isFocusableInTouchMode = true
                 binding.perceptionEdit.setSelection(binding.perceptionEdit.text.length)
 
             }catch (e: Exception){

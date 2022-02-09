@@ -43,6 +43,7 @@ class MsvViewModel
     var datum: String = ""
     var location = ""
     var msvNumber = ""
+    var entryDate = ""
     val reversedList: ArrayList<ObservationData> = ArrayList()
 
     fun getPhoto(name: String){

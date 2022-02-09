@@ -43,22 +43,23 @@ class Sql(private val sqlMessage: SqlMessage) {
             } else {
                 felelos = resultSet.getString("TextDescription").trim()
                 val statement1 =
-                    connection.prepareStatement("""SELECT [ID],[Név],[Tsz],[FelelosSzemely],[FelelosTsz],[Resztvevo],[ResztvevoTsz],[Helyszin],[Datum],[Statusz] FROM [Fusetech].[dbo].[MsvData] where FelelosSzemely =? AND Statusz = 1""")
+                    connection.prepareStatement("""SELECT [ID],[Nev],[Tsz],[FelelosSzemely],[FelelosTsz],[Resztvevo],[ResztvevoTsz],[Helyszin],[Datum],[Statusz],[BelepesDatum] FROM [Fusetech].[dbo].[MsvData] where FelelosSzemely =? AND Statusz = 1""")
                 statement1.setString(1, felelos)
                 val resultSet1 = statement1.executeQuery()
                 if (!resultSet1.next()) {
                     sqlMessage.sendMessage("$felelos nevén nincs aktív MSV!")
                 } else {
                     val id = resultSet1.getInt("ID")
-                    val name = resultSet1.getString("Név")
-                    val tsz = resultSet1.getInt("Tsz")
+                    val name = resultSet1.getString("Nev")
+                    val tsz = resultSet1.getString("Tsz")
                     val felelos = resultSet1.getString("FelelosSzemely")
-                    val ftsz = resultSet1.getInt("FelelosTsz")
+                    val ftsz = resultSet1.getString("FelelosTsz")
                     val resztvevo = resultSet1.getString("Resztvevo")
-                    val rtsz = resultSet1.getInt("ResztvevoTsz")
+                    val rtsz = resultSet1.getString("ResztvevoTsz")
                     val location = resultSet1.getString("Helyszin")
                     val date = resultSet1.getString("Datum")
                     val status = resultSet1.getInt("Statusz")
+                    val entryDate = resultSet1.getString("BelepesDatum")
                     dataArray.add(
                         Data(
                             id,
@@ -70,7 +71,8 @@ class Sql(private val sqlMessage: SqlMessage) {
                             rtsz,
                             location,
                             date,
-                            status
+                            status,
+                            entryDate
                         )
                     )
                     MainActivity.rtsz = rtsz.toString().trim()

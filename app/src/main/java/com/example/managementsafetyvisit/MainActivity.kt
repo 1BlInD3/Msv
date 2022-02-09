@@ -260,15 +260,19 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                 progress.visibility = View.VISIBLE
                 CoroutineScope(IO).launch {
                     if (!closingTime) {
-                        val sql = Sql(this@MainActivity)
-                        if (sql.getDataByName(result.contents.trim())) {
-                            CoroutineScope(Main).launch {
-                                Log.d(TAG, "onActivityResult: $dataArray")
-                                supportFragmentManager.beginTransaction()
-                                    .replace(R.id.id_container, msvFragment, "MSVFRAG")
-                                    .addToBackStack(null).commit()
-                                progress.visibility = View.GONE
+                        try{
+                            val sql = Sql(this@MainActivity)
+                            if (sql.getDataByName(result.contents.trim())) {
+                                CoroutineScope(Main).launch {
+                                    Log.d(TAG, "onActivityResult: $dataArray")
+                                    supportFragmentManager.beginTransaction()
+                                        .replace(R.id.id_container, msvFragment, "MSVFRAG")
+                                        .addToBackStack(null).commit()
+                                    progress.visibility = View.GONE
+                                }
                             }
+                        }catch(e: Exception){
+                            Log.d(TAG, "onActivityResult: $e")
                         }
                     } else {
                         closingTime = false

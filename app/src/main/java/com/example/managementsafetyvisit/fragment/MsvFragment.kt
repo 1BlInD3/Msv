@@ -19,9 +19,11 @@ import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.interfaces.MsvListener
 import com.example.managementsafetyvisit.databinding.FragmentMsvBinding
+import com.example.managementsafetyvisit.utils.Sql
 import com.example.managementsafetyvisit.viewModels.MsvViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import java.lang.RuntimeException
@@ -36,20 +38,22 @@ private const val ARG_PARAM7 = "param7"
 private const val ARG_PARAM8 = "param8"
 private const val ARG_PARAM9 = "param9"
 private const val ARG_PARAM10 = "param10"
+private const val ARG_PARAM11 = "param11"
 
 @AndroidEntryPoint
 class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelection {
 
     private var p1 = 0
     private var p2 = ""
-    private var p3 = 0
+    private var p3 = ""
     private var p4 = ""
-    private var p5 = 0
+    private var p5 = ""
     private var p6 = ""
-    private var p7 = 0
+    private var p7 = ""
     private var p8 = ""
     private var p9 = ""
     private var p10 = 0
+    private var p11 = ""
 
 
     private var familyName: String = ""
@@ -63,14 +67,15 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         arguments?.let {
             p1 = it.getInt(ARG_PARAM1)
             p2 = it.getString(ARG_PARAM2).toString()
-            p3 = it.getInt(ARG_PARAM3)
+            p3 = it.getString(ARG_PARAM3).toString()
             p4 = it.getString(ARG_PARAM4).toString()
-            p5 = it.getInt(ARG_PARAM5)
+            p5 = it.getString(ARG_PARAM5).toString()
             p6 = it.getString(ARG_PARAM6).toString()
-            p7 = it.getInt(ARG_PARAM7)
+            p7 = it.getString(ARG_PARAM7).toString()
             p8 = it.getString(ARG_PARAM8).toString()
             p9 = it.getString(ARG_PARAM9).toString()
             p10 = it.getInt(ARG_PARAM10)
+            p11 = it.getString(ARG_PARAM11).toString()
         }
     }
 
@@ -201,6 +206,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         capitals.clear()
         viewModel.location = p8
         viewModel.datum = p9
+        viewModel.entryDate = p11
         if (middleName.isEmpty() && middleMiddleName.isEmpty()) {
             viewModel.getPhoto("${viewModel.familyName}${viewModel.firstName}${viewModel.tsz}.jpg")
         } else if (middleMiddleName.isEmpty()) {
@@ -347,6 +353,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             p8 = myList[i].location
             p9 = myList[i].date
             p10 = myList[i].status
+            p11 = myList[i].entryDate
         }
     }
 

@@ -2,9 +2,10 @@
 <resources>
     <color name="colorPrimary">#4d7285</color>
     <color name="colorPrimaryDark">#395461</color>
-    <color name="colorAccent">#ef4c16</color>
-    <color name="plusColor">#ee751d</color>
+    <color name="colorAccent">#ee751d</color>
+    <color name="plusColor">#ef4c16</color>
     <color name="mersenBlue">#4d7285</color>
-    <color name="mersenOrange">#ef4c16</color>
+    <color name="mersenOrange">#ee751d</color>
     <color name="mersenSilver">#B9C1C5</color>
+    <color name="mersenOrange2">#ee751d</color>
 </resources>
