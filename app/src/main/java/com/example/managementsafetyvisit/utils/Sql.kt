@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.managementsafetyvisit.MainActivity
 import com.example.managementsafetyvisit.MainActivity.Companion.dataArray
 import com.example.managementsafetyvisit.MainActivity.Companion.felelos
+import com.example.managementsafetyvisit.MainActivity.Companion.managerArray
 import com.example.managementsafetyvisit.MainActivity.Companion.msvFragment
 import com.example.managementsafetyvisit.MainActivity.Companion.newPerceptionArray
 import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
@@ -33,6 +34,17 @@ class Sql(private val sqlMessage: SqlMessage) {
         Class.forName("net.sourceforge.jtds.jdbc.Driver")
         try {
             connection = DriverManager.getConnection(read_connect)
+            val statementManager = connection.prepareStatement("""SELECT TextDescription FROM [Fusetech].[dbo].[DolgKodok] WHERE CodeDepFld2 =?""")
+            statementManager.setString(1,"MAN")
+            val resultManager = statementManager.executeQuery()
+            if(!resultManager.next()){
+                sqlMessage.sendMessage("Nem sikerölt a managereket letölteni")
+            }else{
+                do{
+                    val manager = resultManager.getString("TextDescription")
+                    managerArray.add(manager)
+                }while(resultManager.next())
+            }
             val statement =
                 connection.prepareStatement("""SELECT TextDescription FROM [Fusetech].[dbo].[DolgKodok] where Key1 = ?""")
             statement.setString(1, code)
