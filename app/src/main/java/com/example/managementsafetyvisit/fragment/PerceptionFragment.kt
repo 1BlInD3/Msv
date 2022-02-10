@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.example.managementsafetyvisit.MainActivity.Companion.managerArray
@@ -18,6 +19,7 @@ import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.adapters.ManagerAdapter
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.databinding.FragmentPerceptionBinding
+import com.example.managementsafetyvisit.utils.showToast
 import com.example.managementsafetyvisit.viewModels.PerceptionViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.RuntimeException
@@ -51,6 +53,7 @@ class PerceptionFragment : Fragment() {
             id: Int,
             statusz: Int
         )
+
         fun updateExistingPerception(
             perception: String?,
             answer: String?,
@@ -62,6 +65,7 @@ class PerceptionFragment : Fragment() {
             id: Int,
             statusz: Int
         )
+
         fun deleteById(id: Int)
     }
 
@@ -103,7 +107,7 @@ class PerceptionFragment : Fragment() {
 
         binding.cancelButton.setOnClickListener {
             mainActivityInteract.closeFragment()
-           // Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
+            // Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
         }
         val adapter = ArrayAdapter.createFromResource(
             requireContext(),
@@ -112,7 +116,11 @@ class PerceptionFragment : Fragment() {
         )
             .also { adapter -> adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
 
-        managerAdapter = ManagerAdapter(requireContext(),android.R.layout.simple_spinner_dropdown_item,managerArray)
+        managerAdapter = ManagerAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            managerArray
+        )
         binding.managerSpinner?.adapter = managerAdapter
         binding.typeSpinner.adapter = adapter
         binding.calendarView.setOnDateChangeListener { _, year, month, day ->
@@ -137,9 +145,9 @@ class PerceptionFragment : Fragment() {
         }
 
         binding.deleteButton?.setOnClickListener {
-            if(update){
+            if (update) {
                 mainActivityInteract.deleteById(viewModel.msvId.toInt())
-            }else{
+            } else {
                 Toast.makeText(
                     requireContext(),
                     "Csak mentett észrevételt lehet törölni",
@@ -149,43 +157,29 @@ class PerceptionFragment : Fragment() {
         }
 
         binding.okButton.setOnClickListener {
-            if(!update){
+            if (!update) {
                 viewModel.typeValue = binding.typeSpinner.selectedItem.toString()
-                when {
-                    binding.perceptionEdit.text.isEmpty() -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "Az észrevétel mező nem lehet üres!",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                    binding.answerEdit.text.isEmpty() -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "A válasz mező nem lehet üres!",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                    binding.measureEdit.text.isEmpty() -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "Az intézkedések mező nem lehet üres!",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                    else -> {
+                if (viewModel.typeValue != "PP-Pozitív pontok") {
+                    if (binding.perceptionEdit.text.isEmpty()) {
+                        showToast("Az észrevétel mező nem lehet üres!", requireContext())
+                    } else if (binding.answerEdit.text.isEmpty()) {
+                        showToast("A válasz mező nem lehet üres!", requireContext())
+                    } else if (binding.measureEdit.text.isEmpty()) {
+                        showToast("A hozott intézkedések mező nem lehet üres!", requireContext())
+                    } else {
                         viewModel.response = binding.perceptionEdit.text.toString().trim()
                         viewModel.answer = binding.answerEdit.text.toString().trim()
                         viewModel.measure = binding.measureEdit.text.toString().trim()
                         if (viewModel.myDate.isEmpty()) {
                             val simpleDate = SimpleDateFormat("yyyy-MM-dd")
-                            viewModel.myDate = simpleDate.format(Date(binding.calendarView.date))
+                            viewModel.myDate =
+                                simpleDate.format(Date(binding.calendarView.date))
                         }
                         viewModel.urgent = binding.urgentBox.isChecked
                         viewModel.typeValue =
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
                         viewModel.corrector = binding.correctorEdit.text.toString().trim()
-                        if(viewModel.urgent && viewModel.measure.isNotEmpty()){
+                        if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
                             val omg: String? = arguments?.getString("MYSTRING")
                             viewModel.corrector = omg!!
                             mainActivityInteract.saveNewPerception(
@@ -199,7 +193,7 @@ class PerceptionFragment : Fragment() {
                                 viewModel.msvId.toInt(),
                                 3
                             )
-                        }else{
+                        } else {
                             mainActivityInteract.saveNewPerception(
                                 viewModel.response,
                                 viewModel.answer,
@@ -222,46 +216,24 @@ class PerceptionFragment : Fragment() {
                         viewModel.msvId = ""
                         mainActivityInteract.closeFragment()
                     }
-                }
-            }else{
-                update = false
-                viewModel.typeValue = binding.typeSpinner.selectedItem.toString()
-                when {
-                    binding.perceptionEdit.text.isEmpty() -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "Az észrevétel mező nem lehet üres!",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                    binding.answerEdit.text.isEmpty() -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "A válasz mező nem lehet üres!",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                    binding.measureEdit.text.isEmpty() -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "Az intézkedések mező nem lehet üres!",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                    else -> {
+                } else {
+                    if (binding.perceptionEdit.text.toString().trim().isNotEmpty()) {
                         viewModel.response = binding.perceptionEdit.text.toString().trim()
                         viewModel.answer = binding.answerEdit.text.toString().trim()
                         viewModel.measure = binding.measureEdit.text.toString().trim()
                         if (viewModel.myDate.isEmpty()) {
                             val simpleDate = SimpleDateFormat("yyyy-MM-dd")
-                            viewModel.myDate = simpleDate.format(Date(binding.calendarView.date))
+                            viewModel.myDate =
+                                simpleDate.format(Date(binding.calendarView.date))
                         }
                         viewModel.urgent = binding.urgentBox.isChecked
                         viewModel.typeValue =
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
                         viewModel.corrector = binding.correctorEdit.text.toString().trim()
-                        if(viewModel.urgent && viewModel.measure.isNotEmpty()){
-                            mainActivityInteract.updateExistingPerception(
+                        if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
+                            val omg: String? = arguments?.getString("MYSTRING")
+                            viewModel.corrector = omg!!
+                            mainActivityInteract.saveNewPerception(
                                 viewModel.response,
                                 viewModel.answer,
                                 viewModel.measure,
@@ -272,8 +244,8 @@ class PerceptionFragment : Fragment() {
                                 viewModel.msvId.toInt(),
                                 3
                             )
-                        }else{
-                            mainActivityInteract.updateExistingPerception(
+                        } else {
+                            mainActivityInteract.saveNewPerception(
                                 viewModel.response,
                                 viewModel.answer,
                                 viewModel.measure,
@@ -294,7 +266,87 @@ class PerceptionFragment : Fragment() {
                         viewModel.myDate = ""
                         viewModel.msvId = ""
                         mainActivityInteract.closeFragment()
+                    }else{
+                        showToast("Az észrevétel nem lehet üres", requireContext())
                     }
+                }
+            } else {
+                update = false
+                viewModel.typeValue = binding.typeSpinner.selectedItem.toString()
+                if (binding.typeSpinner.selectedItemId.toInt() != 0) {
+                    when {
+                        binding.perceptionEdit.text.isEmpty() -> {
+                            Toast.makeText(
+                                requireContext(),
+                                "Az észrevétel mező nem lehet üres!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        binding.answerEdit.text.isEmpty() -> {
+                            Toast.makeText(
+                                requireContext(),
+                                "A válasz mező nem lehet üres!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        binding.measureEdit.text.isEmpty() -> {
+                            Toast.makeText(
+                                requireContext(),
+                                "Az intézkedések mező nem lehet üres!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        else -> {
+                            viewModel.response = binding.perceptionEdit.text.toString().trim()
+                            viewModel.answer = binding.answerEdit.text.toString().trim()
+                            viewModel.measure = binding.measureEdit.text.toString().trim()
+                            if (viewModel.myDate.isEmpty()) {
+                                val simpleDate = SimpleDateFormat("yyyy-MM-dd")
+                                viewModel.myDate =
+                                    simpleDate.format(Date(binding.calendarView.date))
+                            }
+                            viewModel.urgent = binding.urgentBox.isChecked
+                            viewModel.typeValue =
+                                binding.typeSpinner.selectedItem.toString().substring(0, 2)
+                            viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                            if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
+                                mainActivityInteract.updateExistingPerception(
+                                    viewModel.response,
+                                    viewModel.answer,
+                                    viewModel.measure,
+                                    viewModel.typeValue,
+                                    viewModel.urgent,
+                                    viewModel.corrector,
+                                    viewModel.myDate,
+                                    viewModel.msvId.toInt(),
+                                    3
+                                )
+                            } else {
+                                mainActivityInteract.updateExistingPerception(
+                                    viewModel.response,
+                                    viewModel.answer,
+                                    viewModel.measure,
+                                    viewModel.typeValue,
+                                    viewModel.urgent,
+                                    viewModel.corrector,
+                                    viewModel.myDate,
+                                    viewModel.msvId.toInt(),
+                                    1
+                                )
+                            }
+                            viewModel.response = ""
+                            viewModel.answer = ""
+                            viewModel.measure = ""
+                            viewModel.typeValue = ""
+                            viewModel.urgent = false
+                            viewModel.corrector = ""
+                            viewModel.myDate = ""
+                            viewModel.msvId = ""
+                            mainActivityInteract.closeFragment()
+                        }
+                    }
+                } else {
+                    showToast("Az észrevétel nem lehet üres", requireContext())
                 }
             }
         }
@@ -344,13 +396,13 @@ class PerceptionFragment : Fragment() {
                 val milli = calendar.timeInMillis
                 binding.calendarView.setDate(milli, true, true)
                 viewModel.msvId = p8
-               // Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
+                // Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
             }
             try {
                 binding.perceptionEdit.isFocusableInTouchMode = true
                 binding.perceptionEdit.setSelection(binding.perceptionEdit.text.length)
 
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.d("FOKUSZ", "onResume: $e")
             }
         }
