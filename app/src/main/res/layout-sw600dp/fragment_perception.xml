@@ -255,6 +255,7 @@
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:selectedItemPosition="@={viewModel.managerList}"
             app:layout_constraintEnd_toEndOf="@+id/corrector_edit"
             app:layout_constraintStart_toStartOf="@+id/corrector_edit"
             app:layout_constraintTop_toBottomOf="@+id/corrector_edit" />

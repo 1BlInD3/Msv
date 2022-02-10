@@ -9,10 +9,10 @@
         android:id="@+id/manager_name_adapter"
         android:layout_width="300dp"
         android:layout_height="50dp"
+        android:paddingStart="40dp"
         android:textSize="18dp"
         android:gravity="start"
         android:textColor="@android:color/black"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

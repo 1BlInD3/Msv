@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.managementsafetyvisit.MainActivity.Companion.managerArray
 import com.example.managementsafetyvisit.MainActivity.Companion.msvNumber
 import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
 import com.example.managementsafetyvisit.R
@@ -92,7 +93,8 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             response: String?,
             measure: String?,
             urgent: Boolean,
-            corrector: String?,
+           // corrector: String?,
+            corrector : Int,
             date: String?,
             id: String,
             name: String
@@ -278,6 +280,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
 
     override fun onCurrentClick(position: Int) {
         var name = ""
+        var manager = ""
         if (viewModel.middleMiddleCommissarName.isEmpty() && viewModel.middleCommissarName.isEmpty()) {
             name =
                 "${viewModel.familyNameCommissar} ${viewModel.firstNameCommissar}"
@@ -288,13 +291,19 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             name =
                 "${viewModel.familyNameCommissar} ${viewModel.middleCommissarName} ${viewModel.middleMiddleCommissarName} ${viewModel.firstNameCommissar}"
         }
+        var index = 0
+        for(i in 0 until managerArray.size){
+           if(managerArray[i] == viewModel.reversedList[position].corrector.toString()) {
+               index = i
+           }
+        }
         mainActivityConnector.loadPanelWithValues(
             viewModel.reversedList[position].perception,
             viewModel.reversedList[position].type,
             viewModel.reversedList[position].response,
             viewModel.reversedList[position].measure,
             viewModel.reversedList[position].now,
-            viewModel.reversedList[position].corrector,
+            index,
             viewModel.reversedList[position].date,
             viewModel.reversedList[position].id,
             name

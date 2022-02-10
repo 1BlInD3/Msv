@@ -419,7 +419,7 @@ class PerceptionFragment : Fragment() {
                 "UA" -> viewModel.typeList = 1
                 "UC" -> viewModel.typeList = 2
             }
-            //viewModel.corrector = p6
+            viewModel.managerList = p6.trim().toInt()
             if (p7 != "") {
                 val date = p7
                 val year = date.substring(0, 4).toInt()

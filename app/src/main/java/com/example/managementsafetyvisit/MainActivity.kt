@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         response: String?,
         measure: String?,
         urgent: Boolean,
-        corrector: String?,
+        corrector: Int,
         date: String?,
         id: String,
         name: String
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                 response,
                 measure,
                 urgent,
-                corrector,
+                corrector.toString(),
                 date,
                 id
             )
