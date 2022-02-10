@@ -14,6 +14,7 @@ import com.example.managementsafetyvisit.MainActivity.Companion.read_connect
 import com.example.managementsafetyvisit.MainActivity.Companion.rtsz
 import com.example.managementsafetyvisit.MainActivity.Companion.write_connect
 import com.example.managementsafetyvisit.data.Data
+import com.example.managementsafetyvisit.data.ManagerNames
 import com.example.managementsafetyvisit.data.ObservationData
 import java.sql.Connection
 import java.sql.DriverManager
@@ -34,15 +35,16 @@ class Sql(private val sqlMessage: SqlMessage) {
         Class.forName("net.sourceforge.jtds.jdbc.Driver")
         try {
             connection = DriverManager.getConnection(read_connect)
-            val statementManager = connection.prepareStatement("""SELECT TextDescription FROM [Fusetech].[dbo].[DolgKodok] WHERE CodeDepFld2 =?""")
+            val statementManager = connection.prepareStatement("""SELECT TextDescription FROM [Fusetech].[dbo].[DolgKodok] WHERE CodeDepFld2 =? ORDER BY TextDescription""")
             statementManager.setString(1,"MAN")
             val resultManager = statementManager.executeQuery()
             if(!resultManager.next()){
                 sqlMessage.sendMessage("Nem sikerölt a managereket letölteni")
             }else{
+                managerArray.add(ManagerNames(""))
                 do{
                     val manager = resultManager.getString("TextDescription")
-                    managerArray.add(manager)
+                    managerArray.add(ManagerNames(manager))
                 }while(resultManager.next())
             }
             val statement =
@@ -343,7 +345,8 @@ class Sql(private val sqlMessage: SqlMessage) {
                         statement.setInt(1, status)
                         statement.setInt(2, id)
                         statement.executeUpdate()
-                        sqlMessage.sendMessage("Az $id számú Msv lezárásra került")
+                        observationArray.clear()
+                       // sqlMessage.sendMessage("Az $id számú Msv lezárásra került")
                         sqlMessage.noEntry()
                     }
                 }else{

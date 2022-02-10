@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.ProgressBar
 import com.example.managementsafetyvisit.camera.CaptureAct
 import com.example.managementsafetyvisit.data.Data
+import com.example.managementsafetyvisit.data.ManagerNames
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.fragment.CameraFragment
 import com.example.managementsafetyvisit.fragment.LoginFragment
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         var closingStatus = 0
         var closingId = 0
         var rtsz = ""
-        val managerArray: ArrayList<String> = ArrayList()
+        val managerArray: ArrayList<ManagerNames> = ArrayList()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -324,7 +325,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                 progress.visibility = View.GONE
             }
             dialog.create()
-            dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
+            dialog.show()
         }
     }
 

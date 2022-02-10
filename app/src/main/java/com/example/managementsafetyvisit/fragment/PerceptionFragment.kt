@@ -12,7 +12,9 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import com.example.managementsafetyvisit.MainActivity.Companion.managerArray
 import com.example.managementsafetyvisit.R
+import com.example.managementsafetyvisit.adapters.ManagerAdapter
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.databinding.FragmentPerceptionBinding
 import com.example.managementsafetyvisit.viewModels.PerceptionViewModel
@@ -75,6 +77,7 @@ class PerceptionFragment : Fragment() {
     private var p7 = ""
     private var p8 = ""
     var update = false
+    private lateinit var managerAdapter: ManagerAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -108,7 +111,8 @@ class PerceptionFragment : Fragment() {
         )
             .also { adapter -> adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
 
-
+        managerAdapter = ManagerAdapter(requireContext(),android.R.layout.simple_spinner_dropdown_item,managerArray)
+        binding.managerSpinner?.adapter = managerAdapter
         binding.typeSpinner.adapter = adapter
         binding.calendarView.setOnDateChangeListener { _, year, month, day ->
             val myMonth = month + 1

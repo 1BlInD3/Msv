@@ -124,6 +124,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             mainActivityConnector.getCameraInstance()
         }
         binding.checkButton?.setOnClickListener {
+            //observationArray.clear()
             mainActivityConnector.closeMsv(2,viewModel.msvNumber.trim().toInt())
         }
         return binding.root
