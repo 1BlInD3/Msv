@@ -108,6 +108,7 @@ class PerceptionFragment : Fragment() {
         )
             .also { adapter -> adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
 
+
         binding.typeSpinner.adapter = adapter
         binding.calendarView.setOnDateChangeListener { _, year, month, day ->
             val myMonth = month + 1

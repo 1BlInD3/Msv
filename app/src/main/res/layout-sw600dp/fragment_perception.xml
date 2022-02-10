@@ -70,7 +70,7 @@
         android:id="@+id/answer_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:text="Válasz a párbeszédre"
         android:textColor="@android:color/black"
         android:textSize="20sp"
@@ -97,7 +97,7 @@
         android:id="@+id/measure_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:text="Hozott intézkedések"
         android:textColor="@android:color/black"
         android:textSize="20sp"
@@ -164,7 +164,7 @@
         android:id="@+id/corrector_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:text="Javító"
         android:textColor="@android:color/black"
         android:textSize="20sp"
@@ -209,12 +209,11 @@
         android:id="@+id/textView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:text="Megjegyzés sorszám"
         android:textColor="@android:color/black"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/corrector_edit"
-        app:layout_constraintTop_toBottomOf="@+id/corrector_edit" />
+        app:layout_constraintStart_toStartOf="@+id/calendarView"
+        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
 
     <TextView
         android:id="@+id/textView8"
@@ -238,6 +237,14 @@
         android:textColor="@color/mersenBlue"
         app:layout_constraintBottom_toTopOf="@+id/cancel_button"
         app:layout_constraintStart_toStartOf="@+id/ok_button" />
+
+    <Spinner
+        android:id="@+id/manager_spinner"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@+id/corrector_edit"
+        app:layout_constraintTop_toBottomOf="@+id/corrector_edit" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
