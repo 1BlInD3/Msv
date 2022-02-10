@@ -176,7 +176,7 @@ class PerceptionFragment : Fragment() {
                         viewModel.urgent = binding.urgentBox.isChecked
                         viewModel.typeValue =
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
-                        viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                        //viewModel.corrector = binding.correctorEdit.text.toString().trim()
                         if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
                             val omg: String? = arguments?.getString("MYSTRING")
                             viewModel.corrector = omg!!
@@ -227,7 +227,7 @@ class PerceptionFragment : Fragment() {
                         viewModel.urgent = binding.urgentBox.isChecked
                         viewModel.typeValue =
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
-                        viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                        //viewModel.corrector = binding.correctorEdit.text.toString().trim()
                         if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
                             val omg: String? = arguments?.getString("MYSTRING")
                             viewModel.corrector = omg!!
@@ -289,7 +289,7 @@ class PerceptionFragment : Fragment() {
                         viewModel.urgent = binding.urgentBox.isChecked
                         viewModel.typeValue =
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
-                        viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                        //viewModel.corrector = binding.correctorEdit.text.toString().trim()
                         if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
                             val omg: String? = arguments?.getString("COMMISSAR")
                             viewModel.corrector = omg!!
@@ -340,7 +340,7 @@ class PerceptionFragment : Fragment() {
                         viewModel.urgent = binding.urgentBox.isChecked
                         viewModel.typeValue =
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
-                        viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                       // viewModel.corrector = binding.correctorEdit.text.toString().trim()
                         if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
                             //viewModel.corrector = correctorInUse
                             val omg: String? = arguments?.getString("COMMISSAR")
@@ -409,7 +409,7 @@ class PerceptionFragment : Fragment() {
                 "UA" -> viewModel.typeList = 1
                 "UC" -> viewModel.typeList = 2
             }
-            viewModel.corrector = p6
+            //viewModel.corrector = p6
             if (p7 != "") {
                 val date = p7
                 val year = date.substring(0, 4).toInt()
