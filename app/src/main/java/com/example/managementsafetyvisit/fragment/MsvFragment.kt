@@ -94,7 +94,8 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             urgent: Boolean,
             corrector: String?,
             date: String?,
-            id: String
+            id: String,
+            name: String
         )
 
         fun getCameraToScan()
@@ -276,6 +277,17 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
     }
 
     override fun onCurrentClick(position: Int) {
+        var name = ""
+        if (viewModel.middleMiddleCommissarName.isEmpty() && viewModel.middleCommissarName.isEmpty()) {
+            name =
+                "${viewModel.familyNameCommissar} ${viewModel.firstNameCommissar}"
+        } else if (viewModel.middleMiddleCommissarName.isEmpty()) {
+            name =
+                "${viewModel.familyNameCommissar.trim()} ${viewModel.middleCommissarName} ${viewModel.firstNameCommissar.trim()}"
+        } else {
+            name =
+                "${viewModel.familyNameCommissar} ${viewModel.middleCommissarName} ${viewModel.middleMiddleCommissarName} ${viewModel.firstNameCommissar}"
+        }
         mainActivityConnector.loadPanelWithValues(
             viewModel.reversedList[position].perception,
             viewModel.reversedList[position].type,
@@ -284,7 +296,8 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             viewModel.reversedList[position].now,
             viewModel.reversedList[position].corrector,
             viewModel.reversedList[position].date,
-            viewModel.reversedList[position].id
+            viewModel.reversedList[position].id,
+            name
         )
     }
 

@@ -100,7 +100,8 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         urgent: Boolean,
         corrector: String?,
         date: String?,
-        id: String
+        id: String,
+        name: String
     ) {
         val observation: ArrayList<ObservationData> = ArrayList()
         observation.add(
@@ -118,6 +119,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         val perceptionFragment = PerceptionFragment()
         val bundle = Bundle()
         bundle.putSerializable("LOADING", observation)
+        bundle.putString("COMMISSAR", name)
         perceptionFragment.arguments = bundle
         supportFragmentManager.beginTransaction()
             .replace(R.id.panel_container, perceptionFragment, "PERCEPTION").commit()

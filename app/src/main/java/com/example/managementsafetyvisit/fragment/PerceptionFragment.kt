@@ -10,11 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.example.managementsafetyvisit.MainActivity.Companion.managerArray
-import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
 import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.adapters.ManagerAdapter
 import com.example.managementsafetyvisit.data.ObservationData
@@ -266,87 +264,123 @@ class PerceptionFragment : Fragment() {
                         viewModel.myDate = ""
                         viewModel.msvId = ""
                         mainActivityInteract.closeFragment()
-                    }else{
+                    } else {
                         showToast("Az észrevétel nem lehet üres", requireContext())
                     }
                 }
             } else {
-                update = false
                 viewModel.typeValue = binding.typeSpinner.selectedItem.toString()
-                if (binding.typeSpinner.selectedItemId.toInt() != 0) {
-                    when {
-                        binding.perceptionEdit.text.isEmpty() -> {
-                            Toast.makeText(
-                                requireContext(),
-                                "Az észrevétel mező nem lehet üres!",
-                                Toast.LENGTH_LONG
-                            ).show()
+                if (viewModel.typeValue != "PP-Pozitív pontok") {
+                    if (binding.perceptionEdit.text.isEmpty()) {
+                        showToast("Az észrevétel mező nem lehet üres!", requireContext())
+                    } else if (binding.answerEdit.text.isEmpty()) {
+                        showToast("A válasz mező nem lehet üres!", requireContext())
+                    } else if (binding.measureEdit.text.isEmpty()) {
+                        showToast("A hozott intézkedések mező nem lehet üres!", requireContext())
+                    } else {
+                        viewModel.response = binding.perceptionEdit.text.toString().trim()
+                        viewModel.answer = binding.answerEdit.text.toString().trim()
+                        viewModel.measure = binding.measureEdit.text.toString().trim()
+                        if (viewModel.myDate.isEmpty()) {
+                            val simpleDate = SimpleDateFormat("yyyy-MM-dd")
+                            viewModel.myDate =
+                                simpleDate.format(Date(binding.calendarView.date))
                         }
-                        binding.answerEdit.text.isEmpty() -> {
-                            Toast.makeText(
-                                requireContext(),
-                                "A válasz mező nem lehet üres!",
-                                Toast.LENGTH_LONG
-                            ).show()
+                        viewModel.urgent = binding.urgentBox.isChecked
+                        viewModel.typeValue =
+                            binding.typeSpinner.selectedItem.toString().substring(0, 2)
+                        viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                        if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
+                            val omg: String? = arguments?.getString("COMMISSAR")
+                            viewModel.corrector = omg!!
+                            mainActivityInteract.updateExistingPerception(
+                                viewModel.response,
+                                viewModel.answer,
+                                viewModel.measure,
+                                viewModel.typeValue,
+                                viewModel.urgent,
+                                viewModel.corrector,
+                                viewModel.myDate,
+                                viewModel.msvId.toInt(),
+                                3
+                            )
+                        } else {
+                            mainActivityInteract.updateExistingPerception(
+                                viewModel.response,
+                                viewModel.answer,
+                                viewModel.measure,
+                                viewModel.typeValue,
+                                viewModel.urgent,
+                                viewModel.corrector,
+                                viewModel.myDate,
+                                viewModel.msvId.toInt(),
+                                1
+                            )
                         }
-                        binding.measureEdit.text.isEmpty() -> {
-                            Toast.makeText(
-                                requireContext(),
-                                "Az intézkedések mező nem lehet üres!",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                        else -> {
-                            viewModel.response = binding.perceptionEdit.text.toString().trim()
-                            viewModel.answer = binding.answerEdit.text.toString().trim()
-                            viewModel.measure = binding.measureEdit.text.toString().trim()
-                            if (viewModel.myDate.isEmpty()) {
-                                val simpleDate = SimpleDateFormat("yyyy-MM-dd")
-                                viewModel.myDate =
-                                    simpleDate.format(Date(binding.calendarView.date))
-                            }
-                            viewModel.urgent = binding.urgentBox.isChecked
-                            viewModel.typeValue =
-                                binding.typeSpinner.selectedItem.toString().substring(0, 2)
-                            viewModel.corrector = binding.correctorEdit.text.toString().trim()
-                            if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
-                                mainActivityInteract.updateExistingPerception(
-                                    viewModel.response,
-                                    viewModel.answer,
-                                    viewModel.measure,
-                                    viewModel.typeValue,
-                                    viewModel.urgent,
-                                    viewModel.corrector,
-                                    viewModel.myDate,
-                                    viewModel.msvId.toInt(),
-                                    3
-                                )
-                            } else {
-                                mainActivityInteract.updateExistingPerception(
-                                    viewModel.response,
-                                    viewModel.answer,
-                                    viewModel.measure,
-                                    viewModel.typeValue,
-                                    viewModel.urgent,
-                                    viewModel.corrector,
-                                    viewModel.myDate,
-                                    viewModel.msvId.toInt(),
-                                    1
-                                )
-                            }
-                            viewModel.response = ""
-                            viewModel.answer = ""
-                            viewModel.measure = ""
-                            viewModel.typeValue = ""
-                            viewModel.urgent = false
-                            viewModel.corrector = ""
-                            viewModel.myDate = ""
-                            viewModel.msvId = ""
-                            mainActivityInteract.closeFragment()
-                        }
+                        viewModel.response = ""
+                        viewModel.answer = ""
+                        viewModel.measure = ""
+                        viewModel.typeValue = ""
+                        viewModel.urgent = false
+                        viewModel.corrector = ""
+                        viewModel.myDate = ""
+                        viewModel.msvId = ""
+                        mainActivityInteract.closeFragment()
                     }
                 } else {
-                    showToast("Az észrevétel nem lehet üres", requireContext())
+                    if (binding.perceptionEdit.text.toString().trim().isNotEmpty()) {
+                        viewModel.response = binding.perceptionEdit.text.toString().trim()
+                        viewModel.answer = binding.answerEdit.text.toString().trim()
+                        viewModel.measure = binding.measureEdit.text.toString().trim()
+                        if (viewModel.myDate.isEmpty()) {
+                            val simpleDate = SimpleDateFormat("yyyy-MM-dd")
+                            viewModel.myDate =
+                                simpleDate.format(Date(binding.calendarView.date))
+                        }
+                        viewModel.urgent = binding.urgentBox.isChecked
+                        viewModel.typeValue =
+                            binding.typeSpinner.selectedItem.toString().substring(0, 2)
+                        viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                        if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
+                            //viewModel.corrector = correctorInUse
+                            val omg: String? = arguments?.getString("COMMISSAR")
+                            viewModel.corrector = omg!!
+                            mainActivityInteract.updateExistingPerception(
+                                viewModel.response,
+                                viewModel.answer,
+                                viewModel.measure,
+                                viewModel.typeValue,
+                                viewModel.urgent,
+                                viewModel.corrector,
+                                viewModel.myDate,
+                                viewModel.msvId.toInt(),
+                                3
+                            )
+                        } else {
+                            mainActivityInteract.updateExistingPerception(
+                                viewModel.response,
+                                viewModel.answer,
+                                viewModel.measure,
+                                viewModel.typeValue,
+                                viewModel.urgent,
+                                viewModel.corrector,
+                                viewModel.myDate,
+                                viewModel.msvId.toInt(),
+                                1
+                            )
+                        }
+                        viewModel.response = ""
+                        viewModel.answer = ""
+                        viewModel.measure = ""
+                        viewModel.typeValue = ""
+                        viewModel.urgent = false
+                        viewModel.corrector = ""
+                        viewModel.myDate = ""
+                        viewModel.msvId = ""
+                        mainActivityInteract.closeFragment()
+                    } else {
+                        showToast("Az észrevétel nem lehet üres", requireContext())
+                    }
                 }
             }
         }
