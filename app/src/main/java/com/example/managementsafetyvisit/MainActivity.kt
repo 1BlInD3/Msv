@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         var closingStatus = 0
         var closingId = 0
         var rtsz = ""
-        val managerArray: ArrayList<ManagerNames> = ArrayList()
+        val managerArray: ArrayList<String> = ArrayList()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

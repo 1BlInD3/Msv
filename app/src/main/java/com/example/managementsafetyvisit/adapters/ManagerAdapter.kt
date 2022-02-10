@@ -9,10 +9,11 @@ import android.widget.TextView
 import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.data.ManagerNames
 import java.util.*
+import java.util.logging.StreamHandler
 import kotlin.collections.ArrayList
 
-class ManagerAdapter(context: Context, resource: Int, objects: ArrayList<out ManagerNames>) :
-    ArrayAdapter<ManagerNames>(context,resource,objects) {
+class ManagerAdapter(context: Context, resource: Int, objects: ArrayList<out String>) :
+    ArrayAdapter<String>(context,resource,objects) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         return initView(position, convertView, parent)
@@ -26,9 +27,9 @@ class ManagerAdapter(context: Context, resource: Int, objects: ArrayList<out Man
         var convertView1: View? = convertView
         convertView1 = LayoutInflater.from(parent.context).inflate(R.layout.managerek, parent, false)
         val textViewName = convertView1.findViewById<TextView>(R.id.manager_name_adapter)
-        val currentItem: ManagerNames? = getItem(position)
+        val currentItem: String? = getItem(position)
         if(currentItem != null){
-            textViewName?.setText(currentItem.managers)
+            textViewName?.setText(currentItem)
         }
         return convertView1
     }

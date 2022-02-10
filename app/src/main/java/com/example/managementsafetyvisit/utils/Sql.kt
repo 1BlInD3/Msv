@@ -41,10 +41,12 @@ class Sql(private val sqlMessage: SqlMessage) {
             if(!resultManager.next()){
                 sqlMessage.sendMessage("Nem sikerölt a managereket letölteni")
             }else{
-                managerArray.add(ManagerNames(""))
+                //managerArray.add(ManagerNames(""))
+                managerArray.add("")
                 do{
                     val manager = resultManager.getString("TextDescription")
-                    managerArray.add(ManagerNames(manager))
+                    managerArray.add(manager)
+                   // managerArray.add(ManagerNames(manager))
                 }while(resultManager.next())
             }
             val statement =

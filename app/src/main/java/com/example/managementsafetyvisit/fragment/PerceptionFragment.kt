@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
@@ -139,6 +140,13 @@ class PerceptionFragment : Fragment() {
 
         binding.urgentBox.setOnClickListener {
             viewModel.urgent = binding.urgentBox.isChecked
+            if(viewModel.urgent){
+                binding.correctorEdit.visibility = View.GONE
+                binding.managerSpinner?.visibility = View.GONE
+            }else{
+                binding.correctorEdit.visibility = View.VISIBLE
+                binding.managerSpinner?.visibility = View.VISIBLE
+            }
             // Toast.makeText(requireContext(), "${binding.urgentBox.isChecked}", Toast.LENGTH_SHORT).show()
         }
 
@@ -153,6 +161,8 @@ class PerceptionFragment : Fragment() {
                 ).show()
             }
         }
+
+
 
         binding.okButton.setOnClickListener {
             if (!update) {
@@ -176,7 +186,7 @@ class PerceptionFragment : Fragment() {
                         viewModel.urgent = binding.urgentBox.isChecked
                         viewModel.typeValue =
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
-                        //viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                        viewModel.corrector = binding.managerSpinner?.selectedItem.toString()
                         if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
                             val omg: String? = arguments?.getString("MYSTRING")
                             viewModel.corrector = omg!!
@@ -227,7 +237,7 @@ class PerceptionFragment : Fragment() {
                         viewModel.urgent = binding.urgentBox.isChecked
                         viewModel.typeValue =
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
-                        //viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                        viewModel.corrector = binding.managerSpinner?.selectedItem.toString()
                         if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
                             val omg: String? = arguments?.getString("MYSTRING")
                             viewModel.corrector = omg!!
@@ -289,7 +299,7 @@ class PerceptionFragment : Fragment() {
                         viewModel.urgent = binding.urgentBox.isChecked
                         viewModel.typeValue =
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
-                        //viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                        viewModel.corrector = binding.managerSpinner?.selectedItem.toString()
                         if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
                             val omg: String? = arguments?.getString("COMMISSAR")
                             viewModel.corrector = omg!!
@@ -340,7 +350,7 @@ class PerceptionFragment : Fragment() {
                         viewModel.urgent = binding.urgentBox.isChecked
                         viewModel.typeValue =
                             binding.typeSpinner.selectedItem.toString().substring(0, 2)
-                       // viewModel.corrector = binding.correctorEdit.text.toString().trim()
+                        viewModel.corrector = binding.managerSpinner?.selectedItem.toString()
                         if (viewModel.urgent && viewModel.measure.isNotEmpty()) {
                             //viewModel.corrector = correctorInUse
                             val omg: String? = arguments?.getString("COMMISSAR")
