@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.example.managementsafetyvisit.MainActivity.Companion.managerArray
+import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
 import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.adapters.ManagerAdapter
 import com.example.managementsafetyvisit.data.ObservationData

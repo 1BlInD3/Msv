@@ -1,5 +1,9 @@
 package com.example.managementsafetyvisit.data
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class ObservationData(
     var perception: String?,
     var type: String?,
@@ -9,4 +13,4 @@ data class ObservationData(
     var corrector: String?,
     var date: String?,
     var id: String
-)
+) : Parcelable

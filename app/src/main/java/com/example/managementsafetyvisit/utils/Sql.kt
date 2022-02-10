@@ -61,6 +61,7 @@ class Sql(private val sqlMessage: SqlMessage) {
                 statement1.setString(1, felelos)
                 val resultSet1 = statement1.executeQuery()
                 if (!resultSet1.next()) {
+                    managerArray.clear()
                     sqlMessage.sendMessage("$felelos nevén nincs aktív MSV!")
                 } else {
                     val id = resultSet1.getInt("ID")

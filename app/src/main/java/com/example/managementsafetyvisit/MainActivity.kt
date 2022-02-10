@@ -247,12 +247,16 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     private fun scanCode() {
-        val integrator = IntentIntegrator(this)
-        integrator.captureActivity = CaptureAct::class.java
-        integrator.setOrientationLocked(true)
-        integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
-        integrator.setPrompt("Beolvasás folyamatban...")
-        integrator.initiateScan()
+        try{
+            val integrator = IntentIntegrator(this)
+            integrator.captureActivity = CaptureAct::class.java
+            integrator.setOrientationLocked(true)
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
+            integrator.setPrompt("Beolvasás folyamatban...")
+            integrator.initiateScan()
+        }catch (e: Exception){
+            com.example.managementsafetyvisit.utils.showDialog("Nincs kamera $e",this)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, @Nullable data: Intent?) {

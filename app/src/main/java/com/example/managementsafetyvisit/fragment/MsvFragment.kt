@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -117,7 +118,18 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.imageProgress?.visibility = View.GONE
 
         binding.newResponse?.setOnClickListener {
-            mainActivityConnector.loadPerceptionPanel(viewModel.msvNumber.trim(), "${viewModel.familyNameCommissar} ${viewModel.middleCommissarName} ${viewModel.middleMiddleCommissarName} ${viewModel.firstNameCommissar}")
+            var name = ""
+            if (viewModel.middleMiddleCommissarName.isEmpty() && viewModel.middleCommissarName.isEmpty()) {
+                name =
+                    "${viewModel.familyNameCommissar} ${viewModel.firstNameCommissar}"
+            } else if (viewModel.middleMiddleCommissarName.isEmpty()) {
+                name =
+                    "${viewModel.familyNameCommissar.trim()} ${viewModel.middleCommissarName} ${viewModel.firstNameCommissar.trim()}"
+            } else {
+                name =
+                    "${viewModel.familyNameCommissar} ${viewModel.middleCommissarName} ${viewModel.middleMiddleCommissarName} ${viewModel.firstNameCommissar}"
+            }
+            mainActivityConnector.loadPerceptionPanel(viewModel.msvNumber.trim(), name)
         }
         binding.cameraButton?.setOnClickListener {
             msvNumber = viewModel.msvNumber.trim()
@@ -125,7 +137,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         }
         binding.checkButton?.setOnClickListener {
             //observationArray.clear()
-            mainActivityConnector.closeMsv(2,viewModel.msvNumber.trim().toInt())
+            mainActivityConnector.closeMsv(2, viewModel.msvNumber.trim().toInt())
         }
         return binding.root
     }
@@ -152,7 +164,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         if (capitals.size == 2) {
             viewModel.familyName = familyName
             viewModel.firstName = firstName
-            viewModel.middleName  = ""
+            viewModel.middleName = ""
             viewModel.middleMiddleName = ""
         } else if (capitals.size == 3) {
             viewModel.familyName = familyName
@@ -172,7 +184,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         if (capitals.size == 2) {
             viewModel.familyNameCommissar = familyName
             viewModel.firstNameCommissar = firstName
-            viewModel.middleCommissarName  = ""
+            viewModel.middleCommissarName = ""
             viewModel.middleMiddleCommissarName = ""
         } else if (capitals.size == 3) {
             viewModel.familyNameCommissar = familyName
@@ -190,7 +202,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         if (capitals.size == 2) {
             viewModel.familyNameChastnik = familyName
             viewModel.firstNameChastnik = firstName
-            viewModel.middleChastinkName  = ""
+            viewModel.middleChastinkName = ""
             viewModel.middleMiddleChastnikName = ""
 
         } else if (capitals.size == 3) {
@@ -296,9 +308,9 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.observationRecycler?.adapter?.notifyDataSetChanged()
     }
 
-    fun refreshAt(position: Int){
-        for(i in observationArray.size - 1 downTo 0){
-            if(observationArray[i].id.toInt() == position){
+    fun refreshAt(position: Int) {
+        for (i in observationArray.size - 1 downTo 0) {
+            if (observationArray[i].id.toInt() == position) {
                 observationArray.removeAt(i)
             }
         }
