@@ -3,6 +3,7 @@ package com.example.managementsafetyvisit.utils
 import android.os.Bundle
 import android.util.Log
 import com.example.managementsafetyvisit.MainActivity
+import com.example.managementsafetyvisit.MainActivity.Companion.closingTime
 import com.example.managementsafetyvisit.MainActivity.Companion.dataArray
 import com.example.managementsafetyvisit.MainActivity.Companion.felelos
 import com.example.managementsafetyvisit.MainActivity.Companion.managerArray
@@ -29,6 +30,8 @@ class Sql(private val sqlMessage: SqlMessage) {
     private var updateId = 0
     private var update = false
     private val TAG = "Sql"
+
+
     fun getDataByName(code: String): Boolean {
         observationArray.clear()
         val connection: Connection
@@ -40,7 +43,7 @@ class Sql(private val sqlMessage: SqlMessage) {
             statementManager.setString(1, "MAN")
             val resultManager = statementManager.executeQuery()
             if (!resultManager.next()) {
-                sqlMessage.sendMessage("Nem sikerölt a managereket letölteni")
+                sqlMessage.sendMessage("Nem sikerült a managereket letölteni")
             } else {
                 //managerArray.add(ManagerNames(""))
                 managerArray.add("")
@@ -78,21 +81,38 @@ class Sql(private val sqlMessage: SqlMessage) {
                     val date = resultSet1.getString("Datum")
                     val status = resultSet1.getInt("Statusz")
                     val entryDate = resultSet1.getString("BelepesDatum")
-                    dataArray.add(
-                        Data(
-                            id,
-                            name,
-                            tsz,
-                            felelos,
-                            ftsz,
-                            resztvevo,
-                            rtsz,
-                            location,
-                            date,
-                            status,
-                            entryDate
-                        )
-                    )
+                    val statement2 = connection.prepareStatement("""SELECT [Munkahely] FROM [Fusetech].[dbo].[MSV_Dolgkodok_HolDolg] where TSz = ?""")
+                    statement2.setString(1,tsz)
+                    val resultSet2 = statement2.executeQuery()
+                    if(!resultSet2.next()){
+                        sqlMessage.sendMessage("Hiba a feldolgozás során")
+                        return false
+                    }else{
+                        val munkahely = resultSet2.getString("Munkahely")
+                        if(munkahely == "GYAR"){
+                            sqlMessage.sendMessage("$name nincs a gyár területén")
+                            return false
+                        }else if (munkahely == "-TROGGER"){
+                            sqlMessage.sendMessage("$name nincs a munkahelyére bejelentkezve. Értesítsd a műszakvezetőjét!")
+                            return false
+                        }else{
+                            dataArray.add(
+                                Data(
+                                    id,
+                                    name,
+                                    tsz,
+                                    felelos,
+                                    ftsz,
+                                    resztvevo,
+                                    rtsz,
+                                    munkahely,
+                                    date,
+                                    status,
+                                    entryDate
+                                )
+                            )
+                        }
+                    }
                     MainActivity.rtsz = rtsz.toString().trim()
                     val bundle = Bundle()
                     bundle.putSerializable("EMBER", dataArray)
@@ -348,6 +368,7 @@ class Sql(private val sqlMessage: SqlMessage) {
                     sqlMessage.noEntry()
 
                 } else {
+                    closingTime = false
                     sqlMessage.sendMessage("Nem a résztvevő húzta le a kódját!"/*"Van kód de valami nem jó $code és $code2"*/)
                 }
             }

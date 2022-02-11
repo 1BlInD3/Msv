@@ -10,7 +10,6 @@ import android.view.View
 import android.widget.ProgressBar
 import com.example.managementsafetyvisit.camera.CaptureAct
 import com.example.managementsafetyvisit.data.Data
-import com.example.managementsafetyvisit.data.ManagerNames
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.fragment.CameraFragment
 import com.example.managementsafetyvisit.fragment.LoginFragment
@@ -138,7 +137,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     override fun closeMsv(statusz: Int, id: Int) {
         val sql = Sql(this)
         CoroutineScope(IO).launch {
-            if(sql.checkMsvObservationNumber(id)){
+            if (sql.checkMsvObservationNumber(id)) {
                 CoroutineScope(Main).launch {
                     val dialog = AlertDialog.Builder(this@MainActivity)
                     dialog.setTitle("Figyelem")
@@ -152,9 +151,13 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                     dialog.create()
                     dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
                 }
-            }else{
+            } else {
                 CoroutineScope(Main).launch {
-                    com.example.managementsafetyvisit.utils.showDialog("Észrevétel nélkül nem lehet az Msv-t lezárni!", this@MainActivity)
+                    closingTime = false
+                    com.example.managementsafetyvisit.utils.showDialog(
+                        "Észrevétel nélkül nem lehet az Msv-t lezárni!",
+                        this@MainActivity
+                    )
                 }
             }
         }
@@ -260,15 +263,15 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     private fun scanCode() {
-        try{
+        try {
             val integrator = IntentIntegrator(this)
             integrator.captureActivity = CaptureAct::class.java
             integrator.setOrientationLocked(true)
             integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
             integrator.setPrompt("Beolvasás folyamatban...")
             integrator.initiateScan()
-        }catch (e: Exception){
-            com.example.managementsafetyvisit.utils.showDialog("Nincs kamera $e",this)
+        } catch (e: Exception) {
+            com.example.managementsafetyvisit.utils.showDialog("Nincs kamera $e", this)
         }
     }
 
@@ -279,7 +282,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                 progress.visibility = View.VISIBLE
                 CoroutineScope(IO).launch {
                     if (!closingTime) {
-                        try{
+                        try {
                             val sql = Sql(this@MainActivity)
                             if (sql.getDataByName(result.contents.trim())) {
                                 CoroutineScope(Main).launch {
@@ -290,7 +293,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                                     progress.visibility = View.GONE
                                 }
                             }
-                        }catch(e: Exception){
+                        } catch (e: Exception) {
                             Log.d(TAG, "onActivityResult: $e")
                         }
                     } else {
@@ -302,7 +305,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                                 val builder = AlertDialog.Builder(this@MainActivity)
                                 builder.setTitle("FIGYELEM!")
                                 builder.setMessage("Az Msv lezárásra került! :)")
-                                builder.setPositiveButton("OK"){_,_->
+                                builder.setPositiveButton("OK") { _, _ ->
                                     finishAndRemoveTask()
                                 }
                             }
@@ -339,6 +342,9 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             dialog.setTitle("Figyelem")
             dialog.setMessage(message)
             dialog.setPositiveButton("OK") { _, _ ->
+                progress.visibility = View.GONE
+            }
+            dialog.setOnCancelListener{
                 progress.visibility = View.GONE
             }
             dialog.create()
