@@ -35,19 +35,20 @@ class Sql(private val sqlMessage: SqlMessage) {
         Class.forName("net.sourceforge.jtds.jdbc.Driver")
         try {
             connection = DriverManager.getConnection(read_connect)
-            val statementManager = connection.prepareStatement("""SELECT TextDescription FROM [Fusetech].[dbo].[DolgKodok] WHERE CodeDepFld2 =? ORDER BY TextDescription""")
-            statementManager.setString(1,"MAN")
+            val statementManager =
+                connection.prepareStatement("""SELECT TextDescription FROM [Fusetech].[dbo].[DolgKodok] WHERE CodeDepFld2 =? ORDER BY TextDescription""")
+            statementManager.setString(1, "MAN")
             val resultManager = statementManager.executeQuery()
-            if(!resultManager.next()){
+            if (!resultManager.next()) {
                 sqlMessage.sendMessage("Nem sikerölt a managereket letölteni")
-            }else{
+            } else {
                 //managerArray.add(ManagerNames(""))
                 managerArray.add("")
-                do{
+                do {
                     val manager = resultManager.getString("TextDescription")
                     managerArray.add(manager)
-                   // managerArray.add(ManagerNames(manager))
-                }while(resultManager.next())
+                    // managerArray.add(ManagerNames(manager))
+                } while (resultManager.next())
             }
             val statement =
                 connection.prepareStatement("""SELECT TextDescription FROM [Fusetech].[dbo].[DolgKodok] where Key1 = ?""")
@@ -328,37 +329,39 @@ class Sql(private val sqlMessage: SqlMessage) {
         Class.forName("net.sourceforge.jtds.jdbc.Driver")
         try {
             connection = DriverManager.getConnection(write_connect)
-            val statement2 = connection.prepareStatement("SELECT Key1 FROM [Fusetech].[dbo].[DolgKodok] WHERE TSz = ?")
-            statement2.setString(1,rtsz)
+            val statement2 =
+                connection.prepareStatement("SELECT Key1 FROM [Fusetech].[dbo].[DolgKodok] WHERE TSz = ?")
+            statement2.setString(1, rtsz)
             val resultSet2 = statement2.executeQuery()
-            if(!resultSet2.next()){
+            if (!resultSet2.next()) {
                 sqlMessage.sendMessage("Hibás kód $rtsz")
-            }else{
+            } else {
                 val code2 = resultSet2.getString("Key1")
-                if(code == code2){
-                    val statement1 =
-                        connection.prepareStatement("SELECT * FROM [Fusetech].[dbo].[MsvNotes] WHERE IdData = ?")
-                    statement1.setInt(1, id)
-                    val resultSet1 = statement1.executeQuery()
-                    if (!resultSet1.next()) {
-                        sqlMessage.sendMessage("Az $id számú Msv-t nem lehet lezárni észrevétel nélkül")
-                    } else {
-                        val statement =
-                            connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvData] Set Statusz = ? where ID = ?""")
-                        statement.setInt(1, status)
-                        statement.setInt(2, id)
-                        statement.executeUpdate()
-                        observationArray.clear()
-                       // sqlMessage.sendMessage("Az $id számú Msv lezárásra került")
-                        sqlMessage.noEntry()
-                    }
-                }else{
+                if (code == code2) {
+                    val statement =
+                        connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvData] Set Statusz = ? where ID = ?""")
+                    statement.setInt(1, status)
+                    statement.setInt(2, id)
+                    statement.executeUpdate()
+                    observationArray.clear()
+                    // sqlMessage.sendMessage("Az $id számú Msv lezárásra került")
+                    sqlMessage.noEntry()
+
+                } else {
                     sqlMessage.sendMessage("Nem a résztvevő húzta le a kódját!"/*"Van kód de valami nem jó $code és $code2"*/)
                 }
             }
         } catch (e: Exception) {
             sqlMessage.sendMessage("Nem sikerült a frissítés! \n$e")
         }
+    }
+    fun checkMsvObservationNumber(id: Int): Boolean{
+        val connection: Connection = DriverManager.getConnection(write_connect)
+        val statement1 =
+            connection.prepareStatement("SELECT * FROM [Fusetech].[dbo].[MsvNotes] WHERE IdData = ?")
+        statement1.setInt(1, id)
+        val resultSet1 = statement1.executeQuery()
+        return resultSet1.next()
     }
 
 }

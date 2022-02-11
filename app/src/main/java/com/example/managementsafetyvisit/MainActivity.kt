@@ -136,17 +136,28 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     override fun closeMsv(statusz: Int, id: Int) {
-        val dialog = AlertDialog.Builder(this@MainActivity)
-        dialog.setTitle("Figyelem")
-        dialog.setMessage("A résztvevőnek hitelesíteni kell az Msv lezárását")
-        dialog.setPositiveButton("OK") { _, _ ->
-            closingId = id
-            closingStatus = statusz
-            closingTime = true
-            scanCode()
+        val sql = Sql(this)
+        CoroutineScope(IO).launch {
+            if(sql.checkMsvObservationNumber(id)){
+                CoroutineScope(Main).launch {
+                    val dialog = AlertDialog.Builder(this@MainActivity)
+                    dialog.setTitle("Figyelem")
+                    dialog.setMessage("A résztvevőnek hitelesíteni kell az Msv lezárását")
+                    dialog.setPositiveButton("OK") { _, _ ->
+                        closingId = id
+                        closingStatus = statusz
+                        closingTime = true
+                        scanCode()
+                    }
+                    dialog.create()
+                    dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
+                }
+            }else{
+                CoroutineScope(Main).launch {
+                    com.example.managementsafetyvisit.utils.showDialog("Észrevétel nélkül nem lehet az Msv-t lezárni!", this@MainActivity)
+                }
+            }
         }
-        dialog.create()
-        dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
     }
 
 
