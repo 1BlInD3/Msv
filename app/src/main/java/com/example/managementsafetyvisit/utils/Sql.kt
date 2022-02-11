@@ -39,8 +39,8 @@ class Sql(private val sqlMessage: SqlMessage) {
         try {
             connection = DriverManager.getConnection(read_connect)
             val statementManager =
-                connection.prepareStatement("""SELECT TextDescription FROM [Fusetech].[dbo].[DolgKodok] WHERE CodeDepFld2 =? ORDER BY TextDescription""")
-            statementManager.setString(1, "MAN")
+                connection.prepareStatement("""SELECT TextDescription FROM [Fusetech].[dbo].[DolgKodok] WHERE MSVStatusz = ? ORDER BY TextDescription""")
+            statementManager.setString(1, "2")
             val resultManager = statementManager.executeQuery()
             if (!resultManager.next()) {
                 sqlMessage.sendMessage("Nem sikerült a managereket letölteni")

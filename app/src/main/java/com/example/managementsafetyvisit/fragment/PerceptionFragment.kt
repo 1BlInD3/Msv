@@ -170,10 +170,6 @@ class PerceptionFragment : Fragment() {
                 if (viewModel.typeValue != "PP-Pozitív pontok") {
                     if (binding.perceptionEdit.text.isEmpty()) {
                         showToast("Az észrevétel mező nem lehet üres!", requireContext())
-                    } else if (binding.answerEdit.text.isEmpty()) {
-                        showToast("A válasz mező nem lehet üres!", requireContext())
-                    } else if (binding.measureEdit.text.isEmpty()) {
-                        showToast("A hozott intézkedések mező nem lehet üres!", requireContext())
                     } else {
                         viewModel.response = binding.perceptionEdit.text.toString().trim()
                         viewModel.answer = binding.answerEdit.text.toString().trim()
@@ -283,11 +279,7 @@ class PerceptionFragment : Fragment() {
                 if (viewModel.typeValue != "PP-Pozitív pontok") {
                     if (binding.perceptionEdit.text.isEmpty()) {
                         showToast("Az észrevétel mező nem lehet üres!", requireContext())
-                    } else if (binding.answerEdit.text.isEmpty()) {
-                        showToast("A válasz mező nem lehet üres!", requireContext())
-                    } else if (binding.measureEdit.text.isEmpty()) {
-                        showToast("A hozott intézkedések mező nem lehet üres!", requireContext())
-                    } else {
+                    }else {
                         viewModel.response = binding.perceptionEdit.text.toString().trim()
                         viewModel.answer = binding.answerEdit.text.toString().trim()
                         viewModel.measure = binding.measureEdit.text.toString().trim()

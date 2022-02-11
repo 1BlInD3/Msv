@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun loadPerceptionPanel(code: String, name: String) {
         val sql = Sql(this)
-        progressRound.visibility = View.VISIBLE
+        progress.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             sql.loadPerceptionPanel(code, name)
             CoroutineScope(Main).launch {
@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                     R.id.panel_container,
                     perceptionFragment, "PERCEPTION"
                 ).addToBackStack(null).commit()
-                progressRound.visibility = View.GONE
+                progress.visibility = View.GONE
             }
         }
     }
@@ -163,6 +163,14 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         }
     }
 
+    override fun progressOnOff() {
+        if(progress.visibility == View.VISIBLE){
+            progress.visibility = View.GONE
+        }else{
+            progress.visibility = View.VISIBLE
+        }
+    }
+
 
     override fun closeFragment() {
         val myFragment = supportFragmentManager.findFragmentByTag("PERCEPTION")
@@ -190,6 +198,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         statusz: Int
     ) {
         val sql = Sql(this)
+        progress.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             sql.saveNewPerception(
                 perception,
@@ -203,6 +212,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                 statusz
             )
             CoroutineScope(Main).launch {
+                progress.visibility = View.GONE
                 val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
                 if (myFrag != null) {
                     (myFrag as MsvFragment).refreshList()
@@ -223,6 +233,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         statusz: Int
     ) {
         val sql = Sql(this)
+        progress.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             sql.updateExisting(
                 perception,
@@ -236,6 +247,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                 statusz
             )
             CoroutineScope(Main).launch {
+                progress.visibility = View.GONE
                 val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
                 if (myFrag != null) {
                     (myFrag as MsvFragment).refreshList()
@@ -268,7 +280,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             integrator.captureActivity = CaptureAct::class.java
             integrator.setOrientationLocked(true)
             integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
-            integrator.setPrompt("Beolvasás folyamatban...")
+            integrator.setPrompt("Kérem az MSV vezető vonalkódját...")
             integrator.initiateScan()
         } catch (e: Exception) {
             com.example.managementsafetyvisit.utils.showDialog("Nincs kamera $e", this)
