@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     override fun getCameraToScan() {
-        scanCode()
+        scanCode("Kérem az MSV vezető vonalkódját...")
     }
 
     override fun getCameraInstance() {
@@ -136,6 +136,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun closeMsv(statusz: Int, id: Int) {
         val sql = Sql(this)
+        progress.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             if (sql.checkMsvObservationNumber(id)) {
                 CoroutineScope(Main).launch {
@@ -146,7 +147,8 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                         closingId = id
                         closingStatus = statusz
                         closingTime = true
-                        scanCode()
+                        progress.visibility = View.GONE
+                        scanCode("Kérem a résztvevő vonalkódját")
                     }
                     dialog.create()
                     dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
@@ -154,6 +156,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             } else {
                 CoroutineScope(Main).launch {
                     closingTime = false
+                    progress.visibility = View.GONE
                     com.example.managementsafetyvisit.utils.showDialog(
                         "Észrevétel nélkül nem lehet az Msv-t lezárni!",
                         this@MainActivity
@@ -274,13 +277,13 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         }
     }
 
-    private fun scanCode() {
+    private fun scanCode(message: String) {
         try {
             val integrator = IntentIntegrator(this)
             integrator.captureActivity = CaptureAct::class.java
             integrator.setOrientationLocked(true)
             integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
-            integrator.setPrompt("Kérem az MSV vezető vonalkódját...")
+            integrator.setPrompt(message)
             integrator.initiateScan()
         } catch (e: Exception) {
             com.example.managementsafetyvisit.utils.showDialog("Nincs kamera $e", this)
@@ -332,7 +335,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     override fun openCamera() {
-        scanCode()
+        scanCode("Kérem az MSV vezető vonalkódját...")
     }
 
     override fun onStop() {

@@ -18,7 +18,9 @@ import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ManagerNames
 import com.example.managementsafetyvisit.data.ObservationData
 import java.sql.Connection
+import java.sql.Date
 import java.sql.DriverManager
+import java.text.SimpleDateFormat
 
 class Sql(private val sqlMessage: SqlMessage) {
 
@@ -35,9 +37,11 @@ class Sql(private val sqlMessage: SqlMessage) {
     fun getDataByName(code: String): Boolean {
         observationArray.clear()
         val connection: Connection
+        val connectionWrite: Connection
         Class.forName("net.sourceforge.jtds.jdbc.Driver")
         try {
             connection = DriverManager.getConnection(read_connect)
+            connectionWrite = DriverManager.getConnection(write_connect)
             val statementManager =
                 connection.prepareStatement("""SELECT TextDescription FROM [Fusetech].[dbo].[DolgKodok] WHERE MSVStatusz = ? ORDER BY TextDescription""")
             statementManager.setString(1, "2")
@@ -54,21 +58,22 @@ class Sql(private val sqlMessage: SqlMessage) {
                 } while (resultManager.next())
             }
             val statement =
-                connection.prepareStatement("""SELECT TextDescription FROM [Fusetech].[dbo].[DolgKodok] where Key1 = ?""")
+                connection.prepareStatement("""SELECT TextDescription, TSz FROM [Fusetech].[dbo].[DolgKodok] where Key1 = ?""")
             statement.setString(1, code)
             val resultSet = statement.executeQuery()
             if (!resultSet.next()) {
                 felelos = ""
                 sqlMessage.sendMessage("Biztos jó kódot vittél fel?")
             } else {
-                felelos = resultSet.getString("TextDescription").trim()
+                felelos = resultSet.getString("TSz").trim()
+                val felelosNev = resultSet.getString("TextDescription").trim()
                 val statement1 =
-                    connection.prepareStatement("""SELECT [ID],[Nev],[Tsz],[FelelosSzemely],[FelelosTsz],[Resztvevo],[ResztvevoTsz],[Helyszin],[Datum],[Statusz],[BelepesDatum] FROM [Fusetech].[dbo].[MsvData] where FelelosSzemely =? AND Statusz = 1""")
+                    connection.prepareStatement("""SELECT [ID],[Nev],[Tsz],[FelelosSzemely],[FelelosTsz],[Resztvevo],[ResztvevoTsz],[Helyszin],[Datum],[Statusz],[BelepesDatum] FROM [Fusetech].[dbo].[MsvData] where FelelosTsz =? AND Statusz = 1""")
                 statement1.setString(1, felelos)
                 val resultSet1 = statement1.executeQuery()
                 if (!resultSet1.next()) {
                     managerArray.clear()
-                    sqlMessage.sendMessage("$felelos nevén nincs aktív MSV!")
+                    sqlMessage.sendMessage("$felelosNev nevén nincs aktív MSV!")
                 } else {
                     val id = resultSet1.getInt("ID")
                     val name = resultSet1.getString("Nev")
@@ -96,6 +101,10 @@ class Sql(private val sqlMessage: SqlMessage) {
                             sqlMessage.sendMessage("$name nincs a munkahelyére bejelentkezve. Értesítsd a műszakvezetőjét!")
                             return false
                         }else{
+                            val statement3 = connectionWrite.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvData] SET Helyszin = ? WHERE ID = ?""")
+                            statement3.setString(1,munkahely)
+                            statement3.setInt(2,id)
+                            statement3.executeUpdate()
                             dataArray.add(
                                 Data(
                                     id,
@@ -358,10 +367,12 @@ class Sql(private val sqlMessage: SqlMessage) {
             } else {
                 val code2 = resultSet2.getString("Key1")
                 if (code == code2) {
+                    val date = SimpleDateFormat("yyyy-MM-dd").format(java.util.Date())
                     val statement =
-                        connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvData] Set Statusz = ? where ID = ?""")
+                        connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvData] Set Statusz = ?, LatogatasIdeje = ? where ID = ?""")
                     statement.setInt(1, status)
-                    statement.setInt(2, id)
+                    statement.setString(2,date)
+                    statement.setInt(3, id)
                     statement.executeUpdate()
                     observationArray.clear()
                     // sqlMessage.sendMessage("Az $id számú Msv lezárásra került")
