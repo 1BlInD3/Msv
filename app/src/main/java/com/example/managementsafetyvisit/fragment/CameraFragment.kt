@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -48,6 +49,8 @@ class CameraFragment : Fragment() {
     private lateinit var decline: Button
     private lateinit var image: ImageView
     private lateinit var viewFinder: PreviewView
+    private lateinit var photoFile: File
+    private lateinit var progress: ProgressBar
     private val TAG = "CameraXBasic"
     private val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
     private val REQUEST_CODE_PERMISSIONS = 10
@@ -67,13 +70,15 @@ class CameraFragment : Fragment() {
         accept = view.findViewById(R.id.save_picture)
         decline = view.findViewById(R.id.decline_picture)
         image = view.findViewById(R.id.imageView2)
+        progress = view.findViewById(R.id.load_image)
+        progress.visibility = View.GONE
         outputDirectory = getOutputDirectory()
         viewFinder = view.findViewById(R.id.viewFinder)
         val retro = RetrofitFunctions()
         CoroutineScope(IO).launch {
             number = retro.getImageCount("MSV_$msvNumber").trim().toInt()
             CoroutineScope(Main).launch{
-                if(number>=10){
+                if(number>=5){
                     showDialog("Nem tudsz több képet készíteni",requireContext())
                     cameraCaptureButton.isEnabled = false
                     cameraCaptureButton.setBackgroundResource(R.drawable.round_button_disabled)
@@ -94,13 +99,43 @@ class CameraFragment : Fragment() {
             takePhoto()
         }
         accept.setOnClickListener {
-            showToast("Mentve",requireContext())
-            frame.visibility = View.GONE
-
+            progress.visibility = View.VISIBLE
+            accept.setBackgroundResource(R.drawable.round_button_disabled)
+            decline.setBackgroundResource(R.drawable.round_button_disabled)
+            CoroutineScope(IO).launch {
+                try {
+                    retro.retrofitGet(
+                        photoFile,
+                        """\\fs\MSV\foto""",
+                        "MSV_$msvNumber"
+                    )
+                    CoroutineScope(Main).launch {
+                        showToast("A kép mentve a szerverre", requireContext())
+                        cameraCaptureButton.isEnabled = true
+                        cameraCaptureButton.setBackgroundResource(R.drawable.round_button_2)
+                        accept.setBackgroundResource(R.drawable.round_button_2)
+                        decline.setBackgroundResource(R.drawable.round_button_2)
+                        progress.visibility = View.GONE
+                        frame.visibility = View.GONE
+                    }
+                } catch (e: Exception) {
+                    Log.d("HIBA", "$e")
+                }
+            }
+            //showToast("Mentve",requireContext())
         }
         decline.setOnClickListener {
+            accept.setBackgroundResource(R.drawable.round_button_disabled)
+            decline.setBackgroundResource(R.drawable.round_button_disabled)
+            if(photoFile.exists()){
+                photoFile.delete()
+            }
             showToast("Elvetve", requireContext())
             frame.visibility = View.GONE
+            cameraCaptureButton.isEnabled = true
+            cameraCaptureButton.setBackgroundResource(R.drawable.round_button_2)
+            accept.setBackgroundResource(R.drawable.round_button_2)
+            decline.setBackgroundResource(R.drawable.round_button_2)
         }
         return view
     }
@@ -149,9 +184,9 @@ class CameraFragment : Fragment() {
         CoroutineScope(IO).launch {
             val number = retro.getImageCount("MSV_$msvNumber")
             CoroutineScope(Main).launch {
-                if (number.toInt() < 10) {
+                if (number.toInt() < 5) {
                     // Create time-stamped output file to hold the image
-                    val photoFile = File(
+                     photoFile = File(
                         outputDirectory,
                         SimpleDateFormat(
                             FILENAME_FORMAT, Locale.US
@@ -177,24 +212,7 @@ class CameraFragment : Fragment() {
                                 //val msg = "A kép mentésre került"
                                 // Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                                 Log.d(TAG, stringPath)
-                                val retro = RetrofitFunctions()
                                 image.setImageURI(savedUri)
-                                CoroutineScope(IO).launch {
-                                    try {
-                                        retro.retrofitGet(
-                                            photoFile,
-                                            """\\fs\MSV\foto""",
-                                            "MSV_$msvNumber"
-                                        )
-                                        CoroutineScope(Main).launch {
-                                            showToast("A kép mentve a szerverre", requireContext())
-                                            cameraCaptureButton.isEnabled = true
-                                            cameraCaptureButton.setBackgroundResource(R.drawable.round_button_2)
-                                        }
-                                    } catch (e: Exception) {
-                                        Log.d("HIBA", "$e")
-                                    }
-                                }
                             }
                         })
                 }else{
