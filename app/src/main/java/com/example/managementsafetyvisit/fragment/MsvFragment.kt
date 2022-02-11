@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -21,11 +20,9 @@ import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.interfaces.MsvListener
 import com.example.managementsafetyvisit.databinding.FragmentMsvBinding
-import com.example.managementsafetyvisit.utils.Sql
 import com.example.managementsafetyvisit.viewModels.MsvViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import java.lang.RuntimeException
@@ -121,16 +118,12 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.imageProgress?.visibility = View.GONE
 
         binding.newResponse?.setOnClickListener {
-            var name = ""
-            if (viewModel.middleMiddleCommissarName.isEmpty() && viewModel.middleCommissarName.isEmpty()) {
-                name =
-                    "${viewModel.familyNameCommissar} ${viewModel.firstNameCommissar}"
+            val name: String = if (viewModel.middleMiddleCommissarName.isEmpty() && viewModel.middleCommissarName.isEmpty()) {
+                "${viewModel.familyNameCommissar} ${viewModel.firstNameCommissar}"
             } else if (viewModel.middleMiddleCommissarName.isEmpty()) {
-                name =
-                    "${viewModel.familyNameCommissar.trim()} ${viewModel.middleCommissarName} ${viewModel.firstNameCommissar.trim()}"
+                "${viewModel.familyNameCommissar.trim()} ${viewModel.middleCommissarName} ${viewModel.firstNameCommissar.trim()}"
             } else {
-                name =
-                    "${viewModel.familyNameCommissar} ${viewModel.middleCommissarName} ${viewModel.middleMiddleCommissarName} ${viewModel.firstNameCommissar}"
+                "${viewModel.familyNameCommissar} ${viewModel.middleCommissarName} ${viewModel.middleMiddleCommissarName} ${viewModel.firstNameCommissar}"
             }
             mainActivityConnector.loadPerceptionPanel(viewModel.msvNumber.trim(), name)
         }
@@ -182,7 +175,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             viewModel.firstName = firstName
         }
         capitals.clear()
-        viewModel.tsz = p3.toString().trim()
+        viewModel.tsz = p3.trim()
         nameGenerator(p4)
         if (capitals.size == 2) {
             viewModel.familyNameCommissar = familyName
@@ -279,17 +272,12 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
     }
 
     override fun onCurrentClick(position: Int) {
-        var name = ""
-        var manager = ""
-        if (viewModel.middleMiddleCommissarName.isEmpty() && viewModel.middleCommissarName.isEmpty()) {
-            name =
-                "${viewModel.familyNameCommissar} ${viewModel.firstNameCommissar}"
+        val name: String = if (viewModel.middleMiddleCommissarName.isEmpty() && viewModel.middleCommissarName.isEmpty()) {
+            "${viewModel.familyNameCommissar} ${viewModel.firstNameCommissar}"
         } else if (viewModel.middleMiddleCommissarName.isEmpty()) {
-            name =
-                "${viewModel.familyNameCommissar.trim()} ${viewModel.middleCommissarName} ${viewModel.firstNameCommissar.trim()}"
+            "${viewModel.familyNameCommissar.trim()} ${viewModel.middleCommissarName} ${viewModel.firstNameCommissar.trim()}"
         } else {
-            name =
-                "${viewModel.familyNameCommissar} ${viewModel.middleCommissarName} ${viewModel.middleMiddleCommissarName} ${viewModel.firstNameCommissar}"
+            "${viewModel.familyNameCommissar} ${viewModel.middleCommissarName} ${viewModel.middleMiddleCommissarName} ${viewModel.firstNameCommissar}"
         }
         var index = 0
         for(i in 0 until managerArray.size){

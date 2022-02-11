@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -17,6 +18,7 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.managementsafetyvisit.MainActivity.Companion.imageNumber
@@ -41,6 +43,10 @@ class CameraFragment : Fragment() {
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var cameraCaptureButton: Button
+    private lateinit var frame : ConstraintLayout
+    private lateinit var accept: Button
+    private lateinit var decline: Button
+    private lateinit var image: ImageView
     private lateinit var viewFinder: PreviewView
     private val TAG = "CameraXBasic"
     private val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
@@ -56,6 +62,11 @@ class CameraFragment : Fragment() {
         cameraCaptureButton = view.findViewById(R.id.camera_capture_button)
         cameraCaptureButton.isEnabled = false
         cameraCaptureButton.setBackgroundResource(R.drawable.round_button_disabled)
+        frame = view.findViewById(R.id.save_frame)
+        frame.visibility = View.GONE
+        accept = view.findViewById(R.id.save_picture)
+        decline = view.findViewById(R.id.decline_picture)
+        image = view.findViewById(R.id.imageView2)
         outputDirectory = getOutputDirectory()
         viewFinder = view.findViewById(R.id.viewFinder)
         val retro = RetrofitFunctions()
@@ -81,6 +92,15 @@ class CameraFragment : Fragment() {
         }
         cameraCaptureButton.setOnClickListener {
             takePhoto()
+        }
+        accept.setOnClickListener {
+            showToast("Mentve",requireContext())
+            frame.visibility = View.GONE
+
+        }
+        decline.setOnClickListener {
+            showToast("Elvetve", requireContext())
+            frame.visibility = View.GONE
         }
         return view
     }
@@ -149,6 +169,7 @@ class CameraFragment : Fragment() {
                             }
 
                             override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                                frame.visibility = View.VISIBLE
                                 val savedUri = Uri.fromFile(photoFile)
                                 //val path = "file:///storage/emulated/0/Android/media/com.example.camerarest/CameraRest/2022-01-13-12-22-06-923.jpg"
                                 val path = savedUri.toString()
@@ -157,6 +178,7 @@ class CameraFragment : Fragment() {
                                 // Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                                 Log.d(TAG, stringPath)
                                 val retro = RetrofitFunctions()
+                                image.setImageURI(savedUri)
                                 CoroutineScope(IO).launch {
                                     try {
                                         retro.retrofitGet(

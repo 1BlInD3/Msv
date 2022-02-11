@@ -29,4 +29,47 @@
         app:layout_constraintBottom_toBottomOf="@+id/viewFinder"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/save_frame"
+        android:layout_width="700dp"
+        android:layout_height="400dp"
+        android:background="@drawable/transparent_orange"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/viewFinder">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:src="@tools:sample/avatars"
+            android:scaleType="centerCrop"/>
+
+        <Button
+            android:id="@+id/save_picture"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:paddingStart="15dp"
+            android:drawableTint="@android:color/white"
+            android:background="@drawable/round_button_2"
+            android:drawableStart="@mipmap/check"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <Button
+            android:id="@+id/decline_picture"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="20dp"
+            android:paddingStart="15dp"
+            android:drawableTint="@android:color/white"
+            android:background="@drawable/round_button_2"
+            android:drawableStart="@mipmap/discard"
+            app:layout_constraintBottom_toTopOf="@+id/save_picture"
+            app:layout_constraintEnd_toEndOf="@+id/save_picture" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

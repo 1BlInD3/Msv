@@ -7,9 +7,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.example.managementsafetyvisit.R
-import com.example.managementsafetyvisit.data.ManagerNames
-import java.util.*
-import java.util.logging.StreamHandler
 import kotlin.collections.ArrayList
 
 class ManagerAdapter(context: Context, resource: Int, objects: ArrayList<out String>) :
