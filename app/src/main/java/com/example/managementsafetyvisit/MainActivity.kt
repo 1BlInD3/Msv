@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.ProgressBar
 import com.example.managementsafetyvisit.camera.CaptureAct
 import com.example.managementsafetyvisit.data.Data
@@ -23,6 +24,9 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import javax.annotation.Nullable
+
+
+/*Hétfőn a plusz gombot letiltani, hogy 1x lehessen lenyomni és vissza is kell állítani*/
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
@@ -57,6 +61,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         progress = findViewById(R.id.progressBar)
         progressRound = findViewById(R.id.progressBar2)
         progress.visibility = View.GONE

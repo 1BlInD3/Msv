@@ -119,7 +119,6 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.imageProgress?.visibility = View.GONE
 
         binding.newResponse?.setOnClickListener {
-           //mainActivityConnector.progressOnOff()
             val name: String = if (viewModel.middleMiddleCommissarName.isEmpty() && viewModel.middleCommissarName.isEmpty()) {
                 "${viewModel.familyNameCommissar} ${viewModel.firstNameCommissar}"
             } else if (viewModel.middleMiddleCommissarName.isEmpty()) {
