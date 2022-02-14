@@ -66,6 +66,7 @@ class PerceptionFragment : Fragment() {
         )
 
         fun deleteById(id: Int)
+        fun revealOkButton()
     }
 
     private lateinit var mainActivityInteract: MainActivityInteract
@@ -105,6 +106,7 @@ class PerceptionFragment : Fragment() {
         binding.viewModel = viewModel
 
         binding.cancelButton.setOnClickListener {
+            mainActivityInteract.revealOkButton()
             mainActivityInteract.closeFragment()
             // Toast.makeText(requireContext(), viewModel.msvId, Toast.LENGTH_SHORT).show()
         }
@@ -153,6 +155,7 @@ class PerceptionFragment : Fragment() {
         binding.deleteButton?.setOnClickListener {
             if (update) {
                 mainActivityInteract.deleteById(viewModel.msvId.toInt())
+                //mainActivityInteract.revealOkButton()
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -385,6 +388,7 @@ class PerceptionFragment : Fragment() {
                     }
                 }
             }
+            mainActivityInteract.revealOkButton()
         }
         return binding.root
     }

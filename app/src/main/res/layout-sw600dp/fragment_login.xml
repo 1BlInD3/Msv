@@ -40,7 +40,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.417"
-            app:srcCompat="@drawable/mersenfusetech" />
+            app:srcCompat="@drawable/mersenlogo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

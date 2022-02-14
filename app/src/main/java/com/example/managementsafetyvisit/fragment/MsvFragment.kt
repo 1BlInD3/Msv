@@ -119,6 +119,8 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         binding.imageProgress?.visibility = View.GONE
 
         binding.newResponse?.setOnClickListener {
+            binding.newResponse!!.isEnabled = false
+            binding.newResponse!!.setBackgroundResource(R.drawable.round_button_disabled)
             val name: String = if (viewModel.middleMiddleCommissarName.isEmpty() && viewModel.middleCommissarName.isEmpty()) {
                 "${viewModel.familyNameCommissar} ${viewModel.firstNameCommissar}"
             } else if (viewModel.middleMiddleCommissarName.isEmpty()) {
@@ -380,5 +382,8 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             p11 = myList[i].entryDate
         }
     }
-
+    fun enableResponseButton(){
+        binding.newResponse?.isEnabled = true
+        binding.newResponse?.setBackgroundResource(R.drawable.round_button_2)
+    }
 }

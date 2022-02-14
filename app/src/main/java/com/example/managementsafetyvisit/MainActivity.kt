@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.ProgressBar
+import android.widget.Toast
 import com.example.managementsafetyvisit.camera.CaptureAct
 import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
@@ -279,6 +280,13 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                     (myMsvFragment as MsvFragment).refreshList()
                 }
             }
+        }
+    }
+
+    override fun revealOkButton() {
+        val myFragment = supportFragmentManager.findFragmentByTag("MSVFRAG")
+        if(myFragment != null){
+            (myFragment as MsvFragment).enableResponseButton()
         }
     }
 
