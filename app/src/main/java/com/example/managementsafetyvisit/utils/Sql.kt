@@ -18,6 +18,9 @@ import com.example.managementsafetyvisit.MainActivity.Companion.write_connect
 import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ManagerNames
 import com.example.managementsafetyvisit.data.ObservationData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import java.sql.Connection
 import java.sql.Date
 import java.sql.DriverManager
@@ -398,6 +401,36 @@ class Sql(private val sqlMessage: SqlMessage) {
         statement1.setInt(1, id)
         val resultSet1 = statement1.executeQuery()
         return resultSet1.next()
+    }
+    fun checkRabotnik(code: String): Boolean{
+        val connection: Connection
+        Class.forName("net.sourceforge.jtds.jdbc.Driver")
+        try{
+            connection = DriverManager.getConnection(read_connect)
+            val statement = connection.prepareStatement("""SELECT [TSz] FROM [Fusetech].[dbo].[DolgKodok] where Key1 = ?""")
+            statement.setString(1,code)
+            var tszkod = ""
+            var tszMsv = ""
+            val resultSet = statement.executeQuery()
+            if(!resultSet.next()){
+                CoroutineScope(Main).launch {
+                    sqlMessage.sendMessage("Nem jó a kód")
+                }
+                return false
+            }else{
+                tszkod = resultSet.getString("TSz")
+                tszMsv = resultSet.getString("Tsz")
+                if(tszkod == tszMsv){
+                    return true
+                }
+            }
+            return false
+        }catch (e: Exception){
+            CoroutineScope(Main).launch {
+                sqlMessage.sendMessage("Hiba az aláírás során $e")
+            }
+            return false
+        }
     }
 
 }

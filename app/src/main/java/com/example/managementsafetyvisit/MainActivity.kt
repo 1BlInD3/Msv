@@ -17,6 +17,7 @@ import com.example.managementsafetyvisit.fragment.LoginFragment
 import com.example.managementsafetyvisit.fragment.MsvFragment
 import com.example.managementsafetyvisit.fragment.PerceptionFragment
 import com.example.managementsafetyvisit.utils.Sql
+import com.example.managementsafetyvisit.utils.showToast
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -24,6 +25,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import javax.annotation.Nullable
+import kotlin.math.sign
 
 
 /*Hétfőn a plusz gombot letiltani, hogy 1x lehessen lenyomni és vissza is kell állítani*/
@@ -56,6 +58,9 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         var closingId = 0
         var rtsz = ""
         val managerArray: ArrayList<String> = ArrayList()
+        var signed = false
+        var signing = false
+        var commissar = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -177,6 +182,12 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         }else{
             progress.visibility = View.VISIBLE
         }
+    }
+
+    override fun signVisit() {
+        signing = true
+        signed = true
+        scanCode("Kérem a meglátogatott személy kártyáját")
     }
 
 
@@ -308,10 +319,11 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             if (result.contents != null) {
                 progress.visibility = View.VISIBLE
                 CoroutineScope(IO).launch {
-                    if (!closingTime) {
+                    if (!closingTime && !signing) {
                         try {
                             val sql = Sql(this@MainActivity)
                             if (sql.getDataByName(result.contents.trim())) {
+                                commissar = true
                                 CoroutineScope(Main).launch {
                                     Log.d(TAG, "onActivityResult: $dataArray")
                                     supportFragmentManager.beginTransaction()
@@ -327,7 +339,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                         } catch (e: Exception) {
                             Log.d(TAG, "onActivityResult: $e")
                         }
-                    } else {
+                    }else if(closingTime && commissar){
                         closingTime = false
                         CoroutineScope(IO).launch {
                             val sql = Sql(this@MainActivity)
@@ -338,6 +350,21 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                                 builder.setMessage("Az Msv lezárásra került! :)")
                                 builder.setPositiveButton("OK") { _, _ ->
                                     finishAndRemoveTask()
+                                }
+                            }
+                        }
+                    }else if (signing){
+                        signing = false
+                        CoroutineScope(IO).launch {
+                            val sql = Sql(this@MainActivity)
+                            if(sql.checkRabotnik(result.contents.trim())){
+                                CoroutineScope(Main).launch {
+                                    progress.visibility = View.GONE
+                                    showToast("Sikeres aláírás",this@MainActivity)
+                                    val myFragment = supportFragmentManager.findFragmentByTag("MSVFRAG")
+                                    if(myFragment != null){
+                                        (myFragment as MsvFragment).isRabotnikSigned()
+                                    }
                                 }
                             }
                         }

@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.managementsafetyvisit.MainActivity.Companion.managerArray
 import com.example.managementsafetyvisit.MainActivity.Companion.msvNumber
 import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
+import com.example.managementsafetyvisit.MainActivity.Companion.signed
 import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.adapters.ObservationDataAdapter
 import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.interfaces.MsvListener
 import com.example.managementsafetyvisit.databinding.FragmentMsvBinding
+import com.example.managementsafetyvisit.utils.showDialog
 import com.example.managementsafetyvisit.viewModels.MsvViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -101,6 +103,7 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         fun getCameraInstance()
         fun closeMsv(statusz: Int, id: Int)
         fun progressOnOff()
+        fun signVisit()
     }
 
     private lateinit var mainActivityConnector: MainActivityConnector
@@ -136,7 +139,15 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
         }
         binding.checkButton?.setOnClickListener {
             //observationArray.clear()
-            mainActivityConnector.closeMsv(2, viewModel.msvNumber.trim().toInt())
+            if(signed){
+                mainActivityConnector.closeMsv(2, viewModel.msvNumber.trim().toInt())
+            }else{
+                showDialog("A meglátogatott személy kártyáját előbb le kell húzni, kattints a képére",requireContext())
+            }
+        }
+        binding.imageView.setOnClickListener {
+            mainActivityConnector.signVisit()
+            //binding.constraintLayout4?.setBackgroundResource(R.color.mersenOrange)
         }
         return binding.root
     }
@@ -385,5 +396,8 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
     fun enableResponseButton(){
         binding.newResponse?.isEnabled = true
         binding.newResponse?.setBackgroundResource(R.drawable.round_button_2)
+    }
+    fun isRabotnikSigned(){
+        binding.constraintLayout4?.setBackgroundResource(R.color.mersenOrange)
     }
 }
