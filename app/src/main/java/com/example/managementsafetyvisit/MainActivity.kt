@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.ProgressBar
-import android.widget.Toast
 import com.example.managementsafetyvisit.camera.CaptureAct
 import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
@@ -320,6 +319,10 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                                         .addToBackStack(null).commit()
                                     progress.visibility = View.GONE
                                 }
+                            }else{
+                                managerArray.clear()
+                                dataArray.clear()
+                                observationArray.clear()
                             }
                         } catch (e: Exception) {
                             Log.d(TAG, "onActivityResult: $e")

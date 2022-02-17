@@ -2,6 +2,7 @@ package com.example.managementsafetyvisit.utils
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import com.example.managementsafetyvisit.MainActivity
 import com.example.managementsafetyvisit.MainActivity.Companion.closingTime
 import com.example.managementsafetyvisit.MainActivity.Companion.dataArray
@@ -48,6 +49,7 @@ class Sql(private val sqlMessage: SqlMessage) {
             val resultManager = statementManager.executeQuery()
             if (!resultManager.next()) {
                 sqlMessage.sendMessage("Nem sikerült a managereket letölteni")
+                return false
             } else {
                 //managerArray.add(ManagerNames(""))
                 managerArray.add("")
@@ -64,6 +66,7 @@ class Sql(private val sqlMessage: SqlMessage) {
             if (!resultSet.next()) {
                 felelos = ""
                 sqlMessage.sendMessage("Biztos jó kódot vittél fel?")
+                return false
             } else {
                 felelos = resultSet.getString("TSz").trim()
                 val felelosNev = resultSet.getString("TextDescription").trim()
@@ -74,6 +77,7 @@ class Sql(private val sqlMessage: SqlMessage) {
                 if (!resultSet1.next()) {
                     managerArray.clear()
                     sqlMessage.sendMessage("$felelosNev nevén nincs aktív MSV!")
+                    return false
                 } else {
                     val id = resultSet1.getInt("ID")
                     val name = resultSet1.getString("Nev")
