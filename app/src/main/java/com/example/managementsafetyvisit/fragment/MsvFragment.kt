@@ -146,7 +146,11 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             }
         }
         binding.imageView.setOnClickListener {
-            mainActivityConnector.signVisit()
+            if(!signed){
+                mainActivityConnector.signVisit()
+            }else{
+                showDialog("A meglátogatott személy már hitelesített",requireContext())
+            }
             //binding.constraintLayout4?.setBackgroundResource(R.color.mersenOrange)
         }
         return binding.root
@@ -399,5 +403,6 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
     }
     fun isRabotnikSigned(){
         binding.constraintLayout4?.setBackgroundResource(R.color.mersenOrange)
+        //binding.constraintLayout4?.setBackgroundResource(R.drawable.gradientorange)
     }
 }

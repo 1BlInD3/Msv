@@ -186,7 +186,6 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun signVisit() {
         signing = true
-        signed = true
         scanCode("Kérem a meglátogatott személy kártyáját")
     }
 
@@ -355,6 +354,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                         }
                     }else if (signing){
                         signing = false
+                        signed = true
                         CoroutineScope(IO).launch {
                             val sql = Sql(this@MainActivity)
                             if(sql.checkRabotnik(result.contents.trim())){

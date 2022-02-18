@@ -9,6 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import com.example.managementsafetyvisit.MainActivity.Companion.closingTime
+import com.example.managementsafetyvisit.MainActivity.Companion.commissar
+import com.example.managementsafetyvisit.MainActivity.Companion.signed
+import com.example.managementsafetyvisit.MainActivity.Companion.signing
 import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.databinding.FragmentLoginBinding
 import com.example.managementsafetyvisit.viewModels.LoginViewModel
@@ -55,6 +59,10 @@ class LoginFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         Log.d("QQQQ", "onResume: ")
+        signed = false
+        signing = false
+        commissar = false
+        closingTime = false
     }
 
     companion object {
