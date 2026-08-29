@@ -35,8 +35,8 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     PerceptionFragment.MainActivityInteract, LoginFragment.LoginScan, Sql.SqlMessage {
 
     private val TAG = "MainActivity"
-    private lateinit var progress: ProgressBar
-    private lateinit var progressRound: ProgressBar
+    private var progress: ProgressBar? = null
+    private var progressRound: ProgressBar? = null
 
     companion object {
         val observationArray: ArrayList<ObservationData> = ArrayList()
@@ -69,8 +69,8 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         progress = findViewById(R.id.progressBar)
         progressRound = findViewById(R.id.progressBar2)
-        progress.visibility = View.GONE
-        progressRound.visibility = View.GONE
+        progress?.visibility = View.GONE
+        progressRound?.visibility = View.GONE
         getLoginFragment()
         Log.d(TAG, "onCreate: ")
     }
@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun loadPerceptionPanel(code: String, name: String) {
         val sql = Sql(this)
-        progress.visibility = View.VISIBLE
+        progress?.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             sql.loadPerceptionPanel(code, name)
             CoroutineScope(Main).launch {
@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                     R.id.panel_container,
                     perceptionFragment, "PERCEPTION"
                 ).addToBackStack(null).commit()
-                progress.visibility = View.GONE
+                progress?.visibility = View.GONE
             }
         }
     }
@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun closeMsv(statusz: Int, id: Int) {
         val sql = Sql(this)
-        progress.visibility = View.VISIBLE
+        progress?.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             if (sql.checkMsvObservationNumber(id)) {
                 CoroutineScope(Main).launch {
@@ -157,7 +157,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                         closingId = id
                         closingStatus = statusz
                         closingTime = true
-                        progress.visibility = View.GONE
+                        progress?.visibility = View.GONE
                         scanCode("Kérem a résztvevő vonalkódját")
                     }
                     dialog.create()
@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             } else {
                 CoroutineScope(Main).launch {
                     closingTime = false
-                    progress.visibility = View.GONE
+                    progress?.visibility = View.GONE
                     com.example.managementsafetyvisit.utils.showDialog(
                         "Észrevétel nélkül nem lehet az Msv-t lezárni!",
                         this@MainActivity
@@ -177,10 +177,10 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     override fun progressOnOff() {
-        if(progress.visibility == View.VISIBLE){
-            progress.visibility = View.GONE
+        if(progress?.visibility == View.VISIBLE){
+            progress?.visibility = View.GONE
         }else{
-            progress.visibility = View.VISIBLE
+            progress?.visibility = View.VISIBLE
         }
     }
 
@@ -216,7 +216,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         statusz: Int
     ) {
         val sql = Sql(this)
-        progress.visibility = View.VISIBLE
+        progress?.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             sql.saveNewPerception(
                 perception,
@@ -230,7 +230,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                 statusz
             )
             CoroutineScope(Main).launch {
-                progress.visibility = View.GONE
+                progress?.visibility = View.GONE
                 val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
                 if (myFrag != null) {
                     (myFrag as MsvFragment).refreshList()
@@ -251,7 +251,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         statusz: Int
     ) {
         val sql = Sql(this)
-        progress.visibility = View.VISIBLE
+        progress?.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             sql.updateExisting(
                 perception,
@@ -265,7 +265,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                 statusz
             )
             CoroutineScope(Main).launch {
-                progress.visibility = View.GONE
+                progress?.visibility = View.GONE
                 val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
                 if (myFrag != null) {
                     (myFrag as MsvFragment).refreshList()
@@ -316,7 +316,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents != null) {
-                progress.visibility = View.VISIBLE
+                progress?.visibility = View.VISIBLE
                 CoroutineScope(IO).launch {
                     if (!closingTime && !signing) {
                         try {
@@ -328,7 +328,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                                     supportFragmentManager.beginTransaction()
                                         .replace(R.id.id_container, msvFragment, "MSVFRAG")
                                         .addToBackStack(null).commit()
-                                    progress.visibility = View.GONE
+                                    progress?.visibility = View.GONE
                                 }
                             }else{
                                 managerArray.clear()
@@ -359,7 +359,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                             val sql = Sql(this@MainActivity)
                             if(sql.checkRabotnik(result.contents.trim())){
                                 CoroutineScope(Main).launch {
-                                    progress.visibility = View.GONE
+                                    progress?.visibility = View.GONE
                                     showToast("Sikeres aláírás",this@MainActivity)
                                     val myFragment = supportFragmentManager.findFragmentByTag("MSVFRAG")
                                     if(myFragment != null){
@@ -400,10 +400,10 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             dialog.setTitle("Figyelem")
             dialog.setMessage(message)
             dialog.setPositiveButton("OK") { _, _ ->
-                progress.visibility = View.GONE
+                progress?.visibility = View.GONE
             }
             dialog.setOnCancelListener{
-                progress.visibility = View.GONE
+                progress?.visibility = View.GONE
             }
             dialog.create()
             dialog.show()
