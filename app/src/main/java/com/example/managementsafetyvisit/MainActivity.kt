@@ -10,14 +10,17 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ProgressBar
 import com.example.managementsafetyvisit.camera.CaptureAct
+import com.example.managementsafetyvisit.config.AppConfig
 import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.fragment.CameraFragment
 import com.example.managementsafetyvisit.fragment.LoginFragment
 import com.example.managementsafetyvisit.fragment.MsvFragment
 import com.example.managementsafetyvisit.fragment.PerceptionFragment
+import com.example.managementsafetyvisit.fragment.SelectionFragment
 import com.example.managementsafetyvisit.utils.Sql
 import com.example.managementsafetyvisit.utils.showToast
+import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +35,8 @@ import kotlin.math.sign
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
-    PerceptionFragment.MainActivityInteract, LoginFragment.LoginScan, Sql.SqlMessage {
+    PerceptionFragment.MainActivityInteract, LoginFragment.LoginScan, Sql.SqlMessage,
+    SelectionFragment.PersonSelectionConnector {
 
     private val TAG = "MainActivity"
     private var progress: ProgressBar? = null
@@ -44,13 +48,14 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
         // val reversedList: ArrayList<ObservationData> = ArrayList()
         val dataArray: ArrayList<Data> = ArrayList()
-        const val read_connect =
-            "jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=scala_read;password=scala_read;loginTimeout=10"
-        const val write_connect =
-            "jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=Termelesmonitor;password=TERM123;loginTimeout=10"
+        val read_connect: String
+            get() = AppConfig.READ_CONNECT
+        val write_connect: String
+            get() = AppConfig.WRITE_CONNECT
         var felelos: String = ""
         val perceptionFragment = PerceptionFragment()
         val msvFragment = MsvFragment()
+        val selectionFragment = SelectionFragment()
         var msvNumber: String = ""
         var closingTime = false
         var imageNumber = ""
@@ -316,24 +321,49 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents != null) {
+                val scannedCode = result.contents.trim()
                 progress?.visibility = View.VISIBLE
                 CoroutineScope(IO).launch {
                     if (!closingTime && !signing) {
                         try {
                             val sql = Sql(this@MainActivity)
-                            if (sql.getDataByName(result.contents.trim())) {
+                            if (sql.getDataByName(scannedCode)) {
                                 commissar = true
+                                Log.d(TAG, "onActivityResult dataArray size: ${dataArray.size}")
+                                if (dataArray.isEmpty()) {
+                                    CoroutineScope(Main).launch {
+                                        com.example.managementsafetyvisit.utils.showDialog("Nincs aktív MSV-d", this@MainActivity)
+                                        managerArray.clear()
+                                        dataArray.clear()
+                                        observationArray.clear()
+                                        progress?.visibility = View.GONE
+                                    }
+                                } else if (dataArray.size == 1) {
+                                    sql.loadVisitForSelectedPerson(dataArray[0])
+                                    CoroutineScope(Main).launch {
+                                        val msvFrag = MsvFragment()
+                                        msvFrag.arguments = msvFragment.arguments
+                                        supportFragmentManager.beginTransaction()
+                                            .replace(R.id.id_container, msvFrag, "MSVFRAG")
+                                            .addToBackStack(null).commit()
+                                        progress?.visibility = View.GONE
+                                    }
+                                } else {
+                                    CoroutineScope(Main).launch {
+                                        val selFrag = SelectionFragment()
+                                        supportFragmentManager.beginTransaction()
+                                            .replace(R.id.id_container, selFrag, "SELECTION")
+                                            .addToBackStack(null).commit()
+                                        progress?.visibility = View.GONE
+                                    }
+                                }
+                            } else {
                                 CoroutineScope(Main).launch {
-                                    Log.d(TAG, "onActivityResult: $dataArray")
-                                    supportFragmentManager.beginTransaction()
-                                        .replace(R.id.id_container, msvFragment, "MSVFRAG")
-                                        .addToBackStack(null).commit()
+                                    managerArray.clear()
+                                    dataArray.clear()
+                                    observationArray.clear()
                                     progress?.visibility = View.GONE
                                 }
-                            }else{
-                                managerArray.clear()
-                                dataArray.clear()
-                                observationArray.clear()
                             }
                         } catch (e: Exception) {
                             Log.d(TAG, "onActivityResult: $e")
@@ -407,6 +437,22 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             }
             dialog.create()
             dialog.show()
+        }
+    }
+
+    override fun onPersonSelected(selectedData: Data) {
+        progress?.visibility = View.VISIBLE
+        CoroutineScope(IO).launch {
+            val sql = Sql(this@MainActivity)
+            sql.loadVisitForSelectedPerson(selectedData)
+            CoroutineScope(Main).launch {
+                val msvFrag = MsvFragment()
+                msvFrag.arguments = msvFragment.arguments
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.id_container, msvFrag, "MSVFRAG")
+                    .addToBackStack(null).commit()
+                progress?.visibility = View.GONE
+            }
         }
     }
 

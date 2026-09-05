@@ -106,7 +106,7 @@ class CameraFragment : Fragment() {
                 try {
                     retro.retrofitGet(
                         photoFile,
-                        """\\fs\MSV\foto""",
+                        com.example.managementsafetyvisit.config.AppConfig.PHOTO_SHARE_PATH,
                         "MSV_$msvNumber"
                     )
                     CoroutineScope(Main).launch {

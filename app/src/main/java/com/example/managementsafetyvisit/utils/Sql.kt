@@ -2,7 +2,6 @@ package com.example.managementsafetyvisit.utils
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import com.example.managementsafetyvisit.MainActivity
 import com.example.managementsafetyvisit.MainActivity.Companion.closingTime
 import com.example.managementsafetyvisit.MainActivity.Companion.dataArray
@@ -12,17 +11,14 @@ import com.example.managementsafetyvisit.MainActivity.Companion.msvFragment
 import com.example.managementsafetyvisit.MainActivity.Companion.newPerceptionArray
 import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
 import com.example.managementsafetyvisit.MainActivity.Companion.perceptionFragment
-import com.example.managementsafetyvisit.MainActivity.Companion.read_connect
 import com.example.managementsafetyvisit.MainActivity.Companion.rtsz
-import com.example.managementsafetyvisit.MainActivity.Companion.write_connect
+import com.example.managementsafetyvisit.config.AppConfig
 import com.example.managementsafetyvisit.data.Data
-import com.example.managementsafetyvisit.data.ManagerNames
 import com.example.managementsafetyvisit.data.ObservationData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import java.sql.Connection
-import java.sql.Date
 import java.sql.DriverManager
 import java.text.SimpleDateFormat
 
@@ -40,12 +36,67 @@ class Sql(private val sqlMessage: SqlMessage) {
 
     fun getDataByName(code: String): Boolean {
         observationArray.clear()
-        val connection: Connection
-        val connectionWrite: Connection
-        Class.forName("net.sourceforge.jtds.jdbc.Driver")
+        dataArray.clear()
+        if (AppConfig.USE_MOCK_DATA) {
+            managerArray.clear()
+            managerArray.add("")
+            managerArray.add("Kovács Péter")
+            managerArray.add("Szabó Gábor")
+            managerArray.add("Tóth István")
+
+            dataArray.add(
+                Data(
+                    101,
+                    "Nagy Anna",
+                    if (code.isNotEmpty()) code else "E200",
+                    "Kovács Péter",
+                    "M100",
+                    "Szabó Gábor",
+                    "E201",
+                    "Szerelde_1",
+                    "2026-09-05",
+                    2,
+                    "2026-09-05 08:00"
+                )
+            )
+            dataArray.add(
+                Data(
+                    102,
+                    "Kovács Béla",
+                    "E202",
+                    "Kovács Péter",
+                    "M100",
+                    "Molnár István",
+                    "E203",
+                    "Forgácsoló_2",
+                    "2026-09-05",
+                    1,
+                    "2026-09-05 08:15"
+                )
+            )
+            dataArray.add(
+                Data(
+                    103,
+                    "Tóth Mária",
+                    "E204",
+                    "Kovács Péter",
+                    "M100",
+                    "Varga Zoltán",
+                    "E205",
+                    "Raktár",
+                    "2026-09-05",
+                    1,
+                    "2026-09-05 08:30"
+                )
+            )
+
+            return true
+        }
+
         try {
-            connection = DriverManager.getConnection(read_connect)
-            connectionWrite = DriverManager.getConnection(write_connect)
+            Class.forName("net.sourceforge.jtds.jdbc.Driver")
+            val connection = DriverManager.getConnection(AppConfig.READ_CONNECT)
+            //val connectionWrite = DriverManager.getConnection(AppConfig.WRITE_CONNECT)
             val statementManager =
                 connection.prepareStatement("""SELECT TextDescription FROM [Fusetech].[dbo].[DolgKodok] WHERE MSVStatusz = ? ORDER BY TextDescription""")
             statementManager.setString(1, "2")
@@ -54,12 +105,11 @@ class Sql(private val sqlMessage: SqlMessage) {
                 sqlMessage.sendMessage("Nem sikerült a managereket letölteni")
                 return false
             } else {
-                //managerArray.add(ManagerNames(""))
+                managerArray.clear()
                 managerArray.add("")
                 do {
                     val manager = resultManager.getString("TextDescription")
                     managerArray.add(manager)
-                    // managerArray.add(ManagerNames(manager))
                 } while (resultManager.next())
             }
             val statement =
@@ -82,88 +132,34 @@ class Sql(private val sqlMessage: SqlMessage) {
                     sqlMessage.sendMessage("$felelosNev nevén nincs aktív MSV!")
                     return false
                 } else {
-                    val id = resultSet1.getInt("ID")
-                    val name = resultSet1.getString("Nev")
-                    val tsz = resultSet1.getString("Tsz")
-                    val felelos = resultSet1.getString("FelelosSzemely")
-                    val ftsz = resultSet1.getString("FelelosTsz")
-                    val resztvevo = resultSet1.getString("Resztvevo")
-                    val rtsz = resultSet1.getString("ResztvevoTsz")
-                    val location = resultSet1.getString("Helyszin")
-                    val date = resultSet1.getString("Datum")
-                    val status = resultSet1.getInt("Statusz")
-                    val entryDate = resultSet1.getString("BelepesDatum")
-                    val statement2 = connection.prepareStatement("""SELECT [Munkahely] FROM [Fusetech].[dbo].[MSV_Dolgkodok_HolDolg] where TSz = ?""")
-                    statement2.setString(1,tsz)
-                    val resultSet2 = statement2.executeQuery()
-                    if(!resultSet2.next()){
-                        sqlMessage.sendMessage("Hiba a feldolgozás során")
-                        return false
-                    }else{
-                        val munkahely = resultSet2.getString("Munkahely")
-                        if(munkahely == "GYAR"){
-                            sqlMessage.sendMessage("$name nincs a gyár területén")
-                            return false
-                        }else if (munkahely == "-TROGGER"){
-                            sqlMessage.sendMessage("$name nincs a munkahelyére bejelentkezve. Értesítsd a műszakvezetőjét!")
-                            return false
-                        }else{
-                            val statement3 = connectionWrite.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvData] SET Helyszin = ? WHERE ID = ?""")
-                            statement3.setString(1,munkahely)
-                            statement3.setInt(2,id)
-                            statement3.executeUpdate()
-                            dataArray.add(
-                                Data(
-                                    id,
-                                    name,
-                                    tsz,
-                                    felelos,
-                                    ftsz,
-                                    resztvevo,
-                                    rtsz,
-                                    munkahely,
-                                    date,
-                                    status,
-                                    entryDate
-                                )
+                    do {
+                        val id = resultSet1.getInt("ID")
+                        val name = resultSet1.getString("Nev")
+                        val tsz = resultSet1.getString("Tsz")
+                        val felelosSzemely = resultSet1.getString("FelelosSzemely")
+                        val ftsz = resultSet1.getString("FelelosTsz")
+                        val resztvevo = resultSet1.getString("Resztvevo")
+                        val rtsz = resultSet1.getString("ResztvevoTsz")
+                        val location = resultSet1.getString("Helyszin")
+                        val date = resultSet1.getString("Datum")
+                        val status = resultSet1.getInt("Statusz")
+                        val entryDate = resultSet1.getString("BelepesDatum")
+                        dataArray.add(
+                            Data(
+                                id,
+                                name,
+                                tsz,
+                                felelosSzemely,
+                                ftsz,
+                                resztvevo,
+                                rtsz,
+                                location,
+                                date,
+                                status,
+                                entryDate
                             )
-                        }
-                    }
-                    MainActivity.rtsz = rtsz.toString().trim()
-                    val bundle = Bundle()
-                    bundle.putSerializable("EMBER", dataArray)
-                    val statement3 =
-                        connection.prepareStatement("""SELECT [ID],[Eszrevetel],[Tipus],[Valasz],[Intezkedes],[Azonnali],[Javito],[Datum],[Statusz] FROM [Fusetech].[dbo].[MsvNotes] WHERE IdData = ? AND Statusz > 0 order by ID""")
-                    statement3.setInt(1, id)
-                    val resultSet3 = statement3.executeQuery()
-                    if (!resultSet3.next()) {
-                        Log.d(TAG, "getDataByName: Nincsenek észrevételek")
-                    } else {
-                        do {
-                            val idM = resultSet3.getInt("ID")
-                            val eszrevetel = resultSet3.getString("Eszrevetel")
-                            val tipus = resultSet3.getString("Tipus")
-                            val valasz = resultSet3.getString("Valasz")
-                            val intezkedes = resultSet3.getString("Intezkedes")
-                            val azonnali = resultSet3.getInt("Azonnali")
-                            val urgent: Boolean = azonnali != 0
-                            val javito = resultSet3.getString("Javito")
-                            val datum = resultSet3.getString("Datum")
-                            observationArray.add(
-                                ObservationData(
-                                    eszrevetel,
-                                    tipus,
-                                    valasz,
-                                    intezkedes,
-                                    urgent,
-                                    javito,
-                                    datum,
-                                    idM.toString().trim()
-                                )
-                            )
-                        } while (resultSet3.next())
-                    }
-                    msvFragment.arguments = bundle
+                        )
+                    } while (resultSet1.next())
                     return true
                 }
             }
@@ -173,24 +169,209 @@ class Sql(private val sqlMessage: SqlMessage) {
         return false
     }
 
+    fun loadVisitForSelectedPerson(selectedData: Data): Boolean {
+        observationArray.clear()
+        val selectedArray = ArrayList<Data>()
+        selectedArray.add(selectedData)
+
+        if (AppConfig.USE_MOCK_DATA) {
+            MainActivity.rtsz = selectedData.rtsz.trim()
+            when (selectedData.id) {
+                101 -> {
+                    // Nagy Anna
+                    observationArray.add(
+                        ObservationData(
+                            "Védőszemüveg használata rendben",
+                            "PP",
+                            "Példás munkavégzés",
+                            "Nincs szükség intézkedésre",
+                            false,
+                            selectedData.fsz,
+                            "2026-09-05",
+                            "1"
+                        )
+                    )
+                    observationArray.add(
+                        ObservationData(
+                            "Olajfolyás a gép alatt",
+                            "UC",
+                            "Azonnal felitatva homokkal",
+                            "Karbantartás értesítve",
+                            true,
+                            "Tóth István",
+                            "2026-09-05",
+                            "2"
+                        )
+                    )
+                }
+                102 -> {
+                    // Kovács Béla
+                    observationArray.add(
+                        ObservationData(
+                            "Hallásvédő dugó használata megfelelő",
+                            "PP",
+                            "Megfelelő munkavédelem",
+                            "Dicséretben részesült",
+                            false,
+                            selectedData.fsz,
+                            "2026-09-05",
+                            "3"
+                        )
+                    )
+                    observationArray.add(
+                        ObservationData(
+                            "Rendezetlen szerszámasztal",
+                            "UA",
+                            "Elpakolás a műszak végén",
+                            "Szerszámtartó állvány kihelyezése",
+                            false,
+                            "Molnár István",
+                            "2026-09-06",
+                            "4"
+                        )
+                    )
+                    observationArray.add(
+                        ObservationData(
+                            "Hiányzó védőburkolat a csiszológépen",
+                            "UC",
+                            "Gép leállítva",
+                            "Védőburkolat pótlása és ellenőrzése",
+                            true,
+                            "Szabó Gábor",
+                            "2026-09-05",
+                            "5"
+                        )
+                    )
+                }
+                103 -> {
+                    // Tóth Mária
+                    observationArray.add(
+                        ObservationData(
+                            "Tiszta, rendezett raktári folyosó",
+                            "PP",
+                            "Kiváló folyosórend",
+                            "Folyamatos szinten tartás",
+                            false,
+                            selectedData.fsz,
+                            "2026-09-05",
+                            "6"
+                        )
+                    )
+                    observationArray.add(
+                        ObservationData(
+                            "Forgalmi út eltorlaszolva raklappal",
+                            "UA",
+                            "Kocsi azonnal áthelyezve",
+                            "Sárga vonalazás megújítása a raktárban",
+                            true,
+                            "Varga Zoltán",
+                            "2026-09-05",
+                            "7"
+                        )
+                    )
+                }
+                else -> {
+                    observationArray.add(
+                        ObservationData(
+                            "Munkavédelmi előírások betartása rendben",
+                            "PP",
+                            "Rendben",
+                            "Nincs szükség intézkedésre",
+                            false,
+                            selectedData.fsz,
+                            "2026-09-05",
+                            "8"
+                        )
+                    )
+                }
+            }
+            val bundle = Bundle()
+            bundle.putSerializable("EMBER", selectedArray)
+            msvFragment.arguments = bundle
+            return true
+        }
+
+        try {
+            Class.forName("net.sourceforge.jtds.jdbc.Driver")
+            val connection = DriverManager.getConnection(AppConfig.READ_CONNECT)
+            MainActivity.rtsz = selectedData.rtsz.trim()
+            val statement3 =
+                connection.prepareStatement("""SELECT ID, Eszrevetel, Tipus, Valasz, Intezkedes, Azonnali, Javito, Datum, Statusz FROM MsvNotes WHERE IdData = ? AND Statusz > 0 order by ID""")
+            statement3.setInt(1, selectedData.id)
+            val resultSet3 = statement3.executeQuery()
+            if (resultSet3.next()) {
+                do {
+                    val idM = resultSet3.getInt("ID")
+                    val eszrevetel = resultSet3.getString("Eszrevetel")
+                    val tipus = resultSet3.getString("Tipus")
+                    val valasz = resultSet3.getString("Valasz")
+                    val intezkedes = resultSet3.getString("Intezkedes")
+                    val azonnali = resultSet3.getInt("Azonnali")
+                    val urgent: Boolean = azonnali != 0
+                    val javito = resultSet3.getString("Javito")
+                    val datum = resultSet3.getString("Datum")
+                    observationArray.add(
+                        ObservationData(
+                            eszrevetel,
+                            tipus,
+                            valasz,
+                            intezkedes,
+                            urgent,
+                            javito,
+                            datum,
+                            idM.toString().trim()
+                        )
+                    )
+                } while (resultSet3.next())
+            }
+            val bundle = Bundle()
+            bundle.putSerializable("EMBER", selectedArray)
+            msvFragment.arguments = bundle
+            return true
+        } catch (e: Exception) {
+            sqlMessage.sendMessage("Nincs hálózat $e")
+        }
+        return false
+    }
+
     fun loadPerceptionPanel(msvCode: String, name: String) {
         newPerceptionArray.clear()
-        val connection1: Connection
-        Class.forName("net.sourceforge.jtds.jdbc.Driver")
+        if (AppConfig.USE_MOCK_DATA) {
+            val mockId = (System.currentTimeMillis() % 10000).toString()
+            newPerceptionArray.add(
+                ObservationData(
+                    "",
+                    "PP",
+                    "",
+                    "",
+                    false,
+                    "",
+                    "",
+                    mockId
+                )
+            )
+            val bundle = Bundle()
+            bundle.putString("MYSTRING", name)
+            bundle.putSerializable("EMPTYARRAY", newPerceptionArray)
+            perceptionFragment.arguments = bundle
+            return
+        }
+
         try {
-            connection1 = DriverManager.getConnection(write_connect)
+            Class.forName("net.sourceforge.jtds.jdbc.Driver")
+            val connection1 = DriverManager.getConnection(AppConfig.WRITE_CONNECT)
             val statement1 =
-                connection1.prepareStatement("""SELECT [ID],[IdData] FROM [Fusetech].[dbo].[MsvNotes] WHERE Statusz = 0 AND IdData = ?""")
+                connection1.prepareStatement("""SELECT ID, IdData FROM MsvNotes WHERE Statusz = 0 AND IdData = ?""")
             statement1.setInt(1, msvCode.toInt())
             val resultSet1 = statement1.executeQuery()
             if (!resultSet1.next()) {
                 val statement =
-                    connection1.prepareStatement("""INSERT INTO [Fusetech].[dbo].[MsvNotes] (IdData,Statusz) Values(?,?)""")
+                    connection1.prepareStatement("""INSERT INTO MsvNotes (IdData,Statusz) Values(?,?)""")
                 statement.setInt(1, msvCode.toInt())
                 statement.setInt(2, 0)
                 statement.executeUpdate()
                 val statement2 =
-                    connection1.prepareStatement("""SELECT [ID],[IdData] FROM [Fusetech].[dbo].[MsvNotes] WHERE Statusz = 0 AND IdData = ?""")
+                    connection1.prepareStatement("""SELECT ID, IdData FROM MsvNotes WHERE Statusz = 0 AND IdData = ?""")
                 statement2.setInt(1, msvCode.toInt())
                 val resultSet2 = statement2.executeQuery()
                 if (!resultSet2.next()) {
@@ -249,18 +430,32 @@ class Sql(private val sqlMessage: SqlMessage) {
         id: Int,
         statusz: Int
     ) {
+        if (AppConfig.USE_MOCK_DATA) {
+            observationArray.add(
+                ObservationData(
+                    perception,
+                    type,
+                    answer,
+                    measure,
+                    urgent,
+                    corrector,
+                    date,
+                    id.toString()
+                )
+            )
+            return
+        }
         var now = 0
         now = if (urgent) {
             1
         } else {
             0
         }
-        val connection: Connection
-        Class.forName("net.sourceforge.jtds.jdbc.Driver")
         try {
-            connection = DriverManager.getConnection(write_connect)
+            Class.forName("net.sourceforge.jtds.jdbc.Driver")
+            val connection = DriverManager.getConnection(AppConfig.WRITE_CONNECT)
             val statement =
-                connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvNotes] SET Eszrevetel = ?, Tipus = ?, Valasz = ?, Intezkedes = ?, Azonnali = ?, Javito = ?, Datum = ?, Statusz = ? WHERE ID = ? AND Statusz = 0""")
+                connection.prepareStatement("""UPDATE MsvNotes SET Eszrevetel = ?, Tipus = ?, Valasz = ?, Intezkedes = ?, Azonnali = ?, Javito = ?, Datum = ?, Statusz = ? WHERE ID = ? AND Statusz = 0""")
             statement.setString(1, perception)
             statement.setString(2, type)
             statement.setString(3, answer)
@@ -299,18 +494,30 @@ class Sql(private val sqlMessage: SqlMessage) {
         id: Int,
         statusz: Int
     ) {
+        if (AppConfig.USE_MOCK_DATA) {
+            getPositionByValue(id)
+            if (update) {
+                observationArray[updateId].perception = perception
+                observationArray[updateId].type = type
+                observationArray[updateId].response = answer
+                observationArray[updateId].measure = measure
+                observationArray[updateId].now = urgent
+                observationArray[updateId].corrector = corrector
+                observationArray[updateId].date = date
+            }
+            return
+        }
         var now = 0
         now = if (urgent) {
             1
         } else {
             0
         }
-        val connection: Connection
-        Class.forName("net.sourceforge.jtds.jdbc.Driver")
         try {
-            connection = DriverManager.getConnection(write_connect)
+            Class.forName("net.sourceforge.jtds.jdbc.Driver")
+            val connection = DriverManager.getConnection(AppConfig.WRITE_CONNECT)
             val statement =
-                connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvNotes] SET Eszrevetel = ?, Tipus = ?, Valasz = ?, Intezkedes = ?, Azonnali = ?, Javito = ?, Datum = ?, Statusz = ? WHERE ID = ?""")
+                connection.prepareStatement("""UPDATE MsvNotes SET Eszrevetel = ?, Tipus = ?, Valasz = ?, Intezkedes = ?, Azonnali = ?, Javito = ?, Datum = ?, Statusz = ? WHERE ID = ?""")
             statement.setString(1, perception)
             statement.setString(2, type)
             statement.setString(3, answer)
@@ -337,18 +544,24 @@ class Sql(private val sqlMessage: SqlMessage) {
     }
 
     fun deleteExisting(id: Int) {
-        val connection: Connection
-        Class.forName("net.sourceforge.jtds.jdbc.Driver")
+        if (AppConfig.USE_MOCK_DATA) {
+            for (i in observationArray.indices.reversed()) {
+                if (observationArray[i].id == id.toString()) {
+                    observationArray.removeAt(i)
+                }
+            }
+            return
+        }
         try {
-            connection = DriverManager.getConnection(write_connect)
+            Class.forName("net.sourceforge.jtds.jdbc.Driver")
+            val connection = DriverManager.getConnection(AppConfig.WRITE_CONNECT)
             val statement =
-                connection.prepareStatement("""DELETE FROM [Fusetech].[dbo].[MsvNotes] WHERE ID = ?""")
+                connection.prepareStatement("""DELETE FROM MsvNotes WHERE ID = ?""")
             statement.setInt(1, id)
             statement.executeUpdate()
         } catch (e: Exception) {
             Log.d(TAG, "deleteExisting: $e")
         }
-
     }
 
     private fun getPositionByValue(id: Int) {
@@ -361,12 +574,17 @@ class Sql(private val sqlMessage: SqlMessage) {
     }
 
     fun closeCommissarMsv(status: Int, id: Int, code: String) {
-        val connection: Connection
-        Class.forName("net.sourceforge.jtds.jdbc.Driver")
+        if (AppConfig.USE_MOCK_DATA) {
+            observationArray.clear()
+            sqlMessage.noEntry()
+            return
+        }
+
         try {
-            connection = DriverManager.getConnection(write_connect)
+            Class.forName("net.sourceforge.jtds.jdbc.Driver")
+            val connection = DriverManager.getConnection(AppConfig.WRITE_CONNECT)
             val statement2 =
-                connection.prepareStatement("SELECT Key1 FROM [Fusetech].[dbo].[DolgKodok] WHERE TSz = ?")
+                connection.prepareStatement("SELECT Key1 FROM DolgKodok WHERE TSz = ?")
             statement2.setString(1, rtsz)
             val resultSet2 = statement2.executeQuery()
             if (!resultSet2.next()) {
@@ -376,61 +594,68 @@ class Sql(private val sqlMessage: SqlMessage) {
                 if (code == code2) {
                     val date = SimpleDateFormat("yyyy-MM-dd").format(java.util.Date())
                     val statement =
-                        connection.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvData] Set Statusz = ?, LatogatasIdeje = ? where ID = ?""")
+                        connection.prepareStatement("""UPDATE MsvData Set Statusz = ?, LatogatasIdeje = ? where ID = ?""")
                     statement.setInt(1, status)
-                    statement.setString(2,date)
+                    statement.setString(2, date)
                     statement.setInt(3, id)
                     statement.executeUpdate()
                     observationArray.clear()
-                    // sqlMessage.sendMessage("Az $id számú Msv lezárásra került")
                     sqlMessage.noEntry()
-
                 } else {
                     closingTime = false
-                    sqlMessage.sendMessage("Nem a résztvevő húzta le a kódját!"/*"Van kód de valami nem jó $code és $code2"*/)
+                    sqlMessage.sendMessage("Nem a résztvevő húzta le a kódját!")
                 }
             }
         } catch (e: Exception) {
             sqlMessage.sendMessage("Nem sikerült a frissítés! \n$e")
         }
     }
-    fun checkMsvObservationNumber(id: Int): Boolean{
-        val connection: Connection = DriverManager.getConnection(write_connect)
+
+    fun checkMsvObservationNumber(id: Int): Boolean {
+        if (AppConfig.USE_MOCK_DATA) {
+            return observationArray.isNotEmpty()
+        }
+        Class.forName("net.sourceforge.jtds.jdbc.Driver")
+        val connection: Connection = DriverManager.getConnection(AppConfig.WRITE_CONNECT)
         val statement1 =
-            connection.prepareStatement("SELECT * FROM [Fusetech].[dbo].[MsvNotes] WHERE IdData = ?")
+            connection.prepareStatement("SELECT * FROM MsvNotes WHERE IdData = ?")
         statement1.setInt(1, id)
         val resultSet1 = statement1.executeQuery()
         return resultSet1.next()
     }
-    fun checkRabotnik(code: String): Boolean{
-        val connection: Connection
-        Class.forName("net.sourceforge.jtds.jdbc.Driver")
-        try{
-            connection = DriverManager.getConnection(read_connect)
-            val statement = connection.prepareStatement("""SELECT [TSz] FROM [Fusetech].[dbo].[DolgKodok] where Key1 = ?""")
-            statement.setString(1,code)
+
+    fun checkRabotnik(code: String): Boolean {
+        if (AppConfig.USE_MOCK_DATA) {
+            return true
+        }
+
+        try {
+            Class.forName("net.sourceforge.jtds.jdbc.Driver")
+            val connection = DriverManager.getConnection(AppConfig.READ_CONNECT)
+            val statement =
+                connection.prepareStatement("""SELECT TSz FROM DolgKodok where Key1 = ?""")
+            statement.setString(1, code)
             var tszkod = ""
             var tszMsv = ""
             val resultSet = statement.executeQuery()
-            if(!resultSet.next()){
+            if (!resultSet.next()) {
                 CoroutineScope(Main).launch {
                     sqlMessage.sendMessage("Nem jó a kód")
                 }
                 return false
-            }else{
+            } else {
                 tszkod = resultSet.getString("TSz")
-                tszMsv = resultSet.getString("Tsz")
-                if(tszkod == tszMsv){
+                tszMsv = resultSet.getString("TSz")
+                if (tszkod == tszMsv) {
                     return true
                 }
             }
             return false
-        }catch (e: Exception){
+        } catch (e: Exception) {
             CoroutineScope(Main).launch {
                 sqlMessage.sendMessage("Hiba az aláírás során $e")
             }
             return false
         }
     }
-
 }

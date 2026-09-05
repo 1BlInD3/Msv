@@ -29,7 +29,7 @@ interface SendApi {
     companion object{
         operator fun invoke():SendApi{
             return Retrofit.Builder()
-                .baseUrl("http://10.0.1.69:8020/")
+                .baseUrl(com.example.managementsafetyvisit.config.AppConfig.API_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(SendApi::class.java)
