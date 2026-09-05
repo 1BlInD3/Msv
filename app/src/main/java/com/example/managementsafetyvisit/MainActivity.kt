@@ -82,7 +82,6 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun onResume() {
         super.onResume()
-        dataArray.clear()
     }
 
     private fun getLoginFragment() {
@@ -382,19 +381,24 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                                 }
                             }
                         }
-                    }else if (signing){
+                    } else if (signing) {
                         signing = false
-                        signed = true
                         CoroutineScope(IO).launch {
                             val sql = Sql(this@MainActivity)
-                            if(sql.checkRabotnik(result.contents.trim())){
+                            if (sql.checkRabotnik(scannedCode)) {
+                                signed = true
                                 CoroutineScope(Main).launch {
                                     progress?.visibility = View.GONE
-                                    showToast("Sikeres aláírás",this@MainActivity)
+                                    showToast("Sikeres aláírás", this@MainActivity)
                                     val myFragment = supportFragmentManager.findFragmentByTag("MSVFRAG")
-                                    if(myFragment != null){
+                                    if (myFragment != null) {
                                         (myFragment as MsvFragment).isRabotnikSigned()
                                     }
+                                }
+                            } else {
+                                signed = false
+                                CoroutineScope(Main).launch {
+                                    progress?.visibility = View.GONE
                                 }
                             }
                         }
@@ -412,7 +416,6 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     override fun onStop() {
-        dataArray.clear()
         super.onStop()
     }
 

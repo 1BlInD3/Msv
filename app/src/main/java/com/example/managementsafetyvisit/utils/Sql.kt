@@ -625,7 +625,15 @@ class Sql(private val sqlMessage: SqlMessage) {
     }
 
     fun checkRabotnik(code: String): Boolean {
+        val trimmedCode = code.trim()
         if (AppConfig.USE_MOCK_DATA) {
+            val targetTsz = rtsz.trim()
+            if (targetTsz.isNotEmpty() && trimmedCode != targetTsz) {
+                CoroutineScope(Main).launch {
+                    sqlMessage.sendMessage("Nem a meglátogatott személy kártyája!")
+                }
+                return false
+            }
             return true
         }
 
@@ -634,9 +642,7 @@ class Sql(private val sqlMessage: SqlMessage) {
             val connection = DriverManager.getConnection(AppConfig.READ_CONNECT)
             val statement =
                 connection.prepareStatement("""SELECT TSz FROM DolgKodok where Key1 = ?""")
-            statement.setString(1, code)
-            var tszkod = ""
-            var tszMsv = ""
+            statement.setString(1, trimmedCode)
             val resultSet = statement.executeQuery()
             if (!resultSet.next()) {
                 CoroutineScope(Main).launch {
@@ -644,13 +650,16 @@ class Sql(private val sqlMessage: SqlMessage) {
                 }
                 return false
             } else {
-                tszkod = resultSet.getString("TSz")
-                tszMsv = resultSet.getString("TSz")
-                if (tszkod == tszMsv) {
+                val tszkod = resultSet.getString("TSz").trim()
+                if (tszkod == rtsz.trim()) {
                     return true
+                } else {
+                    CoroutineScope(Main).launch {
+                        sqlMessage.sendMessage("Nem a meglátogatott személy kártyája!")
+                    }
+                    return false
                 }
             }
-            return false
         } catch (e: Exception) {
             CoroutineScope(Main).launch {
                 sqlMessage.sendMessage("Hiba az aláírás során $e")
