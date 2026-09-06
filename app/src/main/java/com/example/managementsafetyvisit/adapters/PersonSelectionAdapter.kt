@@ -51,7 +51,7 @@ class PersonSelectionAdapter(
 
     override fun onBindViewHolder(holder: PersonViewHolder, position: Int) {
         val item = personList[position]
-        holder.personName.text = "${item.name} (${item.tsz})"
+        holder.personName.text = "${item.name} #${item.tsz}"
         holder.participantName.text = if (item.resztvevo.isNullOrEmpty()) "Nincs megadva" else item.resztvevo
         holder.personLocation.text = if (item.location.isNullOrEmpty()) "Helyszín" else item.location
         holder.personImage.setImageResource(R.mipmap.ic_launcher)
