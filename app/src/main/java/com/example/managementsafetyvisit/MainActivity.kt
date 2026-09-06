@@ -18,6 +18,7 @@ import com.example.managementsafetyvisit.fragment.LoginFragment
 import com.example.managementsafetyvisit.fragment.MsvFragment
 import com.example.managementsafetyvisit.fragment.PerceptionFragment
 import com.example.managementsafetyvisit.fragment.SelectionFragment
+import com.example.managementsafetyvisit.fragment.SettingsFragment
 import com.example.managementsafetyvisit.utils.Sql
 import com.example.managementsafetyvisit.utils.showToast
 import com.google.android.material.snackbar.Snackbar
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         var signed = false
         var signing = false
         var commissar = false
+        var adminScanning = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -323,7 +325,24 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                 val scannedCode = result.contents.trim()
                 progress?.visibility = View.VISIBLE
                 CoroutineScope(IO).launch {
-                    if (!closingTime && !signing) {
+                    if (adminScanning) {
+                        adminScanning = false
+                        val sql = Sql(this@MainActivity)
+                        if (sql.checkAdminCode(scannedCode)) {
+                            CoroutineScope(Main).launch {
+                                progress?.visibility = View.GONE
+                                val settingsFrag = SettingsFragment()
+                                supportFragmentManager.beginTransaction()
+                                    .replace(R.id.id_container, settingsFrag, "SETTINGS")
+                                    .addToBackStack(null).commit()
+                            }
+                        } else {
+                            CoroutineScope(Main).launch {
+                                progress?.visibility = View.GONE
+                                com.example.managementsafetyvisit.utils.showDialog("Nem admin kódot vittél fel", this@MainActivity)
+                            }
+                        }
+                    } else if (!closingTime && !signing) {
                         try {
                             val sql = Sql(this@MainActivity)
                             if (sql.getDataByName(scannedCode)) {
@@ -413,6 +432,11 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun openCamera() {
         scanCode("Kérem az MSV vezető vonalkódját...")
+    }
+
+    override fun openAdminCamera() {
+        adminScanning = true
+        scanCode("Kérem az admin kódját olvassa le")
     }
 
     override fun onStop() {

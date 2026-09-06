@@ -667,4 +667,35 @@ class Sql(private val sqlMessage: SqlMessage) {
             return false
         }
     }
+
+    fun checkAdminCode(code: String): Boolean {
+        val trimmedCode = code.trim()
+        if (trimmedCode.isEmpty()) return false
+
+        if (AppConfig.USE_MOCK_DATA) {
+
+            return true;
+        }
+
+        try {
+            Class.forName(AppConfig.DRIVER_CLASS)
+            val connection = DriverManager.getConnection(AppConfig.READ_CONNECT)
+            val statement =
+                connection.prepareStatement("SELECT CodeDepFld1 FROM DolgKodok WHERE Key1 = ?")
+            statement.setString(1, trimmedCode)
+            val resultSet = statement.executeQuery()
+            if (resultSet.next()) {
+                val role = resultSet.getString("CodeDepFld1")?.trim()
+                if ("BOSS".equals(role, ignoreCase = true)) {
+                    return true
+                }
+            }
+            return false
+        } catch (e: Exception) {
+            CoroutineScope(Main).launch {
+                sqlMessage.sendMessage("Hiba az ellenőrzés során: $e")
+            }
+            return false
+        }
+    }
 }

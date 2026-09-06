@@ -2,12 +2,14 @@ package com.example.managementsafetyvisit
 
 import android.app.Application
 import android.util.Log
+import com.example.managementsafetyvisit.config.AppConfig
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class BaseApplication: Application() {
     override fun onCreate() {
         super.onCreate()
+        AppConfig.load(this)
 
         // Global crash logger for any unhandled exception across threads
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()

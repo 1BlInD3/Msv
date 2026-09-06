@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sys_name"
+            android:textColor="@color/mersenBlue"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <!-- ENVIRONMENT SETTINGS -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/env_name"
+            android:textColor="@color/mersenOrange"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp" />
+
+        <CheckBox
+            android:id="@+id/cbIsLocalTesting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Helyi teszt környezet (IS_LOCAL_TESTING)"
+            android:textColor="@color/mersenBlue"
+            android:textSize="14sp" />
+
+        <CheckBox
+            android:id="@+id/cbUseMockData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mock adatok használata (USE_MOCK_DATA)"
+            android:textColor="@color/mersenBlue"
+            android:textSize="14sp" />
+
+        <!-- PROD SETTINGS -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prod_env_name"
+            android:textColor="@color/mersenOrange"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prod_ip"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="6dp" />
+        <EditText
+            android:id="@+id/editProdSqlIp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:hint="pl. 10.0.0.11"
+            android:inputType="text"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prod_db"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editProdDbName"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:hint="pl. Fusetech"
+            android:inputType="text"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prod_user"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editProdReadUser"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:hint="pl. scala_read"
+            android:inputType="text"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prod_pwd"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editProdReadPw"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:inputType="textPassword"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prod_write_user"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editProdWriteUser"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:hint="pl. Termelesmonitor"
+            android:inputType="text"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prod_write_pwd"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editProdWritePw"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:inputType="textPassword"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prod_api_url"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editProdApiBaseUrl"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:hint="pl. http://10.0.1.69:8020/"
+            android:inputType="textUri"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prod_photo_path"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editProdPhotoSharePath"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:hint="pl. \\\\fs\\MSV\\foto"
+            android:inputType="text"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnTestProd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/round_button_4"
+            android:text="PROD Kapcsolat Tesztelése"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <!-- LOCAL SETTINGS -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Helyi beállítások (LOCAL)"
+            android:textColor="@color/mersenOrange"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/local_ip"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="6dp" />
+        <EditText
+            android:id="@+id/editLocalSqlIp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:hint="pl. 192.168.1.9"
+            android:inputType="text"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LOCAL Port:"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editLocalSqlPort"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:hint="pl. 1433"
+            android:inputType="number"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/local_db"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editLocalDbName"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:hint="pl. fusetech"
+            android:inputType="text"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/local_user"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editLocalUser"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:hint="pl. fuse"
+            android:inputType="text"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/local_pwd"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editLocalPassword"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:inputType="textPassword"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LOCAL API Alap URL (Base URL):"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editLocalApiBaseUrl"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:hint="pl. http://192.168.1.9:8020/"
+            android:inputType="textUri"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/local_photo_path"
+            android:textColor="@color/mersenBlue"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp" />
+        <EditText
+            android:id="@+id/editLocalPhotoSharePath"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/white_edit"
+            android:paddingHorizontal="10dp"
+            android:hint="pl. \\\\local-server\\MSV\\foto"
+            android:inputType="text"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnTestLocal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/round_button_4"
+            android:text="LOCAL Kapcsolat Tesztelése"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white" />
+
+        <!-- SAVE BUTTON -->
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/round_button_5"
+            android:text="Mentés és Vissza"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</ScrollView>
