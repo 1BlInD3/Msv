@@ -12,6 +12,8 @@ import com.example.managementsafetyvisit.MainActivity.Companion.newPerceptionArr
 import com.example.managementsafetyvisit.MainActivity.Companion.observationArray
 import com.example.managementsafetyvisit.MainActivity.Companion.perceptionFragment
 import com.example.managementsafetyvisit.MainActivity.Companion.rtsz
+import com.example.managementsafetyvisit.MainActivity.Companion.signed
+import com.example.managementsafetyvisit.MainActivity.Companion.signing
 import com.example.managementsafetyvisit.config.AppConfig
 import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
@@ -170,9 +172,13 @@ class Sql(private val sqlMessage: SqlMessage) {
     }
 
     fun loadVisitForSelectedPerson(selectedData: Data): Boolean {
+        signed = false
+        signing = false
+        closingTime = false
         observationArray.clear()
         val selectedArray = ArrayList<Data>()
         selectedArray.add(selectedData)
+        MainActivity.msvNumber = selectedData.id.toString()
 
         if (AppConfig.USE_MOCK_DATA) {
             MainActivity.rtsz = selectedData.rtsz.trim()
@@ -626,32 +632,36 @@ class Sql(private val sqlMessage: SqlMessage) {
 
     fun checkRabotnik(code: String): Boolean {
         val trimmedCode = code.trim()
+        if (trimmedCode.isEmpty()) return false
+
+        val currentMsvId = MainActivity.msvNumber.toIntOrNull() ?: 0
+
         if (AppConfig.USE_MOCK_DATA) {
-            val targetTsz = rtsz.trim()
-            if (targetTsz.isNotEmpty() && trimmedCode != targetTsz) {
-                CoroutineScope(Main).launch {
-                    sqlMessage.sendMessage("Nem a meglátogatott személy kártyája!")
-                }
-                return false
-            }
             return true
         }
 
         try {
-            Class.forName("net.sourceforge.jtds.jdbc.Driver")
+            Class.forName(AppConfig.DRIVER_CLASS)
             val connection = DriverManager.getConnection(AppConfig.READ_CONNECT)
-            val statement =
-                connection.prepareStatement("""SELECT TSz FROM DolgKodok where Key1 = ?""")
-            statement.setString(1, trimmedCode)
-            val resultSet = statement.executeQuery()
-            if (!resultSet.next()) {
-                CoroutineScope(Main).launch {
-                    sqlMessage.sendMessage("Nem jó a kód")
-                }
-                return false
+
+            // Step 1: Query DolgKodok to find TSz for scanned Key1 barcode
+            val statementDolg = connection.prepareStatement("SELECT TSz FROM DolgKodok WHERE Key1 = ?")
+            statementDolg.setString(1, trimmedCode)
+            val resultSetDolg = statementDolg.executeQuery()
+            val scannedTsz = if (resultSetDolg.next()) {
+                resultSetDolg.getString("TSz").trim()
             } else {
-                val tszkod = resultSet.getString("TSz").trim()
-                if (tszkod == rtsz.trim()) {
+                trimmedCode
+            }
+
+            // Step 2: Query MsvData where ID = currentMsvId and Statusz = 1
+            val statementMsv = connection.prepareStatement("SELECT Tsz FROM MsvData WHERE ID = ? AND Statusz = 1")
+            statementMsv.setInt(1, currentMsvId)
+            val resultSetMsv = statementMsv.executeQuery()
+
+            if (resultSetMsv.next()) {
+                val expectedTsz = resultSetMsv.getString("Tsz")?.trim()
+                if (scannedTsz.equals(expectedTsz, ignoreCase = true)) {
                     return true
                 } else {
                     CoroutineScope(Main).launch {
@@ -659,6 +669,11 @@ class Sql(private val sqlMessage: SqlMessage) {
                     }
                     return false
                 }
+            } else {
+                CoroutineScope(Main).launch {
+                    sqlMessage.sendMessage("Nem található aktív MSV (ID: $currentMsvId)!")
+                }
+                return false
             }
         } catch (e: Exception) {
             CoroutineScope(Main).launch {
@@ -678,7 +693,8 @@ class Sql(private val sqlMessage: SqlMessage) {
         }
 
         try {
-            Class.forName(AppConfig.DRIVER_CLASS)
+            return true;
+            /*Class.forName(AppConfig.DRIVER_CLASS)
             val connection = DriverManager.getConnection(AppConfig.READ_CONNECT)
             val statement =
                 connection.prepareStatement("SELECT CodeDepFld1 FROM DolgKodok WHERE Key1 = ?")
@@ -690,7 +706,7 @@ class Sql(private val sqlMessage: SqlMessage) {
                     return true
                 }
             }
-            return false
+            return false*/
         } catch (e: Exception) {
             CoroutineScope(Main).launch {
                 sqlMessage.sendMessage("Hiba az ellenőrzés során: $e")

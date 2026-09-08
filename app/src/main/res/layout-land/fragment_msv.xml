@@ -15,15 +15,27 @@
     android:layout_height="match_parent"
     tools:context=".fragment.MsvFragment">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout4"
+        android:layout_width="116dp"
+        android:layout_height="156dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:background="@color/mersenSilver"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="100dp"
         android:layout_height="140dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:scaleType="centerCrop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/constraintLayout4"
+        app:layout_constraintTop_toTopOf="@+id/constraintLayout4"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
@@ -125,11 +137,11 @@
         android:id="@+id/rabotnik_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="16dp"
         android:text="Meglátogatott személy"
         android:textColor="@android:color/black"
         android:textSize="15sp"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/constraintLayout4"
         app:layout_constraintTop_toTopOf="@+id/comissar_text" />
 
     <Button
@@ -146,6 +158,30 @@
         android:background="@drawable/round_button"
         app:layout_constraintBottom_toBottomOf="@+id/horizontalScrollView"
         app:layout_constraintEnd_toEndOf="@+id/horizontalScrollView" />
+
+    <Button
+        android:id="@+id/camera_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/round_button_2"
+        android:drawableStart="@mipmap/camera"
+        android:drawableTint="@android:color/white"
+        android:paddingStart="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/new_response"
+        app:layout_constraintEnd_toEndOf="@+id/new_response" />
+
+    <Button
+        android:id="@+id/check_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/round_button_3"
+        android:drawableStart="@mipmap/check"
+        android:drawableTint="@color/mersenOrange"
+        android:paddingStart="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/camera_button"
+        app:layout_constraintEnd_toEndOf="@+id/camera_button" />
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView"

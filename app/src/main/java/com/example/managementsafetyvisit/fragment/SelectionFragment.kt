@@ -41,6 +41,13 @@ class SelectionFragment : Fragment(), PersonSelectionAdapter.OnPersonClickListen
         personSelectionConnector.onPersonSelected(data)
     }
 
+    override fun onResume() {
+        super.onResume()
+        MainActivity.signed = false
+        MainActivity.signing = false
+        MainActivity.closingTime = false
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         personSelectionConnector = if (context is PersonSelectionConnector) {

@@ -278,6 +278,9 @@ class MsvFragment : Fragment(), MsvListener, ObservationDataAdapter.CurrentSelec
             }
         }
         refreshList()
+        if (signed) {
+            isRabotnikSigned()
+        }
     }
 
     override fun onAttach(context: Context) {

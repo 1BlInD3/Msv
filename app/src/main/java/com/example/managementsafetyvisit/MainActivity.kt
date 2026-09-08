@@ -386,19 +386,11 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                         } catch (e: Exception) {
                             Log.d(TAG, "onActivityResult: $e")
                         }
-                    }else if(closingTime && commissar){
+                    } else if (closingTime && commissar) {
                         closingTime = false
                         CoroutineScope(IO).launch {
                             val sql = Sql(this@MainActivity)
                             sql.closeCommissarMsv(closingStatus, closingId, result.contents.trim())
-                            CoroutineScope(Main).launch {
-                                val builder = AlertDialog.Builder(this@MainActivity)
-                                builder.setTitle("FIGYELEM!")
-                                builder.setMessage("Az Msv lezárásra került! :)")
-                                builder.setPositiveButton("OK") { _, _ ->
-                                    finishAndRemoveTask()
-                                }
-                            }
                         }
                     } else if (signing) {
                         signing = false
@@ -485,11 +477,19 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun noEntry() {
         CoroutineScope(Main).launch {
+            dataArray.removeAll { it.id == closingId }
             val dialog = AlertDialog.Builder(this@MainActivity)
             dialog.setTitle("Figyelem")
             dialog.setMessage("Az Msv lezárásra került")
             dialog.setPositiveButton("OK") { _, _ ->
-                finishAndRemoveTask()
+                if (dataArray.isNotEmpty()) {
+                    val selFrag = SelectionFragment()
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.id_container, selFrag, "SELECTION")
+                        .commit()
+                } else {
+                    finishAndRemoveTask()
+                }
             }
             dialog.create()
             dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
