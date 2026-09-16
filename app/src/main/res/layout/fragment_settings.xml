@@ -46,6 +46,14 @@
             android:textColor="@color/mersenBlue"
             android:textSize="14sp" />
 
+        <CheckBox
+            android:id="@+id/cbFetchFromServer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Konfiguráció letöltése szerverről (FETCH_FROM_SERVER)"
+            android:textColor="@color/mersenBlue"
+            android:textSize="14sp" />
+
         <!-- PROD SETTINGS -->
         <TextView
             android:layout_width="match_parent"

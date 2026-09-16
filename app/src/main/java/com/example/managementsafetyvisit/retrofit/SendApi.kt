@@ -1,5 +1,6 @@
 package com.example.managementsafetyvisit.retrofit
 
+import com.example.managementsafetyvisit.data.AppDbData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -12,22 +13,25 @@ interface SendApi {
     @Multipart
     @POST("uploadFile/{path}")
     fun sendPhoto(
-        @Part("path")path: RequestBody,
+        @Part("path") path: RequestBody,
         @Part xml: MultipartBody.Part,
         @Query("number") number: String
     ): Call<UploadResponse>
 
     @GET("test")
-    fun getTest():Call<UploadResponse>
+    fun getTest(): Call<UploadResponse>
 
     @GET("data")
-    fun getImageNumber(@Query("folder") folder: String):Call<UploadResponse>
+    fun getImageNumber(@Query("folder") folder: String): Call<UploadResponse>
 
     @GET("image")
     fun getImage(@Query("name") name: String): Call<ResponseBody>
 
-    companion object{
-        operator fun invoke():SendApi{
+    @GET("data-properties")
+    fun getDataProperties(): Call<AppDbData>
+
+    companion object {
+        operator fun invoke(): SendApi {
             return Retrofit.Builder()
                 .baseUrl(com.example.managementsafetyvisit.config.AppConfig.API_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -35,14 +39,4 @@ interface SendApi {
                 .create(SendApi::class.java)
         }
     }
-    /*companion object{
-        operator fun invoke():SendApi{
-            return Retrofit.Builder()
-                .baseUrl("http://10.0.2.149:8030/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(SendApi::class.java)
-        }
-    }
-*/
 }

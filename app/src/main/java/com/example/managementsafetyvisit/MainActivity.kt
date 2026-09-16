@@ -19,6 +19,7 @@ import com.example.managementsafetyvisit.fragment.MsvFragment
 import com.example.managementsafetyvisit.fragment.PerceptionFragment
 import com.example.managementsafetyvisit.fragment.SelectionFragment
 import com.example.managementsafetyvisit.fragment.SettingsFragment
+import com.example.managementsafetyvisit.retrofit.RetrofitFunctions
 import com.example.managementsafetyvisit.utils.Sql
 import com.example.managementsafetyvisit.utils.showToast
 import com.google.android.material.snackbar.Snackbar
@@ -78,6 +79,11 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         progressRound = findViewById(R.id.progressBar2)
         progress?.visibility = View.GONE
         progressRound?.visibility = View.GONE
+        CoroutineScope(IO).launch {
+            if (AppConfig.FETCH_FROM_SERVER) {
+                RetrofitFunctions().fetchDataProperties(this@MainActivity)
+            }
+        }
         getLoginFragment()
         Log.d(TAG, "onCreate: ")
     }

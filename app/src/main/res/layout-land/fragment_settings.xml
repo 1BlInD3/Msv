@@ -45,6 +45,15 @@
                 android:text="Mock adatok használata (USE_MOCK_DATA)"
                 android:textColor="@color/mersenBlue"
                 android:textSize="14sp" />
+
+            <CheckBox
+                android:id="@+id/cbFetchFromServer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Szerverről letöltés (FETCH_FROM_SERVER)"
+                android:textColor="@color/mersenBlue"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <!-- TWO COLUMNS: PROD & LOCAL -->

@@ -1,15 +1,20 @@
 package com.example.managementsafetyvisit.fragment
 
+import android.content.Context
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import com.example.managementsafetyvisit.R
 import com.example.managementsafetyvisit.config.AppConfig
+import com.example.managementsafetyvisit.retrofit.RetrofitFunctions
 import com.example.managementsafetyvisit.utils.showToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +33,7 @@ class SettingsFragment : Fragment() {
 
         val cbIsLocalTesting: CheckBox = view.findViewById(R.id.cbIsLocalTesting)
         val cbUseMockData: CheckBox = view.findViewById(R.id.cbUseMockData)
+        val cbFetchFromServer: CheckBox = view.findViewById(R.id.cbFetchFromServer)
 
         val editProdSqlIp: EditText = view.findViewById(R.id.editProdSqlIp)
         val editProdDbName: EditText = view.findViewById(R.id.editProdDbName)
@@ -53,6 +59,7 @@ class SettingsFragment : Fragment() {
         // Pre-populate fields from AppConfig
         cbIsLocalTesting.isChecked = AppConfig.IS_LOCAL_TESTING
         cbUseMockData.isChecked = AppConfig.USE_MOCK_DATA
+        cbFetchFromServer.isChecked = AppConfig.FETCH_FROM_SERVER
 
         editProdSqlIp.setText(AppConfig.PROD_SQL_IP)
         editProdDbName.setText(AppConfig.PROD_DB_NAME)
@@ -70,6 +77,54 @@ class SettingsFragment : Fragment() {
         editLocalPassword.setText(AppConfig.LOCAL_PASSWORD)
         editLocalApiBaseUrl.setText(AppConfig.LOCAL_API_BASE_URL)
         editLocalPhotoSharePath.setText(AppConfig.LOCAL_PHOTO_SHARE_PATH)
+
+        val allEditTexts = listOf(
+            editProdSqlIp, editProdDbName, editProdReadUser, editProdReadPw,
+            editProdWriteUser, editProdWritePw, editProdApiBaseUrl, editProdPhotoSharePath,
+            editLocalSqlIp, editLocalSqlPort, editLocalDbName, editLocalUser,
+            editLocalPassword, editLocalApiBaseUrl, editLocalPhotoSharePath
+        )
+        for (i in allEditTexts.indices) {
+            val editText = allEditTexts[i]
+            editText.maxLines = 1
+            editText.isSingleLine = true
+            editText.imeOptions = if (i < allEditTexts.size - 1) EditorInfo.IME_ACTION_NEXT else EditorInfo.IME_ACTION_DONE
+
+            editText.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    editText.post {
+                        if (editText.text.isNotEmpty()) {
+                            editText.setSelection(editText.text.length)
+                        }
+                    }
+                }
+            }
+            editText.setOnClickListener {
+                if (editText.text.isNotEmpty()) {
+                    editText.setSelection(editText.text.length)
+                }
+            }
+            editText.setOnEditorActionListener { _, actionId, event ->
+                if (actionId == EditorInfo.IME_ACTION_NEXT ||
+                    (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
+                ) {
+                    if (i < allEditTexts.size - 1) {
+                        allEditTexts[i + 1].requestFocus()
+                        true
+                    } else {
+                        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                        imm?.hideSoftInputFromWindow(editText.windowToken, 0)
+                        true
+                    }
+                } else if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                    imm?.hideSoftInputFromWindow(editText.windowToken, 0)
+                    true
+                } else {
+                    false
+                }
+            }
+        }
 
         btnTestProd.setOnClickListener {
             val ip = editProdSqlIp.text.toString().trim()
@@ -145,8 +200,10 @@ class SettingsFragment : Fragment() {
         }
 
         btnSave.setOnClickListener {
+            val context = requireActivity()
             AppConfig.IS_LOCAL_TESTING = cbIsLocalTesting.isChecked
             AppConfig.USE_MOCK_DATA = cbUseMockData.isChecked
+            AppConfig.FETCH_FROM_SERVER = cbFetchFromServer.isChecked
 
             AppConfig.PROD_SQL_IP = editProdSqlIp.text.toString().trim()
             AppConfig.PROD_DB_NAME = editProdDbName.text.toString().trim()
@@ -165,8 +222,15 @@ class SettingsFragment : Fragment() {
             AppConfig.LOCAL_API_BASE_URL = editLocalApiBaseUrl.text.toString().trim()
             AppConfig.LOCAL_PHOTO_SHARE_PATH = editLocalPhotoSharePath.text.toString().trim()
 
-            AppConfig.save(requireContext())
+            AppConfig.save(context)
             showToast("Beállítások elmentve!", requireContext())
+
+            if (AppConfig.FETCH_FROM_SERVER) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    RetrofitFunctions().fetchDataProperties(context)
+                }
+            }
+
             parentFragmentManager.popBackStack()
         }
 

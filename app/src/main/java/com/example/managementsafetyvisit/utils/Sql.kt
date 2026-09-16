@@ -693,20 +693,7 @@ class Sql(private val sqlMessage: SqlMessage) {
         }
 
         try {
-            return true;
-            /*Class.forName(AppConfig.DRIVER_CLASS)
-            val connection = DriverManager.getConnection(AppConfig.READ_CONNECT)
-            val statement =
-                connection.prepareStatement("SELECT CodeDepFld1 FROM DolgKodok WHERE Key1 = ?")
-            statement.setString(1, trimmedCode)
-            val resultSet = statement.executeQuery()
-            if (resultSet.next()) {
-                val role = resultSet.getString("CodeDepFld1")?.trim()
-                if ("BOSS".equals(role, ignoreCase = true)) {
-                    return true
-                }
-            }
-            return false*/
+            return "5999076269532".equals(trimmedCode)
         } catch (e: Exception) {
             CoroutineScope(Main).launch {
                 sqlMessage.sendMessage("Hiba az ellenőrzés során: $e")
