@@ -363,14 +363,19 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                                         progress?.visibility = View.GONE
                                     }
                                 } else if (dataArray.size == 1) {
-                                    sql.loadVisitForSelectedPerson(dataArray[0])
-                                    CoroutineScope(Main).launch {
-                                        val msvFrag = MsvFragment()
-                                        msvFrag.arguments = msvFragment.arguments
-                                        supportFragmentManager.beginTransaction()
-                                            .replace(R.id.id_container, msvFrag, "MSVFRAG")
-                                            .addToBackStack(null).commit()
-                                        progress?.visibility = View.GONE
+                                    if (sql.loadVisitForSelectedPerson(dataArray[0])) {
+                                        CoroutineScope(Main).launch {
+                                            val msvFrag = MsvFragment()
+                                            msvFrag.arguments = msvFragment.arguments
+                                            supportFragmentManager.beginTransaction()
+                                                .replace(R.id.id_container, msvFrag, "MSVFRAG")
+                                                .addToBackStack(null).commit()
+                                            progress?.visibility = View.GONE
+                                        }
+                                    } else {
+                                        CoroutineScope(Main).launch {
+                                            progress?.visibility = View.GONE
+                                        }
                                     }
                                 } else {
                                     CoroutineScope(Main).launch {
@@ -469,14 +474,19 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         progress?.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             val sql = Sql(this@MainActivity)
-            sql.loadVisitForSelectedPerson(selectedData)
-            CoroutineScope(Main).launch {
-                val msvFrag = MsvFragment()
-                msvFrag.arguments = msvFragment.arguments
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.id_container, msvFrag, "MSVFRAG")
-                    .addToBackStack(null).commit()
-                progress?.visibility = View.GONE
+            if (sql.loadVisitForSelectedPerson(selectedData)) {
+                CoroutineScope(Main).launch {
+                    val msvFrag = MsvFragment()
+                    msvFrag.arguments = msvFragment.arguments
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.id_container, msvFrag, "MSVFRAG")
+                        .addToBackStack(null).commit()
+                    progress?.visibility = View.GONE
+                }
+            } else {
+                CoroutineScope(Main).launch {
+                    progress?.visibility = View.GONE
+                }
             }
         }
     }

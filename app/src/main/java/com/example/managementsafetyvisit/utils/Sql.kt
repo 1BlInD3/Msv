@@ -142,10 +142,25 @@ class Sql(private val sqlMessage: SqlMessage) {
                         val ftsz = resultSet1.getString("FelelosTsz")
                         val resztvevo = resultSet1.getString("Resztvevo")
                         val rtsz = resultSet1.getString("ResztvevoTsz")
-                        val location = resultSet1.getString("Helyszin")
+                        var location = resultSet1.getString("Helyszin")
                         val date = resultSet1.getString("Datum")
                         val status = resultSet1.getInt("Statusz")
                         val entryDate = resultSet1.getString("BelepesDatum")
+
+                        try {
+                            val statement2 = connection.prepareStatement("""SELECT [Munkahely] FROM [Fusetech].[dbo].[MSV_Dolgkodok_HolDolg] where TSz = ?""")
+                            statement2.setString(1, tsz)
+                            val resultSet2 = statement2.executeQuery()
+                            if (resultSet2.next()) {
+                                val munkahely = resultSet2.getString("Munkahely")
+                                if (!munkahely.isNullOrEmpty()) {
+                                    location = munkahely.trim()
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.d(TAG, "Error fetching Munkahely for $tsz: $e")
+                        }
+
                         dataArray.add(
                             Data(
                                 id,
@@ -175,6 +190,16 @@ class Sql(private val sqlMessage: SqlMessage) {
         signed = false
         signing = false
         closingTime = false
+
+        val location = selectedData.location.trim()
+        if (location == "GYAR") {
+            sqlMessage.sendMessage("${selectedData.name} nincs a gyár területén")
+            return false
+        } else if (location == "-TROGGER") {
+            sqlMessage.sendMessage("${selectedData.name} nincs a munkahelyére bejelentkezve. Értesítsd a műszakvezetőjét!")
+            return false
+        }
+
         observationArray.clear()
         val selectedArray = ArrayList<Data>()
         selectedArray.add(selectedData)
@@ -298,7 +323,14 @@ class Sql(private val sqlMessage: SqlMessage) {
         }
 
         try {
-            Class.forName("net.sourceforge.jtds.jdbc.Driver")
+            Class.forName(AppConfig.DRIVER_CLASS)
+            val connectionWrite = DriverManager.getConnection(AppConfig.WRITE_CONNECT)
+            val statementUpdate = connectionWrite.prepareStatement("""UPDATE [Fusetech].[dbo].[MsvData] SET Helyszin = ? WHERE ID = ?""")
+            statementUpdate.setString(1, selectedData.location)
+            statementUpdate.setInt(2, selectedData.id)
+            statementUpdate.executeUpdate()
+            connectionWrite.close()
+
             val connection = DriverManager.getConnection(AppConfig.READ_CONNECT)
             MainActivity.rtsz = selectedData.rtsz.trim()
             val statement3 =
