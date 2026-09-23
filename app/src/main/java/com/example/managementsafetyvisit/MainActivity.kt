@@ -493,19 +493,11 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun noEntry() {
         CoroutineScope(Main).launch {
-            dataArray.removeAll { it.id == closingId }
             val dialog = AlertDialog.Builder(this@MainActivity)
             dialog.setTitle("Figyelem")
             dialog.setMessage("Az Msv lezárásra került")
             dialog.setPositiveButton("OK") { _, _ ->
-                if (dataArray.isNotEmpty()) {
-                    val selFrag = SelectionFragment()
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.id_container, selFrag, "SELECTION")
-                        .commit()
-                } else {
-                    finishAndRemoveTask()
-                }
+                finishAndRemoveTask()
             }
             dialog.create()
             dialog.show().getButton(DialogInterface.BUTTON_POSITIVE).requestFocus()
