@@ -169,6 +169,8 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                         closingId = id
                         closingStatus = statusz
                         closingTime = true
+                        adminScanning = false
+                        signing = false
                         progress?.visibility = View.GONE
                         scanCode("Kérem a résztvevő vonalkódját")
                     }
@@ -198,6 +200,8 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun signVisit() {
         signing = true
+        adminScanning = false
+        closingTime = false
         scanCode("Kérem a meglátogatott személy kártyáját")
     }
 
@@ -427,6 +431,10 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                     }
                 }
             } else {
+                adminScanning = false
+                signing = false
+                closingTime = false
+                progress?.visibility = View.GONE
                 Log.d(TAG, "onActivityResult: no result")
             }
         }
@@ -434,11 +442,16 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     override fun openCamera() {
+        adminScanning = false
+        signing = false
+        closingTime = false
         scanCode("Kérem az MSV vezető vonalkódját...")
     }
 
     override fun openAdminCamera() {
         adminScanning = true
+        signing = false
+        closingTime = false
         scanCode("Kérem az admin kódját olvassa le")
     }
 

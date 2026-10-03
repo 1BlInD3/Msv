@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import com.example.managementsafetyvisit.MainActivity.Companion.adminScanning
 import com.example.managementsafetyvisit.MainActivity.Companion.closingTime
 import com.example.managementsafetyvisit.MainActivity.Companion.commissar
 import com.example.managementsafetyvisit.MainActivity.Companion.signed
@@ -68,6 +69,7 @@ class LoginFragment : Fragment() {
         signing = false
         commissar = false
         closingTime = false
+        adminScanning = false
     }
 
     companion object {

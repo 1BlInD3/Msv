@@ -46,6 +46,7 @@ class SelectionFragment : Fragment(), PersonSelectionAdapter.OnPersonClickListen
         MainActivity.signed = false
         MainActivity.signing = false
         MainActivity.closingTime = false
+        MainActivity.adminScanning = false
     }
 
     override fun onAttach(context: Context) {
