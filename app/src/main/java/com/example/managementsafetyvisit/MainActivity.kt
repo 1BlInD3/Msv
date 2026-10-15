@@ -10,14 +10,19 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ProgressBar
 import com.example.managementsafetyvisit.camera.CaptureAct
+import com.example.managementsafetyvisit.config.AppConfig
 import com.example.managementsafetyvisit.data.Data
 import com.example.managementsafetyvisit.data.ObservationData
 import com.example.managementsafetyvisit.fragment.CameraFragment
 import com.example.managementsafetyvisit.fragment.LoginFragment
 import com.example.managementsafetyvisit.fragment.MsvFragment
 import com.example.managementsafetyvisit.fragment.PerceptionFragment
+import com.example.managementsafetyvisit.fragment.SelectionFragment
+import com.example.managementsafetyvisit.fragment.SettingsFragment
+import com.example.managementsafetyvisit.retrofit.RetrofitFunctions
 import com.example.managementsafetyvisit.utils.Sql
 import com.example.managementsafetyvisit.utils.showToast
+import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -32,11 +37,12 @@ import kotlin.math.sign
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
-    PerceptionFragment.MainActivityInteract, LoginFragment.LoginScan, Sql.SqlMessage {
+    PerceptionFragment.MainActivityInteract, LoginFragment.LoginScan, Sql.SqlMessage,
+    SelectionFragment.PersonSelectionConnector {
 
     private val TAG = "MainActivity"
-    private lateinit var progress: ProgressBar
-    private lateinit var progressRound: ProgressBar
+    private var progress: ProgressBar? = null
+    private var progressRound: ProgressBar? = null
 
     companion object {
         val observationArray: ArrayList<ObservationData> = ArrayList()
@@ -44,13 +50,14 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
         // val reversedList: ArrayList<ObservationData> = ArrayList()
         val dataArray: ArrayList<Data> = ArrayList()
-        const val read_connect =
-            "jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=scala_read;password=scala_read;loginTimeout=10"
-        const val write_connect =
-            "jdbc:jtds:sqlserver://10.0.0.11;databaseName=Fusetech;user=Termelesmonitor;password=TERM123;loginTimeout=10"
+        val read_connect: String
+            get() = AppConfig.READ_CONNECT
+        val write_connect: String
+            get() = AppConfig.WRITE_CONNECT
         var felelos: String = ""
         val perceptionFragment = PerceptionFragment()
         val msvFragment = MsvFragment()
+        val selectionFragment = SelectionFragment()
         var msvNumber: String = ""
         var closingTime = false
         var imageNumber = ""
@@ -61,6 +68,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         var signed = false
         var signing = false
         var commissar = false
+        var adminScanning = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,15 +77,19 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         progress = findViewById(R.id.progressBar)
         progressRound = findViewById(R.id.progressBar2)
-        progress.visibility = View.GONE
-        progressRound.visibility = View.GONE
+        progress?.visibility = View.GONE
+        progressRound?.visibility = View.GONE
+        CoroutineScope(IO).launch {
+            if (AppConfig.FETCH_FROM_SERVER) {
+                RetrofitFunctions().fetchDataProperties(this@MainActivity)
+            }
+        }
         getLoginFragment()
         Log.d(TAG, "onCreate: ")
     }
 
     override fun onResume() {
         super.onResume()
-        dataArray.clear()
     }
 
     private fun getLoginFragment() {
@@ -87,7 +99,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun loadPerceptionPanel(code: String, name: String) {
         val sql = Sql(this)
-        progress.visibility = View.VISIBLE
+        progress?.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             sql.loadPerceptionPanel(code, name)
             CoroutineScope(Main).launch {
@@ -95,7 +107,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                     R.id.panel_container,
                     perceptionFragment, "PERCEPTION"
                 ).addToBackStack(null).commit()
-                progress.visibility = View.GONE
+                progress?.visibility = View.GONE
             }
         }
     }
@@ -146,7 +158,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
 
     override fun closeMsv(statusz: Int, id: Int) {
         val sql = Sql(this)
-        progress.visibility = View.VISIBLE
+        progress?.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             if (sql.checkMsvObservationNumber(id)) {
                 CoroutineScope(Main).launch {
@@ -157,7 +169,9 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                         closingId = id
                         closingStatus = statusz
                         closingTime = true
-                        progress.visibility = View.GONE
+                        adminScanning = false
+                        signing = false
+                        progress?.visibility = View.GONE
                         scanCode("Kérem a résztvevő vonalkódját")
                     }
                     dialog.create()
@@ -166,7 +180,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             } else {
                 CoroutineScope(Main).launch {
                     closingTime = false
-                    progress.visibility = View.GONE
+                    progress?.visibility = View.GONE
                     com.example.managementsafetyvisit.utils.showDialog(
                         "Észrevétel nélkül nem lehet az Msv-t lezárni!",
                         this@MainActivity
@@ -177,15 +191,17 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     override fun progressOnOff() {
-        if(progress.visibility == View.VISIBLE){
-            progress.visibility = View.GONE
+        if(progress?.visibility == View.VISIBLE){
+            progress?.visibility = View.GONE
         }else{
-            progress.visibility = View.VISIBLE
+            progress?.visibility = View.VISIBLE
         }
     }
 
     override fun signVisit() {
         signing = true
+        adminScanning = false
+        closingTime = false
         scanCode("Kérem a meglátogatott személy kártyáját")
     }
 
@@ -216,7 +232,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         statusz: Int
     ) {
         val sql = Sql(this)
-        progress.visibility = View.VISIBLE
+        progress?.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             sql.saveNewPerception(
                 perception,
@@ -230,7 +246,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                 statusz
             )
             CoroutineScope(Main).launch {
-                progress.visibility = View.GONE
+                progress?.visibility = View.GONE
                 val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
                 if (myFrag != null) {
                     (myFrag as MsvFragment).refreshList()
@@ -251,7 +267,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         statusz: Int
     ) {
         val sql = Sql(this)
-        progress.visibility = View.VISIBLE
+        progress?.visibility = View.VISIBLE
         CoroutineScope(IO).launch {
             sql.updateExisting(
                 perception,
@@ -265,7 +281,7 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
                 statusz
             )
             CoroutineScope(Main).launch {
-                progress.visibility = View.GONE
+                progress?.visibility = View.GONE
                 val myFrag = supportFragmentManager.findFragmentByTag("MSVFRAG")
                 if (myFrag != null) {
                     (myFrag as MsvFragment).refreshList()
@@ -316,61 +332,109 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents != null) {
-                progress.visibility = View.VISIBLE
+                val scannedCode = result.contents.trim()
+                progress?.visibility = View.VISIBLE
                 CoroutineScope(IO).launch {
-                    if (!closingTime && !signing) {
+                    if (adminScanning) {
+                        adminScanning = false
+                        val sql = Sql(this@MainActivity)
+                        if (sql.checkAdminCode(scannedCode)) {
+                            CoroutineScope(Main).launch {
+                                progress?.visibility = View.GONE
+                                val settingsFrag = SettingsFragment()
+                                supportFragmentManager.beginTransaction()
+                                    .replace(R.id.id_container, settingsFrag, "SETTINGS")
+                                    .addToBackStack(null).commit()
+                            }
+                        } else {
+                            CoroutineScope(Main).launch {
+                                progress?.visibility = View.GONE
+                                com.example.managementsafetyvisit.utils.showDialog("Nem admin kódot vittél fel", this@MainActivity)
+                            }
+                        }
+                    } else if (!closingTime && !signing) {
                         try {
                             val sql = Sql(this@MainActivity)
-                            if (sql.getDataByName(result.contents.trim())) {
+                            if (sql.getDataByName(scannedCode)) {
                                 commissar = true
-                                CoroutineScope(Main).launch {
-                                    Log.d(TAG, "onActivityResult: $dataArray")
-                                    supportFragmentManager.beginTransaction()
-                                        .replace(R.id.id_container, msvFragment, "MSVFRAG")
-                                        .addToBackStack(null).commit()
-                                    progress.visibility = View.GONE
+                                Log.d(TAG, "onActivityResult dataArray size: ${dataArray.size}")
+                                if (dataArray.isEmpty()) {
+                                    CoroutineScope(Main).launch {
+                                        com.example.managementsafetyvisit.utils.showDialog("Nincs aktív MSV-d", this@MainActivity)
+                                        managerArray.clear()
+                                        dataArray.clear()
+                                        observationArray.clear()
+                                        progress?.visibility = View.GONE
+                                    }
+                                } else if (dataArray.size == 1) {
+                                    if (sql.loadVisitForSelectedPerson(dataArray[0])) {
+                                        CoroutineScope(Main).launch {
+                                            val msvFrag = MsvFragment()
+                                            msvFrag.arguments = msvFragment.arguments
+                                            supportFragmentManager.beginTransaction()
+                                                .replace(R.id.id_container, msvFrag, "MSVFRAG")
+                                                .addToBackStack(null).commit()
+                                            progress?.visibility = View.GONE
+                                        }
+                                    } else {
+                                        CoroutineScope(Main).launch {
+                                            progress?.visibility = View.GONE
+                                        }
+                                    }
+                                } else {
+                                    CoroutineScope(Main).launch {
+                                        val selFrag = SelectionFragment()
+                                        supportFragmentManager.beginTransaction()
+                                            .replace(R.id.id_container, selFrag, "SELECTION")
+                                            .addToBackStack(null).commit()
+                                        progress?.visibility = View.GONE
+                                    }
                                 }
-                            }else{
-                                managerArray.clear()
-                                dataArray.clear()
-                                observationArray.clear()
+                            } else {
+                                CoroutineScope(Main).launch {
+                                    managerArray.clear()
+                                    dataArray.clear()
+                                    observationArray.clear()
+                                    progress?.visibility = View.GONE
+                                }
                             }
                         } catch (e: Exception) {
                             Log.d(TAG, "onActivityResult: $e")
                         }
-                    }else if(closingTime && commissar){
+                    } else if (closingTime && commissar) {
                         closingTime = false
                         CoroutineScope(IO).launch {
                             val sql = Sql(this@MainActivity)
                             sql.closeCommissarMsv(closingStatus, closingId, result.contents.trim())
-                            CoroutineScope(Main).launch {
-                                val builder = AlertDialog.Builder(this@MainActivity)
-                                builder.setTitle("FIGYELEM!")
-                                builder.setMessage("Az Msv lezárásra került! :)")
-                                builder.setPositiveButton("OK") { _, _ ->
-                                    finishAndRemoveTask()
-                                }
-                            }
                         }
-                    }else if (signing){
+                    } else if (signing) {
                         signing = false
-                        signed = true
                         CoroutineScope(IO).launch {
                             val sql = Sql(this@MainActivity)
-                            if(sql.checkRabotnik(result.contents.trim())){
+                            if (sql.checkRabotnik(scannedCode)) {
+                                signed = true
                                 CoroutineScope(Main).launch {
-                                    progress.visibility = View.GONE
-                                    showToast("Sikeres aláírás",this@MainActivity)
+                                    progress?.visibility = View.GONE
+                                    showToast("Sikeres aláírás", this@MainActivity)
                                     val myFragment = supportFragmentManager.findFragmentByTag("MSVFRAG")
-                                    if(myFragment != null){
+                                    if (myFragment != null) {
                                         (myFragment as MsvFragment).isRabotnikSigned()
                                     }
+                                }
+                            } else {
+                                signed = false
+                                CoroutineScope(Main).launch {
+                                    progress?.visibility = View.GONE
                                 }
                             }
                         }
                     }
                 }
             } else {
+                adminScanning = false
+                signing = false
+                closingTime = false
+                progress?.visibility = View.GONE
                 Log.d(TAG, "onActivityResult: no result")
             }
         }
@@ -378,11 +442,20 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
     }
 
     override fun openCamera() {
+        adminScanning = false
+        signing = false
+        closingTime = false
         scanCode("Kérem az MSV vezető vonalkódját...")
     }
 
+    override fun openAdminCamera() {
+        adminScanning = true
+        signing = false
+        closingTime = false
+        scanCode("Kérem az admin kódját olvassa le")
+    }
+
     override fun onStop() {
-        dataArray.clear()
         super.onStop()
     }
 
@@ -400,13 +473,34 @@ class MainActivity : AppCompatActivity(), MsvFragment.MainActivityConnector,
             dialog.setTitle("Figyelem")
             dialog.setMessage(message)
             dialog.setPositiveButton("OK") { _, _ ->
-                progress.visibility = View.GONE
+                progress?.visibility = View.GONE
             }
             dialog.setOnCancelListener{
-                progress.visibility = View.GONE
+                progress?.visibility = View.GONE
             }
             dialog.create()
             dialog.show()
+        }
+    }
+
+    override fun onPersonSelected(selectedData: Data) {
+        progress?.visibility = View.VISIBLE
+        CoroutineScope(IO).launch {
+            val sql = Sql(this@MainActivity)
+            if (sql.loadVisitForSelectedPerson(selectedData)) {
+                CoroutineScope(Main).launch {
+                    val msvFrag = MsvFragment()
+                    msvFrag.arguments = msvFragment.arguments
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.id_container, msvFrag, "MSVFRAG")
+                        .addToBackStack(null).commit()
+                    progress?.visibility = View.GONE
+                }
+            } else {
+                CoroutineScope(Main).launch {
+                    progress?.visibility = View.GONE
+                }
+            }
         }
     }
 

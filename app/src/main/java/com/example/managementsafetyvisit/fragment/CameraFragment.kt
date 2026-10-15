@@ -50,7 +50,7 @@ class CameraFragment : Fragment() {
     private lateinit var image: ImageView
     private lateinit var viewFinder: PreviewView
     private lateinit var photoFile: File
-    private lateinit var progress: ProgressBar
+    private var progress: ProgressBar? = null
     private val TAG = "CameraXBasic"
     private val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
     private val REQUEST_CODE_PERMISSIONS = 10
@@ -71,7 +71,7 @@ class CameraFragment : Fragment() {
         decline = view.findViewById(R.id.decline_picture)
         image = view.findViewById(R.id.imageView2)
         progress = view.findViewById(R.id.load_image)
-        progress.visibility = View.GONE
+        progress?.visibility = View.GONE
         outputDirectory = getOutputDirectory()
         viewFinder = view.findViewById(R.id.viewFinder)
         val retro = RetrofitFunctions()
@@ -99,14 +99,14 @@ class CameraFragment : Fragment() {
             takePhoto()
         }
         accept.setOnClickListener {
-            progress.visibility = View.VISIBLE
+            progress?.visibility = View.VISIBLE
             accept.setBackgroundResource(R.drawable.round_button_disabled)
             decline.setBackgroundResource(R.drawable.round_button_disabled)
             CoroutineScope(IO).launch {
                 try {
                     retro.retrofitGet(
                         photoFile,
-                        """\\fs\MSV\foto""",
+                        com.example.managementsafetyvisit.config.AppConfig.PHOTO_SHARE_PATH,
                         "MSV_$msvNumber"
                     )
                     CoroutineScope(Main).launch {
@@ -115,7 +115,7 @@ class CameraFragment : Fragment() {
                         cameraCaptureButton.setBackgroundResource(R.drawable.round_button_2)
                         accept.setBackgroundResource(R.drawable.round_button_2)
                         decline.setBackgroundResource(R.drawable.round_button_2)
-                        progress.visibility = View.GONE
+                        progress?.visibility = View.GONE
                         frame.visibility = View.GONE
                     }
                 } catch (e: Exception) {

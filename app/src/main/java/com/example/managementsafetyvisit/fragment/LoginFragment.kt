@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import com.example.managementsafetyvisit.MainActivity.Companion.adminScanning
 import com.example.managementsafetyvisit.MainActivity.Companion.closingTime
 import com.example.managementsafetyvisit.MainActivity.Companion.commissar
 import com.example.managementsafetyvisit.MainActivity.Companion.signed
@@ -25,9 +26,11 @@ private const val ARG_PARAM2 = "param2"
 
 class LoginFragment : Fragment() {
 
-    interface LoginScan{
+    interface LoginScan {
         fun openCamera()
+        fun openAdminCamera()
     }
+
     private lateinit var loginScan: LoginScan
     private val viewModel: LoginViewModel by viewModels()
     private lateinit var binding: FragmentLoginBinding
@@ -47,10 +50,13 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_login, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
         binding.viewModel = viewModel
         binding.loginButton.setOnClickListener {
             loginScan.openCamera()
+        }
+        binding.settingsButton?.setOnClickListener {
+            loginScan.openAdminCamera()
         }
         Log.d("QQQQ", "onCreateView: ")
         return binding.root
@@ -63,6 +69,7 @@ class LoginFragment : Fragment() {
         signing = false
         commissar = false
         closingTime = false
+        adminScanning = false
     }
 
     companion object {
@@ -78,10 +85,10 @@ class LoginFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-         loginScan = if(context is LoginScan){
-             context
-         }else{
-             throw RuntimeException(context.toString() + "must implement")
-         }
+        loginScan = if (context is LoginScan) {
+            context
+        } else {
+            throw RuntimeException("$context must implement LoginScan")
+        }
     }
 }

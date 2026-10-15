@@ -6,4 +6,23 @@
         <item>UC-Nem biztonságos körülmények</item>
     </string-array>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="prod_ip">PROD SQL IP cím:</string>
+    <string name="prod_db">PROD Adatbázis név:</string>
+    <string name="prod_user">PROD READ felhasználónév:</string>
+    <string name="prod_pwd">PROD READ jelszó:</string>
+    <string name="prod_write_user">PROD WRITE felhasználónév:</string>
+    <string name="prod_write_pwd">PROD WRITE jelszó:</string>
+    <string name="prod_api_url">PROD API URL (Base URL):</string>
+    <string name="prod_photo_path">PROD Fotó megosztási útvonal:</string>
+    <string name="local_ip">LOCAL SQL IP cím:</string>
+    <string name="local_port">LOCAL Port:</string>
+    <string name="local_db">LOCAL Adatbázis név:</string>
+    <string name="local_user">LOCAL Felhasználónév:</string>
+    <string name="local_pwd">LOCAL Jelszó:</string>
+    <string name="local_api_url">LOCAL API Alap URL (Base URL):</string>
+    <string name="local_photo_path">LOCAL Fotó megosztási útvonal:</string>
+    <string name="sys_name">Rendszerbeállítások</string>
+    <string name="env_name">Környezeti beállítások</string>
+    <string name="prod_env_name">Termelési környezet beállítás (PROD)</string>
+
 </resources>

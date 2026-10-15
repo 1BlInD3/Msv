@@ -1,5 +1,9 @@
 package com.example.managementsafetyvisit.data
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Data(
     val id: Int,
     val name: String,
@@ -12,4 +16,4 @@ data class Data(
     val date: String,
     val status: Int,
     val entryDate: String
-)
+) : Parcelable
